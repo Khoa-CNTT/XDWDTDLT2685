@@ -50,6 +50,7 @@ public class UserService implements IUserService {
                 .facebookAccountId(userDTO.getFacebookAccountId() != null ? userDTO.getFacebookAccountId() : 0)
                 .googleAccountId(userDTO.getGoogleAccountId() != null ? userDTO.getGoogleAccountId() : 0)
                 .role(role)
+                .isActive(true)
                 .build();
 
         // Mã hóa mật khẩu nếu không dùng tài khoản Facebook/Google
