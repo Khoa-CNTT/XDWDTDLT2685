@@ -7,6 +7,7 @@ import com.project.booktour.dtos.ScheduleDTO;
 import com.project.booktour.models.Tour;
 import lombok.*;
 
+import java.util.Arrays;
 import java.util.List;
 
 @Getter
@@ -31,11 +32,32 @@ public class TourResponse extends BaseResponse {
     private boolean availability;
     private List<ScheduleDTO> itinerary;
     private String reviews;
+    private List<String> include; // Thêm trường include
+    private List<String> notinclude; // Thêm trường notinclude
 
     public static TourResponse fromTour(Tour tour, ObjectMapper objectMapper) throws Exception {
         List<ScheduleDTO> itinerary = tour.getItinerary() != null
                 ? objectMapper.readValue(tour.getItinerary(), new TypeReference<List<ScheduleDTO>>() {})
                 : null;
+
+        // Hardcode giá trị cho include và notinclude
+        List<String> includeList = Arrays.asList(
+                "Dịch vụ đón và trả khách",
+                "1 bữa ăn mỗi ngày",
+                "Bữa tối trên du thuyền & Sự kiện âm nhạc",
+                "Tham quan 7 địa điểm tuyệt vời nhất trong thành phố",
+                "Nước đóng chai trên xe buýt",
+                "Phương tiện di chuyển Xe buýt du lịch hạng sang"
+        );
+
+        List<String> notIncludeList = Arrays.asList(
+                "Tiền boa",
+                "Đón và trả khách tại khách sạn",
+                "Bữa trưa, Đồ ăn & Đồ uống",
+                "Nâng cấp tùy chọn lên một ly",
+                "Dịch vụ bổ sung",
+                "Bảo hiểm"
+        );
 
         TourResponse tourResponse = TourResponse.builder()
                 .title(tour.getTitle())
@@ -47,6 +69,8 @@ public class TourResponse extends BaseResponse {
                 .duration(tour.getDuration())
                 .destination(tour.getDestination())
                 .availability(tour.getAvailability())
+                .include(includeList)
+                .notinclude(notIncludeList)
                 .itinerary(itinerary)
                 .reviews(tour.getReviews())
                 .build();
