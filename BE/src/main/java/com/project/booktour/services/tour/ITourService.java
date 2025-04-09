@@ -1,5 +1,6 @@
 package com.project.booktour.services.tour;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.project.booktour.dtos.TourDTO;
 import com.project.booktour.dtos.TourImageDTO;
 import com.project.booktour.exceptions.DataNotFoundException;
@@ -13,7 +14,7 @@ import org.springframework.stereotype.Service;
 @Service
 public interface ITourService {
 
-    Tour createTour(TourDTO tourDTO) throws DataNotFoundException;
+    Tour createTour(TourDTO tourDTO) throws DataNotFoundException, JsonProcessingException;
 
     Tour getTourById(Long tourId) throws Exception;
 

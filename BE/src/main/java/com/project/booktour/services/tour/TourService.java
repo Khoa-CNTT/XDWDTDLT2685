@@ -1,5 +1,7 @@
 package com.project.booktour.services.tour;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.project.booktour.dtos.TourDTO;
 import com.project.booktour.dtos.TourImageDTO;
 import com.project.booktour.exceptions.DataNotFoundException;
@@ -21,9 +23,10 @@ import java.util.Optional;
 public class TourService implements ITourService {
     private final TourRepository tourRepository;
     private final TourImageRepository tourImageRepository;
+    private final ObjectMapper objectMapper; // Inject ObjectMapper
 
     @Override
-    public Tour createTour(TourDTO tourDTO) throws DataNotFoundException {
+    public Tour createTour(TourDTO tourDTO) throws DataNotFoundException, JsonProcessingException {
         Tour newTour = Tour.builder()
                 .title(tourDTO.getTitle())
                 .description(tourDTO.getDescription())
@@ -34,7 +37,8 @@ public class TourService implements ITourService {
                 .duration(tourDTO.getDuration())
                 .destination(tourDTO.getDestination())
                 .availability(tourDTO.isAvailability())
-                .itinerary(tourDTO.getItinerary())
+                // Chuyển List<ScheduleDTO> thành chuỗi JSON
+                .itinerary(tourDTO.getItinerary() != null ? objectMapper.writeValueAsString(tourDTO.getItinerary()) : null)
                 .reviews(tourDTO.getReviews())
                 .build();
 
@@ -50,7 +54,14 @@ public class TourService implements ITourService {
     @Override
     public Page<TourResponse> getAllTours(PageRequest pageRequest) {
         // Lấy danh sách tour theo trang (page) và giới hạn
-        return tourRepository.findAll(pageRequest).map(TourResponse::fromTour);
+        return tourRepository.findAll(pageRequest)
+                .map(tour -> {
+                    try {
+                        return TourResponse.fromTour(tour, objectMapper);
+                    } catch (Exception e) {
+                        throw new RuntimeException("Failed to parse itinerary for tour with id: " + tour.getTourId(), e);
+                    }
+                });
     }
 
     @Override
@@ -67,7 +78,8 @@ public class TourService implements ITourService {
             existingTour.setDuration(tourDTO.getDuration());
             existingTour.setDestination(tourDTO.getDestination());
             existingTour.setAvailability(tourDTO.isAvailability());
-            existingTour.setItinerary(tourDTO.getItinerary());
+            // Chuyển List<ScheduleDTO> thành chuỗi JSON
+            existingTour.setItinerary(tourDTO.getItinerary() != null ? objectMapper.writeValueAsString(tourDTO.getItinerary()) : null);
             existingTour.setReviews(tourDTO.getReviews());
             return tourRepository.save(existingTour);
         }

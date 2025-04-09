@@ -1,5 +1,6 @@
 package com.project.booktour.controllers;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.javafaker.Faker;
 import com.project.booktour.dtos.TourDTO;
 import com.project.booktour.dtos.TourImageDTO;
@@ -37,6 +38,7 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class TourController {
     private final ITourService tourService;
+    private final ObjectMapper objectMapper;
 
     @GetMapping("")
     public ResponseEntity<TourListResponse> getTours(@RequestParam("page") int page, @RequestParam("limit") int limit) {
@@ -55,7 +57,7 @@ public class TourController {
     public ResponseEntity<?> getTourById(@PathVariable("id") Long tourId) {
         try {
             Tour existingTour = tourService.getTourById(tourId);
-            return ResponseEntity.ok(TourResponse.fromTour(existingTour));
+            return ResponseEntity.ok(TourResponse.fromTour(existingTour, objectMapper));
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
@@ -70,7 +72,7 @@ public class TourController {
                 return ResponseEntity.badRequest().body(errorMessages);
             }
             Tour newTour = tourService.createTour(tourDTO);
-            return ResponseEntity.ok("Tour created successfully: " + newTour.getTitle());
+            return ResponseEntity.ok(TourResponse.fromTour(newTour, objectMapper));
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
         }
@@ -84,7 +86,7 @@ public class TourController {
             if (files == null || files.isEmpty()) {
                 return ResponseEntity.badRequest().body("No files uploaded");
             }
-            if (files.size() < 5) {
+            if (files.size() > 5) { // Sửa điều kiện: số lượng file phải <= 5
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                         .body("Total number of images must be <= 5");
             }
@@ -148,39 +150,39 @@ public class TourController {
     public ResponseEntity<?> updateTour(@PathVariable("id") Long id, @RequestBody TourDTO tourDTO) {
         try {
             Tour updatedTour = tourService.updateTour(id, tourDTO);
-            return ResponseEntity.ok(updatedTour);
+            return ResponseEntity.ok(TourResponse.fromTour(updatedTour, objectMapper));
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
         }
     }
 
-    //    @PostMapping("/generateFakeTours")
-    private ResponseEntity<String> generateFakeTours() {
-        Faker faker = new Faker();
-        for (int i = 0; i < 1000; i++) { // Giảm số lượng để tránh quá tải
-            String tourTitle = faker.lorem().sentence(3);
-            if (tourService.existsByTitle(tourTitle)) {
-                continue;
-            }
-            TourDTO tourDTO = TourDTO.builder()
-                    .title(tourTitle)
-                    .priceAdult(faker.number().randomDouble(2, 1000000, 10000000))
-                    .priceChild(faker.number().randomDouble(2, 500000, 5000000))
-                    .image("")
-                    .quantity(faker.number().numberBetween(5, 50))
-                    .description(faker.lorem().paragraph())
-                    .duration(faker.number().numberBetween(1, 7) + " ngày")
-                    .destination(faker.address().city())
-                    .availability(true)
-                    .itinerary(faker.lorem().paragraph())
-                    .reviews(faker.lorem().sentence())
-                    .build();
-            try {
-                tourService.createTour(tourDTO);
-            } catch (Exception e) {
-                return ResponseEntity.badRequest().body(e.getMessage());
-            }
-        }
-        return ResponseEntity.ok().body("Fake tours created successfully");
-    }
+    // @PostMapping("/generateFakeTours")
+    // private ResponseEntity<String> generateFakeTours() {
+    //     Faker faker = new Faker();
+    //     for (int i = 0; i < 1000; i++) { // Giảm số lượng để tránh quá tải
+    //         String tourTitle = faker.lorem().sentence(3);
+    //         if (tourService.existsByTitle(tourTitle)) {
+    //             continue;
+    //         }
+    //         TourDTO tourDTO = TourDTO.builder()
+    //                 .title(tourTitle)
+    //                 .priceAdult(faker.number().randomDouble(2, 1000000, 10000000))
+    //                 .priceChild(faker.number().randomDouble(2, 500000, 5000000))
+    //                 .image("")
+    //                 .quantity(faker.number().numberBetween(5, 50))
+    //                 .description(faker.lorem().paragraph())
+    //                 .duration(faker.number().numberBetween(1, 7) + " ngày")
+    //                 .destination(faker.address().city())
+    //                 .availability(true)
+    //                 .itinerary(faker.lorem().paragraph()) // Cần sửa nếu muốn tạo fake itinerary dưới dạng List<ScheduleDTO>
+    //                 .reviews(faker.lorem().sentence())
+    //                 .build();
+    //         try {
+    //             tourService.createTour(tourDTO);
+    //         } catch (Exception e) {
+    //             return ResponseEntity.badRequest().body(e.getMessage());
+    //         }
+    //     }
+    //     return ResponseEntity.ok().body("Fake tours created successfully");
+    // }
 }

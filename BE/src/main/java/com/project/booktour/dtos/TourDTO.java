@@ -4,6 +4,8 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.validation.constraints.*;
 import lombok.*;
 
+import java.util.List;
+
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
@@ -39,8 +41,8 @@ public class TourDTO {
 
     private boolean availability = true;
 
-    @NotEmpty(message = "Itinerary cannot be empty")
-    private String itinerary;
+    @NotNull(message = "Itinerary cannot be null")
+    private List<ScheduleDTO> itinerary;
 
     private String reviews;
 }
