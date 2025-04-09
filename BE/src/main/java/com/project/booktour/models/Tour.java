@@ -22,7 +22,7 @@ public class Tour extends BaseEntity {
     @Column(name = "description", columnDefinition = "LONGTEXT", nullable = false)
     private String description;
 
-    @Column(name = "image", length = 255, nullable = false)
+    @Column(name = "image", length = 255)
     private String image;
 
     @Column(name = "quantity", nullable = false)

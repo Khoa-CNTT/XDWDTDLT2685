@@ -94,13 +94,6 @@ public class TourService implements ITourService {
                 .tour(existingTour)
                 .imageUrl(tourImageDTO.getImageUrl())
                 .build();
-
-        // Không cho insert quá 5 ảnh cho 1 tour
-        int size = tourImageRepository.findByTourTourId(tourId).size();
-        if (size >= 5) {
-            throw new InvalidParamException("Number of images must be <= 5");
-        }
-
         return tourImageRepository.save(newTourImage);
     }
 }

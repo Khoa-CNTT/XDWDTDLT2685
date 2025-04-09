@@ -17,7 +17,7 @@ public class TourDTO {
     @NotEmpty(message = "Description cannot be empty")
     private String description;
 
-    @NotEmpty(message = "Image URL cannot be empty")
+
     private String image;
 
     @Min(value = 1, message = "Quantity must be at least 1")

@@ -14,6 +14,7 @@ import org.springframework.stereotype.Component;
 import java.security.Key;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
 
@@ -29,6 +30,9 @@ public class JwtTokenUtil {
     public String generateToken(com.project.booktour.models.User user) throws InvalidParamException {
         Map<String, Object> claims = new HashMap<>();
         claims.put("userName", user.getUsername());
+        claims.put("authorities", user.getAuthorities().stream() // Thêm authorities vào claims
+                .map(authority -> authority.getAuthority())
+                .toList());
         try {
             String token = Jwts.builder()
                     .setClaims(claims)
@@ -69,9 +73,15 @@ public class JwtTokenUtil {
     public String extractUserName(String token) {
         return extractClaim(token, Claims::getSubject);
     }
-
+    public List<String> extractAuthorities(String token) { // Thêm phương thức lấy authorities
+        return extractClaim(token, claims -> (List<String>) claims.get("authorities"));
+    }
     public boolean validateToken(String token, UserDetails userDetails) {
         String userName = extractUserName(token);
-        return (userName.equals(userDetails.getUsername()) && !isTokenExpired(token)); // Bật lại kiểm tra expiration
+        List<String> authorities = extractAuthorities(token);
+        boolean hasValidAuthorities = userDetails.getAuthorities().stream()
+                .map(authority -> authority.getAuthority())
+                .allMatch(auth -> authorities.contains(auth));
+        return (userName.equals(userDetails.getUsername()) && !isTokenExpired(token) && hasValidAuthorities);
     }
 }

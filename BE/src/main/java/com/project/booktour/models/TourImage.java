@@ -14,11 +14,11 @@ import lombok.*;
 public class TourImage {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "tours_image_id")
+    @Column(name = "tour_image_id")
     private Long toursImageId;
 
     @ManyToOne
-    @JoinColumn(name = "tours_id")
+    @JoinColumn(name = "tour_id")
     private Tour tour;
 
     @Column(name = "image_url", length = 300)

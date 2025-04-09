@@ -1,6 +1,7 @@
 package com.project.booktour.responses;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.project.booktour.models.Review;
 import com.project.booktour.models.Tour;
 import lombok.*;
 
@@ -41,7 +42,6 @@ public class TourResponse extends BaseResponse {
                 .itinerary(tour.getItinerary())
                 .reviews(tour.getReviews())
                 .build();
-
         tourResponse.setCreatedAt(tour.getCreatedAt());
         tourResponse.setUpdatedAt(tour.getUpdatedAt());
         return tourResponse;

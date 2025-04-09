@@ -70,7 +70,7 @@ public class TourController {
                 return ResponseEntity.badRequest().body(errorMessages);
             }
             Tour newTour = tourService.createTour(tourDTO);
-            return ResponseEntity.ok(newTour);
+            return ResponseEntity.ok("Tour created successfully: " + newTour.getTitle());
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
         }
@@ -84,9 +84,9 @@ public class TourController {
             if (files == null || files.isEmpty()) {
                 return ResponseEntity.badRequest().body("No files uploaded");
             }
-            if (files.size() > 5) {
+            if (files.size() < 5) {
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                        .body("You can only upload up to 5 images at a time");
+                        .body("Total number of images must be <= 5");
             }
             List<TourImage> tourImages = new ArrayList<>();
             for (MultipartFile file : files) {
