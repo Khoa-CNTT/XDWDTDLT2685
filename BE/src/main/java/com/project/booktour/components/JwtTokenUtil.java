@@ -24,7 +24,7 @@ public class JwtTokenUtil {
     @Value("${jwt.expiration}")
     private Long expiration;
 
-    @Value("${jwt.secretky}") // Sửa lỗi chính tả nếu cần trong application.properties thành "secretkey"
+    @Value("${jwt.secretkey}")
     private String secretKey;
 
     public String generateToken(com.project.booktour.models.User user) throws InvalidParamException {

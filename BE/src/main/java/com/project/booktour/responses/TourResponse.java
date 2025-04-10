@@ -31,7 +31,6 @@ public class TourResponse extends BaseResponse {
     private String destination;
     private boolean availability;
     private List<ScheduleDTO> itinerary;
-    private String reviews;
     private List<String> include; // Thêm trường include
     private List<String> notinclude; // Thêm trường notinclude
 
@@ -72,7 +71,6 @@ public class TourResponse extends BaseResponse {
                 .include(includeList)
                 .notinclude(notIncludeList)
                 .itinerary(itinerary)
-                .reviews(tour.getReviews())
                 .build();
         tourResponse.setCreatedAt(tour.getCreatedAt());
         tourResponse.setUpdatedAt(tour.getUpdatedAt());

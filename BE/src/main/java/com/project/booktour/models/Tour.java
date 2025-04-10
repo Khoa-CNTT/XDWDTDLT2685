@@ -3,6 +3,8 @@ package com.project.booktour.models;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.util.List;
+
 @Entity
 @Table(name = "tours")
 @Getter
@@ -46,6 +48,7 @@ public class Tour extends BaseEntity {
     @Column(name = "itinerary", length = 255, nullable = false)
     private String itinerary;
 
-    @Column(name = "reviews", length = 255)
-    private String reviews;
+    // Quan hệ @OneToMany với Review
+    @OneToMany(mappedBy = "tour", fetch = FetchType.LAZY)
+    private List<Review> reviews;
 }

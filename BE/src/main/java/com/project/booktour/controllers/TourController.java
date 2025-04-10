@@ -157,33 +157,4 @@ public class TourController {
         }
     }
 
-    // @PostMapping("/generateFakeTours")
-    // private ResponseEntity<String> generateFakeTours() {
-    //     Faker faker = new Faker();
-    //     for (int i = 0; i < 1000; i++) { // Giảm số lượng để tránh quá tải
-    //         String tourTitle = faker.lorem().sentence(3);
-    //         if (tourService.existsByTitle(tourTitle)) {
-    //             continue;
-    //         }
-    //         TourDTO tourDTO = TourDTO.builder()
-    //                 .title(tourTitle)
-    //                 .priceAdult(faker.number().randomDouble(2, 1000000, 10000000))
-    //                 .priceChild(faker.number().randomDouble(2, 500000, 5000000))
-    //                 .image("")
-    //                 .quantity(faker.number().numberBetween(5, 50))
-    //                 .description(faker.lorem().paragraph())
-    //                 .duration(faker.number().numberBetween(1, 7) + " ngày")
-    //                 .destination(faker.address().city())
-    //                 .availability(true)
-    //                 .itinerary(faker.lorem().paragraph()) // Cần sửa nếu muốn tạo fake itinerary dưới dạng List<ScheduleDTO>
-    //                 .reviews(faker.lorem().sentence())
-    //                 .build();
-    //         try {
-    //             tourService.createTour(tourDTO);
-    //         } catch (Exception e) {
-    //             return ResponseEntity.badRequest().body(e.getMessage());
-    //         }
-    //     }
-    //     return ResponseEntity.ok().body("Fake tours created successfully");
-    // }
 }

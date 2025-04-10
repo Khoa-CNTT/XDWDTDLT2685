@@ -38,9 +38,7 @@ public class TourService implements ITourService {
                 .duration(tourDTO.getDuration())
                 .destination(tourDTO.getDestination())
                 .availability(tourDTO.isAvailability())
-                // Chuyển List<ScheduleDTO> thành chuỗi JSON
                 .itinerary(tourDTO.getItinerary() != null ? objectMapper.writeValueAsString(tourDTO.getItinerary()) : null)
-                .reviews(tourDTO.getReviews())
                 .build();
 
         return tourRepository.save(newTour);
@@ -54,11 +52,14 @@ public class TourService implements ITourService {
 
     @Override
     public Page<SimplifiedTourResponse> getAllTours(PageRequest pageRequest) {
-        // Lấy danh sách tour theo trang (page) và giới hạn
-        return tourRepository.findAll(pageRequest)
-                .map(tour -> {
+        return tourRepository.findAllWithAverageRating(pageRequest)
+                .map(result -> {
+                    Tour tour = (Tour) result[0];
+                    Double avgRating = (Double) result[1];
                     try {
-                        return SimplifiedTourResponse.fromTour(tour, objectMapper);
+                        SimplifiedTourResponse response = SimplifiedTourResponse.fromTour(tour, objectMapper);
+                        response.setStar(avgRating.floatValue());
+                        return response;
                     } catch (Exception e) {
                         throw new RuntimeException("Failed to parse itinerary for tour with id: " + tour.getTourId(), e);
                     }
@@ -81,7 +82,6 @@ public class TourService implements ITourService {
             existingTour.setAvailability(tourDTO.isAvailability());
             // Chuyển List<ScheduleDTO> thành chuỗi JSON
             existingTour.setItinerary(tourDTO.getItinerary() != null ? objectMapper.writeValueAsString(tourDTO.getItinerary()) : null);
-            existingTour.setReviews(tourDTO.getReviews());
             return tourRepository.save(existingTour);
         }
         return null;

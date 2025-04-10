@@ -9,6 +9,7 @@ package com.project.booktour.responses;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.project.booktour.models.Review;
 import com.project.booktour.models.Tour;
 import lombok.*;
 

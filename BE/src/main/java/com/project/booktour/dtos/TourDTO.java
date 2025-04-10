@@ -44,5 +44,4 @@ public class TourDTO {
     @NotNull(message = "Itinerary cannot be null")
     private List<ScheduleDTO> itinerary;
 
-    private String reviews;
 }
