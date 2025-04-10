@@ -12,6 +12,6 @@ import java.util.List;
 @Builder
 @Data
 public class TourListResponse {
-    private List<TourResponse> tours;
+    private List<SimplifiedTourResponse> tours;
     private int totalPages;
 }

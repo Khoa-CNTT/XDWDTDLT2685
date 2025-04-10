@@ -10,6 +10,7 @@ import com.project.booktour.models.Tour;
 import com.project.booktour.models.TourImage;
 import com.project.booktour.repositories.TourImageRepository;
 import com.project.booktour.repositories.TourRepository;
+import com.project.booktour.responses.SimplifiedTourResponse;
 import com.project.booktour.responses.TourResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -52,12 +53,12 @@ public class TourService implements ITourService {
     }
 
     @Override
-    public Page<TourResponse> getAllTours(PageRequest pageRequest) {
+    public Page<SimplifiedTourResponse> getAllTours(PageRequest pageRequest) {
         // Lấy danh sách tour theo trang (page) và giới hạn
         return tourRepository.findAll(pageRequest)
                 .map(tour -> {
                     try {
-                        return TourResponse.fromTour(tour, objectMapper);
+                        return SimplifiedTourResponse.fromTour(tour, objectMapper);
                     } catch (Exception e) {
                         throw new RuntimeException("Failed to parse itinerary for tour with id: " + tour.getTourId(), e);
                     }

@@ -6,6 +6,7 @@ import com.project.booktour.dtos.TourImageDTO;
 import com.project.booktour.exceptions.DataNotFoundException;
 import com.project.booktour.models.Tour;
 import com.project.booktour.models.TourImage;
+import com.project.booktour.responses.SimplifiedTourResponse;
 import com.project.booktour.responses.TourResponse;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -18,7 +19,7 @@ public interface ITourService {
 
     Tour getTourById(Long tourId) throws Exception;
 
-    Page<TourResponse> getAllTours(PageRequest pageRequest);
+    Page<SimplifiedTourResponse> getAllTours(PageRequest pageRequest);
 
     Tour updateTour(Long id, TourDTO tourDTO) throws Exception;
 

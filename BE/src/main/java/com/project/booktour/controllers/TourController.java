@@ -6,6 +6,7 @@ import com.project.booktour.dtos.TourDTO;
 import com.project.booktour.dtos.TourImageDTO;
 import com.project.booktour.models.Tour;
 import com.project.booktour.models.TourImage;
+import com.project.booktour.responses.SimplifiedTourResponse;
 import com.project.booktour.responses.TourListResponse;
 import com.project.booktour.responses.TourResponse;
 import com.project.booktour.services.tour.ITourService;
@@ -43,10 +44,10 @@ public class TourController {
     @GetMapping("")
     public ResponseEntity<TourListResponse> getTours(@RequestParam("page") int page, @RequestParam("limit") int limit) {
         PageRequest pageRequest = PageRequest.of(page, limit, Sort.by("createdAt").descending());
-        Page<TourResponse> tourPage = tourService.getAllTours(pageRequest);
+        Page<SimplifiedTourResponse> tourPage = tourService.getAllTours(pageRequest);
 
         int totalPages = tourPage.getTotalPages();
-        List<TourResponse> tours = tourPage.getContent();
+        List<SimplifiedTourResponse> tours = tourPage.getContent();
         return ResponseEntity.ok(TourListResponse.builder()
                 .tours(tours)
                 .totalPages(totalPages)
