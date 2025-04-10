@@ -24,7 +24,7 @@ import java.util.Optional;
 public class TourService implements ITourService {
     private final TourRepository tourRepository;
     private final TourImageRepository tourImageRepository;
-    private final ObjectMapper objectMapper; // Inject ObjectMapper
+    private final ObjectMapper objectMapper;
 
     @Override
     public Tour createTour(TourDTO tourDTO) throws DataNotFoundException, JsonProcessingException {
