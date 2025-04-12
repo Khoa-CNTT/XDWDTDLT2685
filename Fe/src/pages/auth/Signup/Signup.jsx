@@ -49,7 +49,7 @@ const Signup = () => {
 
         }
     };
-    const Validation = (name, email, password, passwordConfirm) => {
+    const Validation = (user_name, email, password, passwordConfirm) => {
         const newErrors = {};
         if (!user_name) {
             toast.warning('Vui lòng nhập tên của bạn');

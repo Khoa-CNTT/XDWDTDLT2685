@@ -1,61 +1,69 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { PiEyeSlash, PiEye } from 'react-icons/pi';
 import { FcGoogle } from 'react-icons/fc';
-import { FaFacebookF } from 'react-icons/fa';
+import { FaFacebookF, FaSyncAlt } from 'react-icons/fa';
 import LoginImg from '../../../assets/Travel/Login.png';
 import { toast } from 'react-toastify'
 import Navbar from '../../../components/Navbar/Navbar';
+import { loginApi } from '../../../services/authApi';
 
 
 const Login = () => {
-    const [email, setEmail] = useState('');
+    const [user_name, setUserName] = useState('');
     const [password, setPassword] = useState('');
     const [isShowPassword, setIsShowPassword] = useState(false);
-    const [errors, setErrors] = useState({}); // Khai báo errors để tránh lỗi
+    const [errors, setErrors] = useState({});
+    const [loading, setLoading] = useState(false)
     const navigate = useNavigate();
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        const newErrors = Validation(email, password);
+        const newErrors = Validation(user_name, password);
         setErrors(newErrors);
 
         if (Object.keys(newErrors).length === 0) {
             try {
-                const response = await fetch("http://localhost:4000/login", {
-                    method: "POST",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({ email, password }),
-                });
+                setLoading(true)
+                const res = await loginApi(user_name, password);
+                console.log(typeof "kqua", res);
+                if (typeof res === "string") {
+                    localStorage.setItem("token", res)
+                    setTimeout(() => {
+                        toast.success("Đăng nhập thành công!");
+                        navigate("/");
+                    }, 1500);
+                } else {
+                    toast.error("Tên đăng nhập hoặc mật khẩu không đúng")
+                }
 
-                if (!response.ok) throw new Error("Tài khoản không tồn tại");
-
-                toast.success("Đăng nhập thành công!");
-                navigate("/");
             } catch (error) {
-                toast.error("Đăng nhập thất bại");
-                console.log(error);
+                console.error("Login error:", error);
+                toast.error("Lỗi kết nối server");
+                setLoading(false)
             }
         }
     };
-    const Validation = (email, password) => {
-        const newErors = {};
-        if (!email) {
-            toast.warning('Vui lòng nhập email');
-            newErors.email = "Vui lòng nhập email";
-        } else if (!/^([a-zA-Z0-9_\.\-])+\@(([a-zA-Z0-9\-])+\.)+([a-zA-Z0-9]{2,4})+$/.test(email)) {
-            toast.warning('Email không hợp lệ!');
-            newErors.email = "Email không hợp lệ";
+    useEffect(() => {
+        let token = localStorage.getItem("token")
+        if (token) {
+            navigate("/")
         }
-
+    })
+    const Validation = (user_name, password) => {
+        const newErrors = {};
+        if (!user_name) {
+            toast.warning('Vui lòng nhập tên của bạn');
+            newErrors.user_name = "Vui lòng nhập tên của bạn";
+        }
         if (!password) {
-            newErors.password = "Vui lòng nhập password";
+            newErrors.password = "Vui lòng nhập password";
             toast.warning('Vui lòng nhập password');
         } else if (password.length < 6) {
-            newErors.password = "Mật khẩu ít nhất có 6 ký tự";
+            newErrors.password = "Mật khẩu ít nhất có 6 ký tự";
             toast.warning('Mật khẩu ít nhất có 6 ký tự');
         }
-        return newErors;
+        return newErrors;
     }
 
     return (
@@ -73,13 +81,13 @@ const Login = () => {
                         </div>
                         <form onSubmit={handleSubmit} className='items-center mt-3'>
                             <label className='flex flex-col mb-2 text-gray-500 dark:text-white'>Email</label>
-                            <input type="email" name="email"
-                                value={email}
-                                onChange={(e) => setEmail(e.target.value)}
+                            <input type="text" name="user_name"
+                                value={user_name}
+                                onChange={(e) => setUserName(e.target.value)}
                                 className='p-3 w-full dark:text-[#101828] max-w-[500px] h-auto mx-auto border border-gray-400 rounded-lg'
                                 placeholder='Email của bạn...'
                             />
-                            {errors.email && <div className='mt-2 text-sm text-rose-500'>{errors.email}</div>}
+                            {errors.user_name && <div className='mt-2 text-sm text-rose-500'>{errors.user_name}</div>}
                             <div className='relative mt-3'>
                                 <label className='flex flex-col mb-2 text-gray-500 dark:text-white '>Mật Khẩu</label>
                                 <input type={isShowPassword ? "text" : "password"} name='password'
@@ -98,8 +106,19 @@ const Login = () => {
                                 </div>
                             </div>
                             <div className='mt-6'>
-                                <button className='w-full p-3 max-w-[500px] text-white transition-all rounded-lg duration-600 bg-gradient-to-r from-primary to-secondary hover:bg-gradient-to-r hover:from-secondary hover:bg-primary'
-                                >Đăng nhập</button>
+                                <button
+                                    type='submit'
+                                    disabled={loading}
+                                    className='w-full p-3 max-w-[500px] text-white transition-all rounded-lg duration-600 bg-gradient-to-r from-primary to-secondary hover:bg-gradient-to-r hover:from-secondary hover:bg-primary flex items-center justify-center gap-2'
+                                >
+                                    {loading ? (
+                                        <>
+                                            <FaSyncAlt className='w-5 h-5 text-white animate-spin' />
+                                        </>
+                                    ) : (
+                                        "Đăng nhập"
+                                    )}
+                                </button>
                             </div>
                             <p className='mt-3 font-medium cursor-pointer text-right text-blue-600 text-leftg max-w-[500px]'>Quên mật khẩu?</p>
                         </form>

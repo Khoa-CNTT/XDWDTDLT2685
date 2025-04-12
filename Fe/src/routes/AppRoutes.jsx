@@ -7,7 +7,6 @@ import NoPage from '../pages/NoPage'
 import Popular from '../pages/Popular';
 import BlogsDetail from '../pages/BlogsDetail'
 import Login from '../pages/auth/Login/Login';
-import Signup from '../pages/auth/signup/Signup';
 import Contact from '../pages/Contact';
 import Tours from '../pages/Tours';
 import TourGuide from '../pages/TourGuide';
@@ -16,6 +15,7 @@ import Payment from '../pages/Payment';
 import TourBooking from '../pages/TourBooking';
 import Location from '../pages/Location';
 import PrivateRoute from './PrivateRoute';
+import Signup from '../pages/auth/Signup/Signup';
 
 const AppRoutes = () => {
     return (

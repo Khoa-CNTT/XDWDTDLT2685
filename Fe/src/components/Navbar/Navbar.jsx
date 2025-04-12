@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Link, NavLink } from "react-router-dom";
+import { Link, NavLink, useNavigate } from "react-router-dom";
 import LogoImg from "../../assets/Travel/Logo.png";
 import { FaCaretDown, FaPhoneAlt } from "react-icons/fa";
 import { FiSun, FiMoon } from "react-icons/fi";
@@ -9,6 +9,7 @@ import ResponsiveMenu from "../Navbar/ResponsiveMenu";
 import "flowbite";
 import { FaUserAlt } from "react-icons/fa";
 import useDarkMode from "../../hooks/useDarkMode";
+import { toast } from "react-toastify";
 
 
 const DropdownLinks = [
@@ -22,27 +23,21 @@ const DropdownLinks = [
     },
 
 ];
-const UserLinks = [
-    {
-        name: "Thông tin cá nhân",
-        link: "/profile"
-    },
-    {
-        name: "Tour đã đặt",
-        link: "/tourbooking"
-    },
-    {
-        name: "Đăng xuất",
-        link: ""
-    }
-]
+
 const Navbar = () => {
     const [isDarkMode, toggleDarkMode] = useDarkMode()
     const [showMenu, setShowMenu] = useState(false);
+    const navigate = useNavigate()
+    let token = localStorage.getItem("token")
 
     const toggleMenu = () => {
         setShowMenu(!showMenu);
     };
+    const handleLogout = () => {
+        localStorage.removeItem("token");
+        toast.success("Đăng xuất thành công!");
+        navigate("/login")
+    }
     return (
         <>
             <div className="fixed top-0 right-0 w-full text-black bg-white shadow-md dark:bg-gray-900 dark:text-white z-[999]">
@@ -84,6 +79,7 @@ const Navbar = () => {
                                             <FaCaretDown className="transition-all duration-200 group-hover:rotate-180:" />
                                         </span>
                                         <div className="absolute -left-9 z-[9999] hidden w-[200px] top-[57px] rounded-md bg-white p-2 text-black group-hover:block shadow-md ">
+
                                             <ul className="space-y-3">
                                                 {DropdownLinks.map((data) => (
                                                     <li key={data.name}>
@@ -111,7 +107,7 @@ const Navbar = () => {
                                 <li className="py-4 text-lg font-normal">
                                     <NavLink
                                         className={({ isActive }) => (isActive ? "active" : "")}
-                                        to="/places"
+                                        to="/location"
                                         onClick={() => window.scrollTo(0, 0)}
                                     >
                                         Điểm Đến
@@ -153,16 +149,43 @@ const Navbar = () => {
                                     </span>
                                     <div className="absolute -left-9 z-[9999] hidden w-[200px] top-[57px] rounded-md bg-white p-2 text-black group-hover:block shadow-md ">
                                         <ul className="space-y-3">
-                                            {UserLinks.map((data) => (
-                                                <li key={data.name}>
-                                                    <a
+                                            {token ? (
+                                                <>
+                                                    <li>
+                                                        <NavLink
+                                                            to="/profile"
+                                                            className="inline-block w-full p-2 text-lg font-medium rounded-md hover:bg-primary/50"
+                                                        >
+                                                            Thông tin cá nhân
+                                                        </NavLink>
+                                                    </li>
+                                                    <li>
+                                                        <NavLink
+                                                            to="/tourbooking"
+                                                            className="inline-block w-full p-2 text-lg font-medium rounded-md hover:bg-primary/50"
+                                                        >
+                                                            Tour đã đặt
+                                                        </NavLink>
+                                                    </li>
+                                                    <li>
+                                                        <NavLink
+                                                            onClick={handleLogout}
+                                                            className="inline-block w-full p-2 text-lg font-medium rounded-md hover:bg-primary/50"
+                                                        >
+                                                            Đăng xuất
+                                                        </NavLink>
+                                                    </li>
+                                                </>
+                                            ) : (
+                                                <li>
+                                                    <NavLink
+                                                        to="/login"
                                                         className="inline-block w-full p-2 text-lg font-medium rounded-md hover:bg-primary/50"
-                                                        href={data.link}
                                                     >
-                                                        {data.name}
-                                                    </a>
+                                                        Đăng nhập
+                                                    </NavLink>
                                                 </li>
-                                            ))}
+                                            )}
                                         </ul>
                                     </div>
                                 </div>
