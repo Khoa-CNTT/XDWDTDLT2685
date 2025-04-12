@@ -24,7 +24,7 @@ const BlogSidebar = ({ item }) => {
                 <hr className='mt-5 border-gray-300' />
                 <div className='flex items-center justify-between mt-5'>
                     <p className='font-semibold '>Thời gian:</p>
-                    <p className='text-gray-500 dark:text-white'>{item.time}</p>
+                    <p className='text-gray-500 dark:text-white'>{item.duration}</p>
                 </div>
                 <hr className='mt-5 border-gray-300' />
                 <div className='mt-5 space-y-4'>
@@ -32,11 +32,11 @@ const BlogSidebar = ({ item }) => {
                     <div className='space-y-3'>
                         <div className='flex items-center justify-between ' >
                             <p className='font-semibold'>Người lớn</p>
-                            <p className='text-gray-500 dark:text-white'>{item.ticket.adult}VNĐ</p>
+                            <p className='text-gray-500 dark:text-white'>{item.price_adult}VNĐ</p>
                         </div>
                         <div className='flex items-center justify-between'>
                             <p className='font-semibold'>Trẻ em(5 đến 11 tuổi)</p>
-                            <p className='text-gray-500 dark:text-white'>{item.ticket.children}VNĐ</p>
+                            <p className='text-gray-500 dark:text-white'>{item.price_child}VNĐ</p>
                         </div>
                     </div>
                 </div>

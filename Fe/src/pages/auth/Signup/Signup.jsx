@@ -4,57 +4,56 @@ import { PiEyeSlash, PiEye } from 'react-icons/pi';
 import { FcGoogle } from 'react-icons/fc';
 import { FaFacebookF } from 'react-icons/fa';
 import LoginImg from '../../../assets/Travel/Login.png';
-import { IoIosCloseCircleOutline } from "react-icons/io";
-import axios from 'axios';
 import { toast } from 'react-toastify'
-
 import Navbar from '../../../components/Navbar/Navbar';
+import { signupApi } from '../../../services/authApi';
+import { FaSyncAlt } from "react-icons/fa";
 
 const Signup = () => {
-    const [name, setName] = useState('');
+    const [user_name, setUserName] = useState('');
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [isShowPassword, setIsShowPassword] = useState(false);
     const [passwordConfirm, setPasswordConfirm] = useState("");
     const [isShowConfirmPassword, setIsShowConfirmPassword] = useState(false);
-    const [errors, setErrors] = useState({}); // Khai báo errors để tránh lỗi
+    const [errors, setErrors] = useState({});
+    const [loading, setLoading] = useState(false)
     const navigate = useNavigate();
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        const newErrors = Validation(name, email, password, passwordConfirm);
+        const newErrors = Validation(user_name, email, password, passwordConfirm);
         setErrors(newErrors);
+
         if (Object.keys(newErrors).length === 0) {
             try {
-                
-                // nếu kh trùng thì đăng ký
-                const res = await axios.post("http://localhost:8088/api/v1/users/register", {
-                    user_name: name.trim(),
+                setLoading(true)
+                const res = await signupApi({
+                    user_name: user_name.trim(),
                     email: email.trim(),
                     password: password.trim(),
                     confirm_password: passwordConfirm.trim(),
                     roleId: 1
-                }, {
-                    headers: { "Content-Type": "application/json" }
                 });
-                if (res.status >= 200 && res.status < 300) {
-                    toast.success("Đăng ký thành công");
-                    navigate("/login");
-                } else {
-                    console.log("Chi tiết lỗi:", res.data); // Log chi tiết nội dung phản hồi từ server nếu có lỗi
-                    toast.error("Có lỗi xảy ra, không thể đăng ký.");
+                if (res) {
+                    setTimeout(() => {
+                        toast.success("Đăng ký thành công");
+                        navigate("/login");
+                    }, 1500);
                 }
             } catch (error) {
                 console.error("Lỗi:", error.response?.data || error.message);
-                toast.error("Đăng ký thất bại");
+                toast.error("Tên hoặc Email của bạn đã tồn tại");
+                setLoading(false)
             }
+
         }
-    }
+    };
     const Validation = (name, email, password, passwordConfirm) => {
         const newErrors = {};
-        if (!name) {
+        if (!user_name) {
             toast.warning('Vui lòng nhập tên của bạn');
-            newErrors.name = "Vui lòng nhập tên của bạn";
+            newErrors.user_name = "Vui lòng nhập tên của bạn";
         }
         if (!email) {
             toast.warning('Vui lòng nhập email');
@@ -97,13 +96,13 @@ const Signup = () => {
                         <form onSubmit={handleSubmit} className='items-center mt-3 '>
                             <div className='mt-3'>
                                 <label className='flex flex-col mb-2 text-gray-500 dark:text-white'>Họ và tên</label>
-                                <input type='text' name="text"
-                                    value={name}
-                                    onChange={(e) => setName(e.target.value)}
+                                <input type='text' name="user_name"
+                                    value={user_name}
+                                    onChange={(e) => setUserName(e.target.value)}
                                     className='p-3 w-full dark:text-[#101828] max-w-[500px] h-auto mx-auto border border-gray-400 rounded-lg'
                                     placeholder='Tên của bạn...'
                                 />
-                                {errors.name && <div className='mt-2 text-sm text-rose-500'>{errors.name}</div>}
+                                {errors.user_name && <div className='mt-2 text-sm text-rose-500'>{errors.user_name}</div>}
                             </div>
                             <div className='mt-3'>
                                 <label className='flex flex-col mb-2 text-gray-500 dark:text-white'>Email</label>
@@ -151,8 +150,19 @@ const Signup = () => {
 
                             </div>
                             <div className='mt-6'>
-                                <button type='submit' className='w-full p-3 max-w-[500px] text-white transition-all rounded-lg duration-600 bg-gradient-to-r from-primary to-secondary hover:bg-gradient-to-r hover:from-secondary hover:bg-primary'
-                                >Đăng ký</button>
+                                <button
+                                    type='submit'
+                                    disabled={loading}
+                                    className='w-full p-3 max-w-[500px] text-white transition-all rounded-lg duration-600 bg-gradient-to-r from-primary to-secondary hover:bg-gradient-to-r hover:from-secondary hover:bg-primary flex items-center justify-center gap-2'
+                                >
+                                    {loading ? (
+                                        <>
+                                            <FaSyncAlt className='w-5 h-5 text-white animate-spin' />
+                                        </>
+                                    ) : (
+                                        "Đăng ký"
+                                    )}
+                                </button>
                             </div>
                         </form>
                         <div className='grid items-center max-w-[500px] justify-center grid-cols-3 p-5 text-gray-500 '>
@@ -170,7 +180,7 @@ const Signup = () => {
                                 </a>
                             </div>
                             <div className='mr-[50px]'>
-                                <Link to="/login" className='px-5 py-2 text-white transition-all rounded-full duration-600 bg-gradient-to-r from-primary to-secondary hover:bg-gradient-to-r hover:from-secondary hover:bg-primary'>Đăng nhập</Link>
+                                <Link onClick={() => window.scrollTo(0, 0)} to="/login" className='px-5 py-2 text-white transition-all rounded-full duration-600 bg-gradient-to-r from-primary to-secondary hover:bg-gradient-to-r hover:from-secondary hover:bg-primary'>Đăng nhập</Link>
                             </div>
                         </div>
                     </div>

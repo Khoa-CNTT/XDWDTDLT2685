@@ -1,36 +1,31 @@
 import React, { useState } from 'react';
-import { AiOutlineLeft, AiOutlineRight } from "react-icons/ai";
-import { AiFillThunderbolt } from "react-icons/ai";
-import { CiClock2 } from "react-icons/ci";
-import { FaHiking } from "react-icons/fa";
-import { Link } from 'react-router-dom';
-import BlogContent from './BlogContent';
 import BlogHeader from './BlogHeader';
+import BlogContentCard from './BlogContentCard';
 
 const BlogImg = ({ item }) => {
-    const [selectedIndex, setSelectedIndex] = useState(0);
-    const [selectedImg, setSelectedImg] = useState(item.img[0]);
+    // const [selectedIndex, setSelectedIndex] = useState(0);
+    // const [selectedImg, setSelectedImg] = useState(item.img[0]);
 
-    const handlePrev = () => {
-        setSelectedIndex(prev => {
-            const newIndex = prev === 0 ? item.img.length - 1 : prev - 1;
-            setSelectedImg(item.img[newIndex]);
-            return newIndex;
-        });
-    };
+    // const handlePrev = () => {
+    //     setSelectedIndex(prev => {
+    //         const newIndex = prev === 0 ? item.img.length - 1 : prev - 1;
+    //         setSelectedImg(item.img[newIndex]);
+    //         return newIndex;
+    //     });
+    // };
 
-    const handleNext = () => {
-        setSelectedIndex(prev => {
-            const newIndex = prev === item.img.length - 1 ? 0 : prev + 1;
-            setSelectedImg(item.img[newIndex]);
-            return newIndex;
-        });
-    };
+    // const handleNext = () => {
+    //     setSelectedIndex(prev => {
+    //         const newIndex = prev === item.img.length - 1 ? 0 : prev + 1;
+    //         setSelectedImg(item.img[newIndex]);
+    //         return newIndex;
+    //     });
+    // };
 
     return (
         <div >
             <div className='container gap-10 '>
-                <div className='pt-2'>
+                {/* <div className='pt-2'>
                     <div className="relative mx-auto">
                         <img
                             className=' h-[500px] w-full object-cover transition duration-700'
@@ -60,10 +55,11 @@ const BlogImg = ({ item }) => {
                             />
                         ))}
                     </div>
-                </div>
+                </div> */}
                 <BlogHeader item={item} />
             </div>
-            <BlogContent />
+            <BlogContentCard item={item} />
+            
         </div>
     );
 };

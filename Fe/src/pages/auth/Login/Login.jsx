@@ -121,7 +121,7 @@ const Login = () => {
                         </div>
                         <div className='flex items-center justify-between mt-5 text-sm font-medium max-w-[500px]'>
                             <p className='text-lg font-normal'>Nếu bạn chưa có tài khoản? hãy đăng ký</p>
-                            <Link to="/signup" className='px-5 py-2 text-white transition-all rounded-full duration-600 bg-gradient-to-r from-primary to-secondary hover:bg-gradient-to-r hover:from-secondary hover:bg-primary'>Đăng ký</Link>
+                            <Link onClick={() => window.scrollTo(0, 0)} to="/signup" className='px-5 py-2 text-white transition-all rounded-full duration-600 bg-gradient-to-r from-primary to-secondary hover:bg-gradient-to-r hover:from-secondary hover:bg-primary'>Đăng ký</Link>
                         </div>
                     </div>
                 </section>

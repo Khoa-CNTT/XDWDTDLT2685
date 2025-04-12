@@ -11,6 +11,7 @@ const BlogsDetail = () => {
             <BlogDetail />
             <Places title="Những Tour tương tự" />
         </div>
+       
     );
 };
 

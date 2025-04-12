@@ -10,11 +10,11 @@ const BlogHeader = ({ item }) => {
             <div data-aos="fade-left">
                 <div className='flex items-center gap-2'>
                     <IoLocationOutline className='w-6 h-6' />
-                    <p className='text-lg'>{item.location}</p>
+                    <p className='text-lg'>{item.destination}</p>
                 </div>
                 <div className='flex flex-col space-y-3'>
-                    <h1 className='text-3xl font-semibold max-w-[600px]'>{item.title[0]}</h1>
-                    <StarDisplay rating={item.star} />
+                    <h1 className='text-3xl font-semibold max-w-[600px]'>{item.title}</h1>
+                    {/* <StarDisplay rating={item.star} /> */}
                 </div>
             </div>
 

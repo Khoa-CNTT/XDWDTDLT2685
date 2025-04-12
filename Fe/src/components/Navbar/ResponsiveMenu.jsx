@@ -38,7 +38,7 @@ const ResponsiveMenu = ({ setShowMenu, showMenu }) => {
                     <div className='mt-12 text-left text-black'>
                         <ul className='space-y-4 text-2xl font-normal'>
                             {navbarLinks.map(({ name, link }) => (
-                                <li>
+                                <li key={name}>
                                     <Link
                                         to={link}
                                         className='inline-block mb-5'

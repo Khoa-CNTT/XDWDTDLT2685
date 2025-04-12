@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
-import axios from 'axios';
 import PlacesCard from './PlacesCard';
+// import Pagination from '../Pagination/Pagination';
+import { getAllTour } from '../../services/tour';
 
 const Places = ({
     hideTitle = true,
@@ -15,8 +16,9 @@ const Places = ({
 
     const getPlaces = async () => {
         try {
-            const res = await axios.get("https://67b48e00392f4aa94fab5b59.mockapi.io/Bestplace");
-            setPlaceData(res.data);
+            const res = await getAllTour();
+            console.log(res)
+            setPlaceData(res);
         } catch {
             console.log("Lỗi khi lấy dữ liệu");
         }
@@ -46,6 +48,7 @@ const Places = ({
                         />
                     ))}
                 </div>
+                {/* <Pagination /> */}
             </section>
         </div>
     );

@@ -43,9 +43,8 @@ public class TourController {
 
     @GetMapping("")
     public ResponseEntity<TourListResponse> getTours(@RequestParam("page") int page, @RequestParam("limit") int limit) {
-        PageRequest pageRequest = PageRequest.of(page, limit, Sort.by("createdAt").descending());
+        PageRequest pageRequest = PageRequest.of(page, limit, Sort.by("id").descending());
         Page<SimplifiedTourResponse> tourPage = tourService.getAllTours(pageRequest);
-
         int totalPages = tourPage.getTotalPages();
         List<SimplifiedTourResponse> tours = tourPage.getContent();
         return ResponseEntity.ok(TourListResponse.builder()
