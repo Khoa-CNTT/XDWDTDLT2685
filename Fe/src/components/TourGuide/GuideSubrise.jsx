@@ -34,7 +34,7 @@ const GuideSubrise = () => {
                 {/* Bên phải */}
                 <div data-aos="fade-left" className='w-1/2 '>
                     <img
-                        className='o w-full h-[500px]'
+                        className=' w-full h-[500px]'
                         src="https://encrypted-tbn1.gstatic.com/images?q=tbn:ANd9GcTpX2lfTAVHCpLV_Y0xnru8K2ADndMi9T2njswm2uiFngwahbfw" alt="" />
                 </div>
             </div>

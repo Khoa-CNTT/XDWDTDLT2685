@@ -1,12 +1,18 @@
 import React from 'react';
 import HeaderImg from '../components/HeaderImg/HeaderImg';
 import GuideSection from '../components/TourGuide/GuideSection';
+import AboutTeam from '../components/About/AboutTeam';
+import GuideFeedback from '../components/TourGuide/GuideFeedback';
+import GuideSubrise from '../components/TourGuide/GuideSubrise';
 
 const TourGuide = () => {
     return (
         <div>
             <HeaderImg title="Hướng Dẫn Viên" currenPage="hướng dẫn viên" />
             <GuideSection />
+            <AboutTeam />
+            <GuideFeedback />
+            <GuideSubrise />
         </div>
     );
 };
