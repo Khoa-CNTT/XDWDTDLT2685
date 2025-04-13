@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import PlacesCard from './PlacesCard';
-// import Pagination from '../Pagination/Pagination';
+import Pagination from '../Pagination/Pagination';
 import { getAllTour } from '../../services/tour';
 
 const Places = ({
@@ -13,19 +13,21 @@ const Places = ({
     title = "Khám Phá Kho Báu Việt Nam Cùng Mixivivu"
 }) => {
     const [placesData, setPlaceData] = useState([]);
+    const [totalPages, setTotalPages] = useState(0)
 
-    const getPlaces = async () => {
+    const getAllTours = async (page) => {
         try {
-            const res = await getAllTour();
+            const res = await getAllTour(page);
             console.log(res)
-            setPlaceData(res);
+            setTotalPages(res.totalPages)
+            setPlaceData(res.tours);
         } catch {
             console.log("Lỗi khi lấy dữ liệu");
         }
     };
 
     useEffect(() => {
-        getPlaces();
+        getAllTours(0);
     }, []);
 
     return (
@@ -48,7 +50,7 @@ const Places = ({
                         />
                     ))}
                 </div>
-                {/* <Pagination /> */}
+                <Pagination totalPages={totalPages} getAllTours={getAllTours} />
             </section>
         </div>
     );

@@ -13,7 +13,7 @@ const PlacesCard = ({ item, booking = true, size = "default", left = false, star
     return (
         <div className={`p-5 transition-all   duration-500  shadow-2xl cursor-pointer rounded-[32px] hover:shadow-xl border border-gray-300 h-full flex flex-col ${sizeClasses} ${left ? 'ml-[16px]' : ''}`}>
             <div className='relative overflow-hidden '>
-                <Link to={`/blog/${item.id}`}>
+                <Link to={`tours/${item.id}`}>
                     <img src={""} alt={item.title}
                         className='mx-auto h-[220px] w-full rounded-[32px] object-cover transition duration-700 hover:skew-x-2 hover:scale-110' />
                 </Link>
@@ -33,7 +33,7 @@ const PlacesCard = ({ item, booking = true, size = "default", left = false, star
                     <p className='max-w-[700px]'>{item.location}</p>
                 </div>
                 <Link
-                    to={`/blog/${item.id}`}
+                    to={`/tours/${item.id}`}
                     onClick={() => window.scrollTo(0, 0)}
                     className='flex-grow text-lg min-h-[10px] font-bold text-left hover:underline '>{item.title}
 
@@ -53,12 +53,12 @@ const PlacesCard = ({ item, booking = true, size = "default", left = false, star
             {/* Phần giá và nút, luôn nằm ở dưới */}
             <div className='flex items-center justify-between py-3 mt-3 border-t-2 '>
                 <div className='opacity-70'>
-                    <p className='text-base font-bold'>{item.price} VND/người</p>
+                    <p className='text-base font-bold'>{item.price}/người</p>
                 </div>
                 {booking && (
                     <div className='flex items-center gap-2'>
                         <Link
-                            to={`/blog/${item.id}`}
+                            to={`tours/${item.id}`}
                             onClick={() => window.scrollTo(0, 0)}
                             className="font-semibold "
                         >

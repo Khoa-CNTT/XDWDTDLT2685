@@ -4,13 +4,10 @@ export const getTourById = (id) => {
     return axios.get(`tours/${id}`);
 };
 
-export const getAllTour = async () => {
-    const token = localStorage.getItem("token"); // nếu lưu token ở đây
-    const response = await axios.get("/tours", {
-        headers: {
-            Authorization: `Bearer ${token}`
-        }
+export const getAllTour = async (page, limit = 6) => {
+    return axios.get('tours', {
+        params: { page, limit }
     });
-    return response.data;
 };
+
 
