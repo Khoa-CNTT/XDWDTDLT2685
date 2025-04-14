@@ -24,8 +24,8 @@ public class SimplifiedTourResponse  extends BaseResponse {
     private String id;
 
     @JsonProperty("img")
-    private List<String> images;
-
+    private String image;
+    private int quantity;
     private String title;
 
     private String location;
@@ -43,6 +43,7 @@ public class SimplifiedTourResponse  extends BaseResponse {
         simplifiedTourResponse.setId(String.valueOf(tour.getTourId()));
         simplifiedTourResponse.setTitle(tour.getTitle());
         simplifiedTourResponse.setLocation(tour.getDestination());
+        simplifiedTourResponse.setQuantity(tour.getQuantity());
         simplifiedTourResponse.setDescription(tour.getDescription());
         simplifiedTourResponse.setPrice(String.format("%,.0f VNĐ", tour.getPriceAdult())); // Định dạng price
         simplifiedTourResponse.setDate(tour.getDuration());
