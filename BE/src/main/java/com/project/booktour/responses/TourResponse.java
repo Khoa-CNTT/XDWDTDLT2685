@@ -25,7 +25,7 @@ public class TourResponse extends BaseResponse {
     private Double priceChild;
 
     @JsonProperty("img")
-    private List<String> images; // Thay String thành List<String>
+    private List<String> images;
 
     private int quantity;
     private String description;
@@ -50,7 +50,6 @@ public class TourResponse extends BaseResponse {
                 "Nước đóng chai trên xe buýt",
                 "Phương tiện di chuyển Xe buýt du lịch hạng sang"
         );
-
         List<String> notIncludeList = Arrays.asList(
                 "Tiền boa",
                 "Đón và trả khách tại khách sạn",
