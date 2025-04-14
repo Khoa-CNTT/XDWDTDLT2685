@@ -16,7 +16,7 @@ const Pagination = ({ totalPages, getAllTours }) => {
     const handlePrev = () => {
         setCurrentPage((prev) => {
             const newPage = prev > 1 ? prev - 1 : prev;
-            if (newPage !== prev) getAllTours(newPage - 1);
+            if (newPage !== prev) getAllTours(newPage -1);
             return newPage;
         });
     };
@@ -24,7 +24,7 @@ const Pagination = ({ totalPages, getAllTours }) => {
     const handleNext = () => {
         setCurrentPage((prev) => {
             const newPage = prev < pageCount ? prev + 1 : prev;
-            if (newPage !== prev) getAllTours(newPage - 1);
+            if (newPage !== prev) getAllTours(newPage -1);
             return newPage;
         });
     };

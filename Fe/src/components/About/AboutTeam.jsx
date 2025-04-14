@@ -36,7 +36,7 @@ const teamMembers = [
 
 const AboutTeam = () => {
     return (
-        <div className='pt-20'>
+        <div className='pt-20 dark:bg-[#101828] dark:text-white'>
             <div className='container'>
                 <div className='flex flex-col items-center space-y-5'>
                     <h1 className='text-3xl'>Những Hướng Dẫn Viên Du Lịch Giàu Kinh Nghiệm Của Chúng Tôi</h1>

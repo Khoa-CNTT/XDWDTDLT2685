@@ -4,7 +4,7 @@ import { FaRegCheckCircle } from 'react-icons/fa';
 
 const GuideSection = () => {
     return (
-        <div className='pt-10 '>
+        <div className='pt-10'>
             <div className='container flex '>
                 {/* bên trái */}
                 <div className='w-1/2'>

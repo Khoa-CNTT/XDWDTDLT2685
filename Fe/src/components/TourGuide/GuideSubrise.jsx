@@ -3,7 +3,7 @@ import Button from '../Button/Button';
 
 const GuideSubrise = () => {
     return (
-        <div className='pt-20 dark:bg-[#101828] dark:text-white'>
+        <div className='pt-20 '>
             <div className='flex '>
                 {/* Bên trái */}
                 <div className='w-1/2 bg-blue-300 h-[500px] p-8 text-white'>

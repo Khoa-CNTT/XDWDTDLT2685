@@ -1,9 +1,10 @@
 import React from 'react';
 import { MdLocationOn } from "react-icons/md";
 import { AiOutlineDollarCircle } from "react-icons/ai";
+import { FaRegClock } from "react-icons/fa";
 
 const destinations = [
-    { value:"default", label: "chọn điểm đến" },
+    { value: "default", label: "chọn điểm đến" },
     { value: "hue", label: "Huế" },
     { value: "danang", label: "Đà Nẵng" },
     { value: "hoian", label: "Hội An" },
@@ -66,13 +67,14 @@ const Hero = () => {
                                     ))}
                                 </select>
                             </div>
-                            <div>
-                                <input
-                                    type="date"
-                                    name="destination"
-                                    id="destination"
-                                    className="w-full !placeholder-slate-400 bg-gray-100 my-2 rounded-full focus:outline-primary outline-1 p-3 text-gray-500"
-                                />
+                            <div className='relative flex items-center ' >
+                                <FaRegClock className='absolute w-6 h-6 ml-2 text-gray-800 -translate-y-1/2 top-1/2' />
+                                <select className="w-full p-3 my-2 text-gray-500 bg-gray-100 rounded-full pl-9 focus:outline-primary outline-1">
+                                    <option>Số ngày</option>
+                                    <option>3 ngày 2 đêm</option>
+                                    <option>4 ngày 3 đêm</option>
+                                    <option>5 ngày 4 đêm</option>
+                                </select>
                             </div>
                             <div className='relative flex items-center ' >
                                 <AiOutlineDollarCircle className='absolute w-6 h-6 ml-2 text-gray-800 -translate-y-1/2 top-1/2' />

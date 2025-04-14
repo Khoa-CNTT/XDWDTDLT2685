@@ -3,7 +3,7 @@ import StarDisplay from '../Star/StarDisplay';
 
 const GuideFeedback = () => {
     return (
-        <div className='pt-20 mb-20 '>
+        <div className='pt-20 mb-20'>
             <div className='container flex gap-5'>
                 <div className='w-1/2'>
                     {/* bên trái */}

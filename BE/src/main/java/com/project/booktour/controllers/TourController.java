@@ -13,6 +13,7 @@ import com.project.booktour.services.tour.ITourService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.apache.tika.Tika;
+import org.springframework.core.io.UrlResource;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
@@ -43,7 +44,9 @@ public class TourController {
 
     @GetMapping("")
     public ResponseEntity<TourListResponse> getTours(@RequestParam("page") int page, @RequestParam("limit") int limit) {
-        PageRequest pageRequest = PageRequest.of(page, limit, Sort.by("id").descending());
+
+
+        PageRequest pageRequest = PageRequest.of(page, limit, Sort.by("id").ascending());
         Page<SimplifiedTourResponse> tourPage = tourService.getAllTours(pageRequest);
         int totalPages = tourPage.getTotalPages();
         List<SimplifiedTourResponse> tours = tourPage.getContent();
@@ -52,7 +55,6 @@ public class TourController {
                 .totalPages(totalPages)
                 .build());
     }
-
     @GetMapping("/{id}")
     public ResponseEntity<?> getTourById(@PathVariable("id") Long tourId) {
         try {
@@ -86,10 +88,6 @@ public class TourController {
             if (files == null || files.isEmpty()) {
                 return ResponseEntity.badRequest().body("No files uploaded");
             }
-            if (files.size() > 5) { // Sửa điều kiện: số lượng file phải <= 5
-                return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                        .body("Total number of images must be <= 5");
-            }
             List<TourImage> tourImages = new ArrayList<>();
             for (MultipartFile file : files) {
                 if (file.getSize() == 0) {
@@ -112,6 +110,26 @@ public class TourController {
             return ResponseEntity.ok().body(tourImages);
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
+    @GetMapping("/images/{imageName}")
+    public ResponseEntity<?> viewImage(@PathVariable String imageName) {
+        try {
+            java.nio.file.Path imagePath = Paths.get("uploads/" + imageName);
+            UrlResource resource = new UrlResource(imagePath.toUri());
+
+            if (resource.exists()) {
+                return ResponseEntity.ok()
+                        .contentType(MediaType.IMAGE_JPEG)
+                        .body(resource);
+            } else {
+                return ResponseEntity.ok()
+                        .contentType(MediaType.IMAGE_JPEG)
+                        .body(new UrlResource(Paths.get("uploads/notfound.jpeg").toUri()));
+                //return ResponseEntity.notFound().build();
+            }
+        } catch (Exception e) {
+            return ResponseEntity.notFound().build();
         }
     }
 

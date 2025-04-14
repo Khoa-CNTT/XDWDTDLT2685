@@ -15,7 +15,7 @@ import { toast } from "react-toastify";
 const DropdownLinks = [
     {
         name: "Tour",
-        link: "/tour",
+        link: "/tours",
     },
     {
         name: "Hướng Dẫn Viên",
@@ -154,7 +154,10 @@ const Navbar = () => {
                                                     <li>
                                                         <NavLink
                                                             to="/profile"
-                                                            className="inline-block w-full p-2 text-lg font-medium rounded-md hover:bg-primary/50"
+                                                            className={({ isActive }) =>
+                                                                `inline-block w-full p-2 text-lg font-medium rounded-md hover:bg-primary/50 ${isActive ? "active" : ""
+                                                                }`
+                                                            }
                                                         >
                                                             Thông tin cá nhân
                                                         </NavLink>
@@ -162,25 +165,31 @@ const Navbar = () => {
                                                     <li>
                                                         <NavLink
                                                             to="/tourbooking"
-                                                            className="inline-block w-full p-2 text-lg font-medium rounded-md hover:bg-primary/50"
+                                                            className={({ isActive }) =>
+                                                                `inline-block w-full p-2 text-lg font-medium rounded-md hover:bg-primary/50 ${isActive ? "active" : ""
+                                                                }`
+                                                            }
                                                         >
                                                             Tour đã đặt
                                                         </NavLink>
                                                     </li>
                                                     <li>
-                                                        <NavLink
+                                                        <button
                                                             onClick={handleLogout}
-                                                            className="inline-block w-full p-2 text-lg font-medium rounded-md hover:bg-primary/50"
+                                                            className="inline-block w-full p-2 text-lg font-medium text-left rounded-md hover:bg-primary/50"
                                                         >
                                                             Đăng xuất
-                                                        </NavLink>
+                                                        </button>
                                                     </li>
                                                 </>
                                             ) : (
                                                 <li>
                                                     <NavLink
                                                         to="/login"
-                                                        className="inline-block w-full p-2 text-lg font-medium rounded-md hover:bg-primary/50"
+                                                        className={({ isActive }) =>
+                                                            `inline-block w-full p-2 text-lg font-medium rounded-md hover:bg-primary/50 ${isActive ? "active" : ""
+                                                            }`
+                                                        }
                                                     >
                                                         Đăng nhập
                                                     </NavLink>
@@ -190,9 +199,6 @@ const Navbar = () => {
                                     </div>
                                 </div>
                             </div>
-
-
-
                         </div>
                         <div className="block md:hidden">
                             {showMenu ? (

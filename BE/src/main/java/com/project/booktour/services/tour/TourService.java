@@ -52,13 +52,24 @@ public class TourService implements ITourService {
 
     @Override
     public Page<SimplifiedTourResponse> getAllTours(PageRequest pageRequest) {
-        return tourRepository.findAllWithAverageRating(pageRequest)
+        return tourRepository.findAllWithAverageRatingAndFirstImage(pageRequest)
                 .map(result -> {
                     Tour tour = (Tour) result[0];
                     Double avgRating = (Double) result[1];
+                    String firstImageUrl = (String) result[2];
+
                     try {
                         SimplifiedTourResponse response = SimplifiedTourResponse.fromTour(tour, objectMapper);
                         response.setStar(avgRating.floatValue());
+
+                        // Gán firstImageUrl với URL của endpoint viewImage
+                        String imageUrl = null;
+                        if (firstImageUrl != null && !firstImageUrl.isEmpty()) {
+                            String baseUrl = "http://localhost:8088/api/v1/tours/images/";
+                            imageUrl = baseUrl + firstImageUrl;
+                        }
+                        response.setImage(imageUrl);
+
                         return response;
                     } catch (Exception e) {
                         throw new RuntimeException("Failed to parse itinerary for tour with id: " + tour.getTourId(), e);
@@ -107,6 +118,12 @@ public class TourService implements ITourService {
                 .tour(existingTour)
                 .imageUrl(tourImageDTO.getImageUrl())
                 .build();
+        int size = tourImageRepository.findByTourTourId(tourId).size();
+        if (size >= 5) {
+            throw new InvalidParamException(
+                    "Number of images must be <= "
+                            + 5);
+        }
         return tourImageRepository.save(newTourImage);
     }
 }

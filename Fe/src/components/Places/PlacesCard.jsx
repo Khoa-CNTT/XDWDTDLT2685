@@ -13,8 +13,8 @@ const PlacesCard = ({ item, booking = true, size = "default", left = false, star
     return (
         <div className={`p-5 transition-all   duration-500  shadow-2xl cursor-pointer rounded-[32px] hover:shadow-xl border border-gray-300 h-full flex flex-col ${sizeClasses} ${left ? 'ml-[16px]' : ''}`}>
             <div className='relative overflow-hidden '>
-                <Link to={`tours/${item.id}`}>
-                    <img src={""} alt={item.title}
+                <Link to={`/tours/${item.id}`}>
+                    <img src={item.img} alt={item.title}
                         className='mx-auto h-[220px] w-full rounded-[32px] object-cover transition duration-700 hover:skew-x-2 hover:scale-110' />
                 </Link>
                 <div className='absolute flex items-center justify-center w-6 h-6 bg-white rounded-full right-[20px] top-[10px]'>
@@ -45,7 +45,7 @@ const PlacesCard = ({ item, booking = true, size = "default", left = false, star
                     </div>
                     <div className='flex items-center'>
                         <FaRegUser />
-                        <span className='ml-1'>50</span>
+                        <span className='ml-1'>{item.quantity}</span>
                     </div>
                 </div>
             </div>
