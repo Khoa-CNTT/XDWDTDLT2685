@@ -24,17 +24,19 @@ public class TourResponse extends BaseResponse {
     @JsonProperty("price_child")
     private Double priceChild;
 
-    private String image;
+    @JsonProperty("img")
+    private List<String> images; // Thay String thành List<String>
+
     private int quantity;
     private String description;
     private String duration;
     private String destination;
     private boolean availability;
     private List<ScheduleDTO> itinerary;
-    private List<String> include; // Thêm trường include
-    private List<String> notinclude; // Thêm trường notinclude
+    private List<String> include;
+    private List<String> notinclude;
 
-    public static TourResponse fromTour(Tour tour, ObjectMapper objectMapper) throws Exception {
+    public static TourResponse fromTour(Tour tour, ObjectMapper objectMapper, List<String> imageUrls) throws Exception {
         List<ScheduleDTO> itinerary = tour.getItinerary() != null
                 ? objectMapper.readValue(tour.getItinerary(), new TypeReference<List<ScheduleDTO>>() {})
                 : null;
@@ -62,7 +64,7 @@ public class TourResponse extends BaseResponse {
                 .title(tour.getTitle())
                 .priceAdult(tour.getPriceAdult())
                 .priceChild(tour.getPriceChild())
-                .image(tour.getImage())
+                .images(imageUrls)
                 .quantity(tour.getQuantity())
                 .description(tour.getDescription())
                 .duration(tour.getDuration())

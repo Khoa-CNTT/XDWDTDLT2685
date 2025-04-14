@@ -20,7 +20,7 @@ public class TourDTO {
     private String description;
 
 
-    private String image;
+    private List<String> images;
 
     @Min(value = 1, message = "Quantity must be at least 1")
     private int quantity;

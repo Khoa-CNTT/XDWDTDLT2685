@@ -17,7 +17,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
-import java.util.Optional;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -27,11 +28,10 @@ public class TourService implements ITourService {
     private final ObjectMapper objectMapper;
 
     @Override
-    public Tour createTour(TourDTO tourDTO) throws DataNotFoundException, JsonProcessingException {
+    public Tour createTour(TourDTO tourDTO) throws DataNotFoundException, JsonProcessingException, InvalidParamException {
         Tour newTour = Tour.builder()
                 .title(tourDTO.getTitle())
                 .description(tourDTO.getDescription())
-                .image(tourDTO.getImage())
                 .quantity(tourDTO.getQuantity())
                 .priceAdult(tourDTO.getPriceAdult())
                 .priceChild(tourDTO.getPriceChild())
@@ -39,15 +39,59 @@ public class TourService implements ITourService {
                 .destination(tourDTO.getDestination())
                 .availability(tourDTO.isAvailability())
                 .itinerary(tourDTO.getItinerary() != null ? objectMapper.writeValueAsString(tourDTO.getItinerary()) : null)
+                .tourImages(new ArrayList<>())
                 .build();
 
-        return tourRepository.save(newTour);
+        Tour savedTour = tourRepository.save(newTour);
+
+        if (tourDTO.getImages() != null && !tourDTO.getImages().isEmpty()) {
+            if (tourDTO.getImages().size() > 5) {
+                throw new InvalidParamException("Number of images must be <= 5");
+            }
+
+            List<TourImage> tourImages = tourDTO.getImages().stream()
+                    .map(imageUrl -> {
+                        TourImage tourImage = new TourImage();
+                        tourImage.setTour(savedTour);
+                        String fileName = imageUrl.replace("http://localhost:8088/api/v1/tours/images/", "");
+                        tourImage.setImageUrl(fileName);
+                        return tourImage;
+                    })
+                    .collect(Collectors.toList());
+
+            savedTour.setTourImages(tourImages);
+            tourRepository.save(savedTour);
+        }
+
+        return savedTour;
     }
 
     @Override
     public Tour getTourById(Long tourId) throws Exception {
         return tourRepository.findById(tourId)
-                .orElseThrow(() -> new DataNotFoundException("Can't find tour with id: " + tourId));
+                .orElseThrow(() -> new DataNotFoundException("Tour not found with id: " + tourId));
+    }
+
+    @Override
+    public TourResponse getTourDetails(Long id) throws DataNotFoundException {
+        Tour tour = tourRepository.findById(id)
+                .orElseThrow(() -> new DataNotFoundException("Tour not found with id: " + id));
+
+        List<String> imageUrls = tour.getTourImages().stream()
+                .map(TourImage::getImageUrl)
+                .filter(Objects::nonNull)
+                .map(url -> "http://localhost:8088/api/v1/tours/images/" + url)
+                .collect(Collectors.toList());
+
+        if (imageUrls.isEmpty()) {
+            imageUrls = Collections.singletonList("http://localhost:8088/api/v1/tours/images/notfound.jpeg");
+        }
+
+        try {
+            return TourResponse.fromTour(tour, objectMapper, imageUrls);
+        } catch (Exception e) {
+            throw new RuntimeException("Failed to parse tour details for tour with id: " + id, e);
+        }
     }
 
     @Override
@@ -62,7 +106,6 @@ public class TourService implements ITourService {
                         SimplifiedTourResponse response = SimplifiedTourResponse.fromTour(tour, objectMapper);
                         response.setStar(avgRating.floatValue());
 
-                        // Gán firstImageUrl với URL của endpoint viewImage
                         String imageUrl = null;
                         if (firstImageUrl != null && !firstImageUrl.isEmpty()) {
                             String baseUrl = "http://localhost:8088/api/v1/tours/images/";
@@ -81,18 +124,37 @@ public class TourService implements ITourService {
     public Tour updateTour(Long id, TourDTO tourDTO) throws Exception {
         Tour existingTour = getTourById(id);
         if (existingTour != null) {
-            // Cập nhật các thuộc tính từ DTO sang Tour
             existingTour.setTitle(tourDTO.getTitle());
             existingTour.setDescription(tourDTO.getDescription());
-            existingTour.setImage(tourDTO.getImage());
             existingTour.setQuantity(tourDTO.getQuantity());
             existingTour.setPriceAdult(tourDTO.getPriceAdult());
             existingTour.setPriceChild(tourDTO.getPriceChild());
             existingTour.setDuration(tourDTO.getDuration());
             existingTour.setDestination(tourDTO.getDestination());
             existingTour.setAvailability(tourDTO.isAvailability());
-            // Chuyển List<ScheduleDTO> thành chuỗi JSON
             existingTour.setItinerary(tourDTO.getItinerary() != null ? objectMapper.writeValueAsString(tourDTO.getItinerary()) : null);
+
+            tourImageRepository.deleteByTourTourId(id);
+
+            if (tourDTO.getImages() != null && !tourDTO.getImages().isEmpty()) {
+                if (tourDTO.getImages().size() > 5) {
+                    throw new InvalidParamException("Number of images must be <= 5");
+                }
+
+                List<TourImage> newTourImages = tourDTO.getImages().stream()
+                        .map(imageUrl -> {
+                            TourImage tourImage = new TourImage();
+                            tourImage.setTour(existingTour);
+                            String fileName = imageUrl.replace("http://localhost:8088/api/v1/tours/images/", "");
+                            tourImage.setImageUrl(fileName);
+                            return tourImage;
+                        })
+                        .collect(Collectors.toList());
+                existingTour.setTourImages(newTourImages);
+            } else {
+                existingTour.setTourImages(new ArrayList<>());
+            }
+
             return tourRepository.save(existingTour);
         }
         return null;
@@ -101,7 +163,10 @@ public class TourService implements ITourService {
     @Override
     public void deleteTour(Long id) {
         Optional<Tour> optionalTour = tourRepository.findById(id);
-        optionalTour.ifPresent(tourRepository::delete);
+        optionalTour.ifPresent(tour -> {
+            tourImageRepository.deleteByTourTourId(id);
+            tourRepository.delete(tour);
+        });
     }
 
     @Override
@@ -114,16 +179,16 @@ public class TourService implements ITourService {
         Tour existingTour = tourRepository.findById(tourId)
                 .orElseThrow(() -> new DataNotFoundException("Cannot find tour with id: " + tourId));
 
+        long size = tourImageRepository.countByTourTourId(tourId);
+        if (size >= 5) {
+            throw new InvalidParamException("Number of images must be <= 5");
+        }
+
         TourImage newTourImage = TourImage.builder()
                 .tour(existingTour)
                 .imageUrl(tourImageDTO.getImageUrl())
                 .build();
-        int size = tourImageRepository.findByTourTourId(tourId).size();
-        if (size >= 5) {
-            throw new InvalidParamException(
-                    "Number of images must be <= "
-                            + 5);
-        }
+
         return tourImageRepository.save(newTourImage);
     }
 }

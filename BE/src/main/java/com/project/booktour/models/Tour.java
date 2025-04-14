@@ -3,6 +3,7 @@ package com.project.booktour.models;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -24,8 +25,8 @@ public class Tour extends BaseEntity {
     @Column(name = "description", columnDefinition = "LONGTEXT", nullable = false)
     private String description;
 
-    @Column(name = "image", length = 255)
-    private String image;
+    @OneToMany(mappedBy = "tour", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    private List<TourImage> tourImages = new ArrayList<>();
 
     @Column(name = "quantity", nullable = false)
     private Integer quantity;
