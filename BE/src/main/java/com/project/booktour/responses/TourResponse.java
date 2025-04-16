@@ -36,6 +36,7 @@ public class TourResponse extends BaseResponse {
     private List<String> include;
     private List<String> notinclude;
 
+
     public static TourResponse fromTour(Tour tour, ObjectMapper objectMapper, List<String> imageUrls) throws Exception {
         List<ScheduleDTO> itinerary = tour.getItinerary() != null
                 ? objectMapper.readValue(tour.getItinerary(), new TypeReference<List<ScheduleDTO>>() {})

@@ -18,4 +18,5 @@ public interface IBookingService {
     void deleteBooking(Long id);
 
     List<Booking> findByUserId(Long userId);
+    boolean hasUserBookedTour(Long userId, Long tourId);
 }

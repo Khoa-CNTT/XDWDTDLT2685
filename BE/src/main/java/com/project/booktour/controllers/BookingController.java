@@ -1,4 +1,4 @@
-package com.project.booktour.controllers; // Sửa "controlers" thành "controllers"
+package com.project.booktour.controllers;
 
 import com.project.booktour.dtos.BookingDTO;
 import com.project.booktour.models.Booking;
@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("${api.prefix}/bookings") // Đổi từ "orders" thành "bookings"
+@RequestMapping("${api.prefix}/bookings")
 @RequiredArgsConstructor
 public class BookingController {
     private final BookingService bookingService;

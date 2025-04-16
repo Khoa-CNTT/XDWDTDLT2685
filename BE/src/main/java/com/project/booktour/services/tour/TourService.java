@@ -2,16 +2,23 @@ package com.project.booktour.services.tour;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.project.booktour.dtos.ReviewDTO;
 import com.project.booktour.dtos.TourDTO;
 import com.project.booktour.dtos.TourImageDTO;
 import com.project.booktour.exceptions.DataNotFoundException;
 import com.project.booktour.exceptions.InvalidParamException;
+import com.project.booktour.exceptions.UnauthorizedException;
+import com.project.booktour.models.Review;
 import com.project.booktour.models.Tour;
 import com.project.booktour.models.TourImage;
+import com.project.booktour.models.User;
+import com.project.booktour.repositories.ReviewRepository;
 import com.project.booktour.repositories.TourImageRepository;
 import com.project.booktour.repositories.TourRepository;
+import com.project.booktour.repositories.UserRepository;
 import com.project.booktour.responses.SimplifiedTourResponse;
 import com.project.booktour.responses.TourResponse;
+import com.project.booktour.services.booking.BookingService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -26,6 +33,9 @@ public class TourService implements ITourService {
     private final TourRepository tourRepository;
     private final TourImageRepository tourImageRepository;
     private final ObjectMapper objectMapper;
+    private final ReviewRepository reviewRepository;
+    private final UserRepository userRepository;
+    private final BookingService bookingService;
 
     @Override
     public Tour createTour(TourDTO tourDTO) throws DataNotFoundException, JsonProcessingException, InvalidParamException {
@@ -190,5 +200,63 @@ public class TourService implements ITourService {
                 .build();
 
         return tourImageRepository.save(newTourImage);
+    }
+
+    @Override
+    public Review createReview(ReviewDTO reviewDTO) throws Exception {
+        // Kiểm tra xem user đã booking tour chưa
+
+
+        if (!bookingService.hasUserBookedTour(reviewDTO.getUserId(), reviewDTO.getTourId())) {
+            throw new UnauthorizedException("User has not booked this tour and cannot leave a review");
+        }
+        Tour tour = tourRepository.findById(reviewDTO.getTourId())
+                .orElseThrow(() -> new DataNotFoundException("Cannot find tour with id: " + reviewDTO.getTourId()));
+
+        User user = userRepository.findById(reviewDTO.getUserId())
+                .orElseThrow(() -> new DataNotFoundException("Cannot find user with id: " + reviewDTO.getUserId()));
+
+        Review review = Review.builder()
+                .tour(tour)
+                .user(user)
+                .comment(reviewDTO.getComment())
+                .rating(reviewDTO.getRating())
+                .build();
+
+        return reviewRepository.save(review);
+    }
+
+    @Override
+    public List<Review> getReviewsByTour(Long tourId) {
+        return reviewRepository.findByTourTourId(tourId);
+    }
+
+    @Override
+    public List<Review> getReviewsByUserAndTour(Long userId, Long tourId) {
+        return reviewRepository.findByTourTourId(tourId).stream()
+                .filter(review -> review.getUser().getUserId().equals(userId))
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public void updateReview(Long reviewId, ReviewDTO reviewDTO) throws Exception {
+        if (!bookingService.hasUserBookedTour(reviewDTO.getUserId(), reviewDTO.getTourId())) {
+            throw new UnauthorizedException("User has not booked this tour and cannot update a review");
+        }
+        Review existingReview = reviewRepository.findById(reviewId)
+                .orElseThrow(() -> new DataNotFoundException("Cannot find review with id: " + reviewId));
+
+        Tour tour = tourRepository.findById(reviewDTO.getTourId())
+                .orElseThrow(() -> new DataNotFoundException("Cannot find tour with id: " + reviewDTO.getTourId()));
+
+        User user = userRepository.findById(reviewDTO.getUserId())
+                .orElseThrow(() -> new DataNotFoundException("Cannot find user with id: " + reviewDTO.getUserId()));
+
+        existingReview.setTour(tour);
+        existingReview.setUser(user);
+        existingReview.setComment(reviewDTO.getComment());
+        existingReview.setRating(reviewDTO.getRating());
+
+        reviewRepository.save(existingReview);
     }
 }
