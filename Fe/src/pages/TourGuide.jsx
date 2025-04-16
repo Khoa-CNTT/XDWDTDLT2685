@@ -7,7 +7,7 @@ import GuideSubrise from '../components/TourGuide/GuideSubrise';
 
 const TourGuide = () => {
     return (
-        <div className='dark:bg-[#101828] dark:text-white'>
+        <div className=''>
             <HeaderImg title="Hướng Dẫn Viên" currenPage="hướng dẫn viên" />
             <GuideSection />
             <AboutTeam />
