@@ -1,5 +1,6 @@
 package com.project.booktour.services.user;
 
+import com.project.booktour.dtos.LoginResponseDTO;
 import com.project.booktour.dtos.UpdateUserDTO;
 import com.project.booktour.dtos.UserDTO;
 import com.project.booktour.exceptions.DataNotFoundException;
@@ -17,7 +18,7 @@ import java.util.Optional;
 public interface IUserService {
     User createUser(UserDTO userDTO) throws Exception;
 
-    String login(String userName, String password) throws Exception;
+    LoginResponseDTO login(String userName, String password) throws Exception;
 
     User updateUser(Long userId, UpdateUserDTO updatedUserDTO) throws Exception;
 

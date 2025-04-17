@@ -128,26 +128,6 @@ public class TourController {
         }
     }
 
-    @GetMapping("/images/{imageName}")
-    public ResponseEntity<?> viewImage(@PathVariable String imageName) {
-        try {
-            Path imagePath = Paths.get("uploads/" + imageName);
-            UrlResource resource = new UrlResource(imagePath.toUri());
-
-            if (resource.exists()) {
-                return ResponseEntity.ok()
-                        .contentType(MediaType.IMAGE_JPEG)
-                        .body(resource);
-            } else {
-                return ResponseEntity.ok()
-                        .contentType(MediaType.IMAGE_JPEG)
-                        .body(new UrlResource(Paths.get("uploads/notfound.jpeg").toUri()));
-            }
-        } catch (Exception e) {
-            return ResponseEntity.notFound().build();
-        }
-    }
-
     @DeleteMapping("/{id}")
     public ResponseEntity<String> deleteTour(@PathVariable Long id) {
         try {

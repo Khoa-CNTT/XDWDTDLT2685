@@ -1,5 +1,6 @@
 package com.project.booktour.controllers;
 
+import com.project.booktour.dtos.LoginResponseDTO;
 import com.project.booktour.dtos.UpdateUserDTO;
 import com.project.booktour.dtos.UserDTO;
 import com.project.booktour.dtos.UserLoginDTO;
@@ -80,8 +81,8 @@ public class UserController {
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody @Valid UserLoginDTO userLoginDTO) {
         try {
-            String token = userService.login(userLoginDTO.getUserName(), userLoginDTO.getPassword());
-            return ResponseEntity.ok(token);
+                LoginResponseDTO loginResponseDTO = userService.login(userLoginDTO.getUserName(), userLoginDTO.getPassword());
+            return ResponseEntity.ok(loginResponseDTO);
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
@@ -119,25 +120,6 @@ public class UserController {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
-//    @GetMapping("/avatars/{imageName}")
-//    public ResponseEntity<?> viewImage(@PathVariable String imageName) {
-//        try {
-//            Path imagePath = Paths.get("uploads/avatars/" + imageName);
-//            UrlResource resource = new UrlResource(imagePath.toUri());
-//
-//            if (resource.exists()) {
-//                return ResponseEntity.ok()
-//                        .contentType(MediaType.IMAGE_JPEG)
-//                        .body(resource);
-//            } else {
-//                return ResponseEntity.ok()
-//                        .contentType(MediaType.IMAGE_JPEG)
-//                        .body(new UrlResource(Paths.get("uploads/avatars/default-avatar.jpg").toUri()));
-//            }
-//        } catch (Exception e) {
-//            return ResponseEntity.notFound().build();
-//        }
-//    }
     @PutMapping("/block/{userId}/{active}")
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     public ResponseEntity<String> blockOrEnable(

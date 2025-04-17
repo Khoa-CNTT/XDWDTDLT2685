@@ -39,7 +39,6 @@ public class UserDTO {
     @JsonProperty("roleId")
     private Long roleId;
 
-    // Các trường tùy chọn
     private String phoneNumber;
 
     private String address;

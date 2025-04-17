@@ -1,6 +1,7 @@
 package com.project.booktour.services.user;
 
 import com.project.booktour.components.JwtTokenUtil;
+import com.project.booktour.dtos.LoginResponseDTO;
 import com.project.booktour.dtos.UpdateUserDTO;
 import com.project.booktour.dtos.UserDTO;
 import com.project.booktour.exceptions.PermissionDenyException;
@@ -71,8 +72,6 @@ public class UserService implements IUserService {
                 .isActive(true)
                 .avatar(DEFAULT_AVATAR_PATH)
                 .build();
-
-        // Mã hóa mật khẩu nếu không dùng tài khoản Facebook/Google
         if (newUser.getFacebookAccountId() == 0 && newUser.getGoogleAccountId() == 0) {
             String password = userDTO.getPassword();
             String encodedPassword = passwordEncoder.encode(password);
@@ -82,7 +81,7 @@ public class UserService implements IUserService {
     }
 
     @Override
-    public String login(String userName, String password) throws Exception {
+    public LoginResponseDTO login(String userName, String password) throws Exception {
         Optional<User> userOptional = userRepository.findByUserName(userName);
         if (userOptional.isEmpty()) {
             throw new DataNotFoundException("Invalid username / password");
@@ -93,11 +92,15 @@ public class UserService implements IUserService {
                 throw new BadCredentialsException("Wrong username or password");
             }
         }
-
         UsernamePasswordAuthenticationToken authenticationToken =
                 new UsernamePasswordAuthenticationToken(userName, password, existingUser.getAuthorities());
         authenticationManager.authenticate(authenticationToken);
-        return jwtTokenUtil.generateToken(existingUser);
+        String token = jwtTokenUtil.generateToken(existingUser);
+        Long roleId = existingUser.getRole().getRoleId(); // hoặc existingUser.getRoleId();
+        return LoginResponseDTO.builder()
+                .token(token)
+                .roleId(roleId)
+                .build();
     }
     @Override
     @Transactional
