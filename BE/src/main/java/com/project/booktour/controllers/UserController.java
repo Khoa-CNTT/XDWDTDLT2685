@@ -1,19 +1,29 @@
 package com.project.booktour.controllers;
 
+import com.project.booktour.dtos.UpdateUserDTO;
 import com.project.booktour.dtos.UserDTO;
 import com.project.booktour.dtos.UserLoginDTO;
+import com.project.booktour.exceptions.DataNotFoundException;
 import com.project.booktour.models.User;
+import com.project.booktour.responses.UserListResponse;
+import com.project.booktour.responses.UserResponse;
 import com.project.booktour.services.user.IUserService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.core.io.UrlResource;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.List;
 
 @RestController
@@ -21,6 +31,33 @@ import java.util.List;
 @RequiredArgsConstructor
 public class UserController {
     private final IUserService userService;
+
+    @GetMapping("")
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    public ResponseEntity<?> getAllUser(
+            @RequestParam(defaultValue = "", required = false) String keyword,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int limit
+    ) {
+        try {
+            PageRequest pageRequest = PageRequest.of(
+                    page, limit,
+                    //Sort.by("createdAt").descending()
+                    Sort.by("id").ascending()
+            );
+            Page<UserResponse> userPage = userService.findAll(keyword, pageRequest)
+                    .map(UserResponse::fromUser);
+            int totalPages = userPage.getTotalPages();
+            List<UserResponse> userResponses = userPage.getContent();
+            return ResponseEntity.ok(UserListResponse
+                    .builder()
+                    .users(userResponses)
+                    .totalPages(totalPages)
+                    .build());
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
 
     @PostMapping("/register")
     public ResponseEntity<?> createUser(@RequestBody @Valid UserDTO userDTO, BindingResult result) {
@@ -45,6 +82,75 @@ public class UserController {
         try {
             String token = userService.login(userLoginDTO.getUserName(), userLoginDTO.getPassword());
             return ResponseEntity.ok(token);
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<?> updateUser(@PathVariable Long id, @RequestBody UpdateUserDTO updatedUserDTO) {
+        try {
+            User updatedUser = userService.updateUser(id, updatedUserDTO);
+            return ResponseEntity.ok("User updated successfully");
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
+
+    @PutMapping("/{id}/avatar")
+    public ResponseEntity<?> updateAvatar(@PathVariable Long id, @RequestParam("avatar") MultipartFile avatar) {
+        try {
+            User updatedUser = userService.updateAvatar(id, avatar);
+            return ResponseEntity.ok(updatedUser);
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
+
+    @PutMapping("/{id}/change-password")
+    public ResponseEntity<?> updatePassword(
+            @PathVariable Long id,
+            @RequestParam("newPassword") String newPassword,
+            @RequestParam("confirmPassword") String confirmPassword) {
+        try {
+            User updatedUser = userService.updatePassword(id, newPassword, confirmPassword);
+            return ResponseEntity.ok("Password updated successfully");
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
+//    @GetMapping("/avatars/{imageName}")
+//    public ResponseEntity<?> viewImage(@PathVariable String imageName) {
+//        try {
+//            Path imagePath = Paths.get("uploads/avatars/" + imageName);
+//            UrlResource resource = new UrlResource(imagePath.toUri());
+//
+//            if (resource.exists()) {
+//                return ResponseEntity.ok()
+//                        .contentType(MediaType.IMAGE_JPEG)
+//                        .body(resource);
+//            } else {
+//                return ResponseEntity.ok()
+//                        .contentType(MediaType.IMAGE_JPEG)
+//                        .body(new UrlResource(Paths.get("uploads/avatars/default-avatar.jpg").toUri()));
+//            }
+//        } catch (Exception e) {
+//            return ResponseEntity.notFound().build();
+//        }
+//    }
+    @PutMapping("/block/{userId}/{active}")
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    public ResponseEntity<String> blockOrEnable(
+            @Valid @PathVariable long userId,
+            @Valid @PathVariable int active
+    ) {
+        try {
+            userService.blockOrEnable(userId, active > 0);
+            String message = active > 0 ? "Successfully enabled the user." : "Successfully blocked the " +
+                    "user.";
+            return ResponseEntity.ok().body(message);
+        } catch (DataNotFoundException e) {
+            return ResponseEntity.badRequest().body("User not found.");
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(e.getMessage());
         }

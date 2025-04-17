@@ -1,23 +1,38 @@
 package com.project.booktour.services.user;
 
 import com.project.booktour.components.JwtTokenUtil;
+import com.project.booktour.dtos.UpdateUserDTO;
 import com.project.booktour.dtos.UserDTO;
 import com.project.booktour.exceptions.PermissionDenyException;
 import com.project.booktour.models.Role;
+import com.project.booktour.models.Token;
 import com.project.booktour.models.User;
 import com.project.booktour.repositories.RoleRepository;
+import com.project.booktour.repositories.TokenRepository;
 import com.project.booktour.repositories.UserRepository;
-import com.project.booktour.services.user.IUserService;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.apache.tika.Tika;
 import org.springframework.dao.DataIntegrityViolationException;
 import com.project.booktour.exceptions.DataNotFoundException;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
+import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
+
+import org.springframework.web.multipart.MultipartFile;
 
 @RequiredArgsConstructor
 @Service
@@ -28,7 +43,10 @@ public class UserService implements IUserService {
     private final PasswordEncoder passwordEncoder;
     private final JwtTokenUtil jwtTokenUtil;
     private final AuthenticationManager authenticationManager;
-
+    private final TokenRepository tokenRepository;
+    private static final String AVATAR_UPLOAD_DIR = "uploads/avatars/";
+    private static final String TOUR_UPLOAD_DIR = "uploads/";
+    private static final String DEFAULT_AVATAR_PATH = "/uploads/avatars/default-avatar.jpg";
     @Override
     public User createUser(UserDTO userDTO) throws Exception {
         // Đăng ký tài khoản
@@ -39,9 +57,9 @@ public class UserService implements IUserService {
         }
         Role role = roleRepository.findById(userDTO.getRoleId())
                 .orElseThrow(() -> new DataNotFoundException("Role not found"));
-//        if (role.getName().toUpperCase().equals("ADMIN")) {
-//            throw new PermissionDenyException("You cannot register an admin account");
-//        }
+        if (role.getName().toUpperCase().equals("ADMIN")) {
+            throw new PermissionDenyException("You cannot register an admin account");
+        }
         // Convert from userDTO -> user
         User newUser = User.builder()
                 .userName(userDTO.getUserName())
@@ -51,6 +69,7 @@ public class UserService implements IUserService {
                 .googleAccountId(userDTO.getGoogleAccountId() != null ? userDTO.getGoogleAccountId() : 0)
                 .role(role)
                 .isActive(true)
+                .avatar(DEFAULT_AVATAR_PATH)
                 .build();
 
         // Mã hóa mật khẩu nếu không dùng tài khoản Facebook/Google
@@ -69,8 +88,6 @@ public class UserService implements IUserService {
             throw new DataNotFoundException("Invalid username / password");
         }
         User existingUser = userOptional.get();
-
-        // Kiểm tra mật khẩu nếu không dùng tài khoản Facebook/Google
         if (existingUser.getFacebookAccountId() == 0 && existingUser.getGoogleAccountId() == 0) {
             if (!passwordEncoder.matches(password, existingUser.getPassword())) {
                 throw new BadCredentialsException("Wrong username or password");
@@ -81,5 +98,110 @@ public class UserService implements IUserService {
                 new UsernamePasswordAuthenticationToken(userName, password, existingUser.getAuthorities());
         authenticationManager.authenticate(authenticationToken);
         return jwtTokenUtil.generateToken(existingUser);
+    }
+    @Override
+    @Transactional
+    public User updateUser(Long userId, UpdateUserDTO updatedUserDTO) throws Exception {
+        User existingUser = userRepository.findById(userId)
+                .orElseThrow(() -> new DataNotFoundException("Cannot find user with id: " + userId));
+        String newUserName = updatedUserDTO.getUserName();
+        if (newUserName != null && !existingUser.getUsername().equals(newUserName) &&
+                userRepository.existsByUserName(newUserName)) {
+            throw new DataIntegrityViolationException("Phone number already exists");
+        }
+
+        if (updatedUserDTO.getUserName() != null) {
+            existingUser.setUserName(updatedUserDTO.getUserName());
+        }
+        if (updatedUserDTO.getPhoneNumber() != null) {
+            existingUser.setPhoneNumber(updatedUserDTO.getPhoneNumber());
+        }
+        if (updatedUserDTO.getEmail() != null) {
+            existingUser.setEmail(updatedUserDTO.getEmail());
+        }
+        if (updatedUserDTO.getAddress() != null) {
+            existingUser.setAddress(updatedUserDTO.getAddress());
+        }
+        if (updatedUserDTO.getDateOfBirth() != null) {
+            existingUser.setDateOfBirth(updatedUserDTO.getDateOfBirth());
+        }
+        if (updatedUserDTO.getFacebookAccountId() != null && updatedUserDTO.getFacebookAccountId() > 0) {
+            existingUser.setFacebookAccountId(updatedUserDTO.getFacebookAccountId());
+        }
+        if (updatedUserDTO.getGoogleAccountId() != null && updatedUserDTO.getGoogleAccountId() > 0) {
+            existingUser.setGoogleAccountId(updatedUserDTO.getGoogleAccountId());
+        }
+        return userRepository.save(existingUser);
+    }
+    @Transactional
+    public User updateAvatar(Long userId, MultipartFile avatar) throws Exception {
+        User existingUser = userRepository.findById(userId)
+                .orElseThrow(() -> new DataNotFoundException("Cannot find user with id: " + userId));
+
+        if (avatar != null && !avatar.isEmpty()) {
+            String fileName = storeFile(avatar);
+            if (fileName != null) {
+                existingUser.setAvatar("/uploads/avatars/" + fileName);
+            }
+        }
+
+        return userRepository.save(existingUser);
+    }
+    @Override
+    @Transactional
+    public User updatePassword(Long userId, String newPassword, String confirmPassword) throws DataNotFoundException {
+        User existingUser = userRepository.findById(userId)
+                .orElseThrow(() -> new DataNotFoundException("Cannot find user with id: " + userId));
+
+        if (newPassword != null && !newPassword.isEmpty()) {
+            if (!newPassword.equals(confirmPassword)) {
+                throw new DataNotFoundException("Password and retype password do not match");
+            }
+            String encodedPassword = passwordEncoder.encode(newPassword);
+            existingUser.setPassword(encodedPassword);
+            List<Token> tokens = tokenRepository.findByUser(existingUser);
+            for (Token token : tokens) {
+                tokenRepository.delete(token);
+            }
+        }
+
+        return userRepository.save(existingUser);
+    }
+
+    private String storeFile(MultipartFile file) throws IOException {
+        if (file.getSize() == 0) {
+            return null;
+        }
+        if (file.getSize() > 5 * 1024 * 1024) {
+            throw new IllegalArgumentException("Avatar size must not exceed 5MB");
+        }
+
+        Tika tika = new Tika();
+        String mimeType = tika.detect(file.getInputStream());
+        if (!mimeType.startsWith("image/")) {
+            throw new IllegalArgumentException("File must be an image");
+        }
+
+        String fileName = UUID.randomUUID().toString() + "-" + file.getOriginalFilename();
+        Path uploadDir = Paths.get(AVATAR_UPLOAD_DIR);
+        if (!Files.exists(uploadDir)) {
+            Files.createDirectories(uploadDir);
+        }
+        Path destination = Paths.get(uploadDir.toString(), fileName);
+        Files.copy(file.getInputStream(), destination, StandardCopyOption.REPLACE_EXISTING);
+        return fileName;
+    }
+
+    @Override
+    public Page<User> findAll(String keyword, Pageable pageable) {
+        return userRepository.findAll(keyword, pageable) ;
+    }
+    @Override
+    @Transactional
+    public void blockOrEnable(Long userId, Boolean active) throws DataNotFoundException {
+        User existingUser = userRepository.findById(userId)
+                .orElseThrow(() -> new DataNotFoundException("Cannot find user with id: " + userId));
+        existingUser.setIsActive(active);
+        userRepository.save(existingUser);
     }
 }

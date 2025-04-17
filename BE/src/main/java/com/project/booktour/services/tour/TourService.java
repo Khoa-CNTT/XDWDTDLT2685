@@ -204,9 +204,6 @@ public class TourService implements ITourService {
 
     @Override
     public Review createReview(ReviewDTO reviewDTO) throws Exception {
-        // Kiểm tra xem user đã booking tour chưa
-
-
         if (!bookingService.hasUserBookedTour(reviewDTO.getUserId(), reviewDTO.getTourId())) {
             throw new UnauthorizedException("User has not booked this tour and cannot leave a review");
         }

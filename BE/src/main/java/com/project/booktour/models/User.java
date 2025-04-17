@@ -58,9 +58,13 @@ public class User extends BaseEntity implements UserDetails {
     @Column(name = "google_account_id")
     private Integer googleAccountId = 0;
 
+    @Column(name = "avatar", length = 255)
+    private String avatar;
+
     @ManyToOne
     @JoinColumn(name = "role_id")
     private Role role;
+
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {

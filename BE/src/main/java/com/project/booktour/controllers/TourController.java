@@ -1,7 +1,7 @@
 package com.project.booktour.controllers;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.github.javafaker.Faker;
+
 import com.project.booktour.dtos.TourDTO;
 import com.project.booktour.dtos.TourImageDTO;
 import com.project.booktour.models.Tour;
