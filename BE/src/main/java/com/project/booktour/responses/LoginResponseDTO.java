@@ -1,4 +1,4 @@
-package com.project.booktour.dtos;
+package com.project.booktour.responses;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.*;
@@ -14,4 +14,8 @@ public class LoginResponseDTO {
 
     @JsonProperty("role_id")
     private Long roleId;
+
+    @JsonProperty("user_id")
+    private Long userId;
+
 }

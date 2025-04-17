@@ -1,7 +1,7 @@
 package com.project.booktour.services.user;
 
 import com.project.booktour.components.JwtTokenUtil;
-import com.project.booktour.dtos.LoginResponseDTO;
+import com.project.booktour.responses.LoginResponseDTO;
 import com.project.booktour.dtos.UpdateUserDTO;
 import com.project.booktour.dtos.UserDTO;
 import com.project.booktour.exceptions.PermissionDenyException;
@@ -96,10 +96,12 @@ public class UserService implements IUserService {
                 new UsernamePasswordAuthenticationToken(userName, password, existingUser.getAuthorities());
         authenticationManager.authenticate(authenticationToken);
         String token = jwtTokenUtil.generateToken(existingUser);
-        Long roleId = existingUser.getRole().getRoleId(); // hoặc existingUser.getRoleId();
+        Long roleId = existingUser.getRole().getRoleId();
+        Long userId = existingUser.getUserId();
         return LoginResponseDTO.builder()
                 .token(token)
                 .roleId(roleId)
+                .userId(userId)
                 .build();
     }
     @Override
@@ -107,12 +109,17 @@ public class UserService implements IUserService {
     public User updateUser(Long userId, UpdateUserDTO updatedUserDTO) throws Exception {
         User existingUser = userRepository.findById(userId)
                 .orElseThrow(() -> new DataNotFoundException("Cannot find user with id: " + userId));
+        String oldPassword = updatedUserDTO.getOldPassword();
+        if (oldPassword != null && !passwordEncoder.matches(oldPassword, existingUser.getPassword())) {
+            throw new DataNotFoundException("Incorrect old password");
+        }
+
+        // Validate username uniqueness
         String newUserName = updatedUserDTO.getUserName();
         if (newUserName != null && !existingUser.getUsername().equals(newUserName) &&
                 userRepository.existsByUserName(newUserName)) {
-            throw new DataIntegrityViolationException("Phone number already exists");
+            throw new DataIntegrityViolationException("Username already exists");
         }
-
         if (updatedUserDTO.getUserName() != null) {
             existingUser.setUserName(updatedUserDTO.getUserName());
         }
@@ -134,6 +141,23 @@ public class UserService implements IUserService {
         if (updatedUserDTO.getGoogleAccountId() != null && updatedUserDTO.getGoogleAccountId() > 0) {
             existingUser.setGoogleAccountId(updatedUserDTO.getGoogleAccountId());
         }
+
+        // Handle password update
+        String newPassword = updatedUserDTO.getNewPassword();
+        String confirmPassword = updatedUserDTO.getConfirmPassword();
+        if (newPassword != null && !newPassword.isEmpty()) {
+            if (!newPassword.equals(confirmPassword)) {
+                throw new DataNotFoundException("New password and confirm password do not match");
+            }
+            String encodedPassword = passwordEncoder.encode(newPassword);
+            existingUser.setPassword(encodedPassword);
+            // Invalidate existing tokens
+            List<Token> tokens = tokenRepository.findByUser(existingUser);
+            for (Token token : tokens) {
+                tokenRepository.delete(token);
+            }
+        }
+
         return userRepository.save(existingUser);
     }
     @Transactional
@@ -150,27 +174,6 @@ public class UserService implements IUserService {
 
         return userRepository.save(existingUser);
     }
-    @Override
-    @Transactional
-    public User updatePassword(Long userId, String newPassword, String confirmPassword) throws DataNotFoundException {
-        User existingUser = userRepository.findById(userId)
-                .orElseThrow(() -> new DataNotFoundException("Cannot find user with id: " + userId));
-
-        if (newPassword != null && !newPassword.isEmpty()) {
-            if (!newPassword.equals(confirmPassword)) {
-                throw new DataNotFoundException("Password and retype password do not match");
-            }
-            String encodedPassword = passwordEncoder.encode(newPassword);
-            existingUser.setPassword(encodedPassword);
-            List<Token> tokens = tokenRepository.findByUser(existingUser);
-            for (Token token : tokens) {
-                tokenRepository.delete(token);
-            }
-        }
-
-        return userRepository.save(existingUser);
-    }
-
     private String storeFile(MultipartFile file) throws IOException {
         if (file.getSize() == 0) {
             return null;

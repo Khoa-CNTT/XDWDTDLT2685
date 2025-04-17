@@ -39,7 +39,12 @@ public class UpdateUserDTO {
 
     @JsonProperty("google_account_id")
     private Integer googleAccountId;
-    private String password;
+
+    @JsonProperty("old_password")
+    private  String oldPassword;
+
+    @JsonProperty("new_password")
+    private String newPassword;
 
     @JsonProperty("confirm_password")
     private String confirmPassword;
