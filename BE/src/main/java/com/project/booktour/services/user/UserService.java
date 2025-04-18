@@ -1,7 +1,7 @@
 package com.project.booktour.services.user;
 
 import com.project.booktour.components.JwtTokenUtil;
-import com.project.booktour.responses.LoginResponseDTO;
+import com.project.booktour.responses.LoginResponse;
 import com.project.booktour.dtos.UpdateUserDTO;
 import com.project.booktour.dtos.UserDTO;
 import com.project.booktour.exceptions.PermissionDenyException;
@@ -11,6 +11,7 @@ import com.project.booktour.models.User;
 import com.project.booktour.repositories.RoleRepository;
 import com.project.booktour.repositories.TokenRepository;
 import com.project.booktour.repositories.UserRepository;
+import com.project.booktour.responses.UserProfileResponse;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.apache.tika.Tika;
@@ -48,6 +49,7 @@ public class UserService implements IUserService {
     private static final String AVATAR_UPLOAD_DIR = "uploads/avatars/";
     private static final String TOUR_UPLOAD_DIR = "uploads/";
     private static final String DEFAULT_AVATAR_PATH = "/uploads/avatars/default-avatar.jpg";
+
     @Override
     public User createUser(UserDTO userDTO) throws Exception {
         // Đăng ký tài khoản
@@ -81,7 +83,7 @@ public class UserService implements IUserService {
     }
 
     @Override
-    public LoginResponseDTO login(String userName, String password) throws Exception {
+    public LoginResponse login(String userName, String password) throws Exception {
         Optional<User> userOptional = userRepository.findByUserName(userName);
         if (userOptional.isEmpty()) {
             throw new DataNotFoundException("Invalid username / password");
@@ -98,12 +100,13 @@ public class UserService implements IUserService {
         String token = jwtTokenUtil.generateToken(existingUser);
         Long roleId = existingUser.getRole().getRoleId();
         Long userId = existingUser.getUserId();
-        return LoginResponseDTO.builder()
+        return LoginResponse.builder()
                 .token(token)
                 .roleId(roleId)
                 .userId(userId)
                 .build();
     }
+
     @Override
     @Transactional
     public User updateUser(Long userId, UpdateUserDTO updatedUserDTO) throws Exception {
@@ -160,6 +163,7 @@ public class UserService implements IUserService {
 
         return userRepository.save(existingUser);
     }
+
     @Transactional
     public User updateAvatar(Long userId, MultipartFile avatar) throws Exception {
         User existingUser = userRepository.findById(userId)
@@ -174,6 +178,7 @@ public class UserService implements IUserService {
 
         return userRepository.save(existingUser);
     }
+
     private String storeFile(MultipartFile file) throws IOException {
         if (file.getSize() == 0) {
             return null;
@@ -200,8 +205,9 @@ public class UserService implements IUserService {
 
     @Override
     public Page<User> findAll(String keyword, Pageable pageable) {
-        return userRepository.findAll(keyword, pageable) ;
+        return userRepository.findAll(keyword, pageable);
     }
+
     @Override
     @Transactional
     public void blockOrEnable(Long userId, Boolean active) throws DataNotFoundException {
@@ -209,5 +215,22 @@ public class UserService implements IUserService {
                 .orElseThrow(() -> new DataNotFoundException("Cannot find user with id: " + userId));
         existingUser.setIsActive(active);
         userRepository.save(existingUser);
+    }
+
+    @Override
+    public UserProfileResponse getUserProfile(Long userId) throws Exception {
+        User existingUser = userRepository.findById(userId)
+                .orElseThrow(() -> new DataNotFoundException("Cannot find user with id: " + userId));
+
+        return UserProfileResponse.builder()
+                .userName(existingUser.getUsername())
+                .phoneNumber(existingUser.getPhoneNumber())
+                .email(existingUser.getEmail())
+                .avatarPath(existingUser.getAvatar())
+                .address(existingUser.getAddress())
+                .dateOfBirth(existingUser.getDateOfBirth())
+                .facebookAccountId(existingUser.getFacebookAccountId())
+                .googleAccountId(existingUser.getGoogleAccountId())
+                .build();
     }
 }

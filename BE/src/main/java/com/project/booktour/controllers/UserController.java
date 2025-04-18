@@ -1,12 +1,13 @@
 package com.project.booktour.controllers;
 
-import com.project.booktour.responses.LoginResponseDTO;
+import com.project.booktour.responses.LoginResponse;
 import com.project.booktour.dtos.UpdateUserDTO;
 import com.project.booktour.dtos.UserDTO;
 import com.project.booktour.dtos.UserLoginDTO;
 import com.project.booktour.exceptions.DataNotFoundException;
 import com.project.booktour.models.User;
 import com.project.booktour.responses.UserListResponse;
+import com.project.booktour.responses.UserProfileResponse;
 import com.project.booktour.responses.UserResponse;
 import com.project.booktour.services.user.IUserService;
 import jakarta.validation.Valid;
@@ -55,6 +56,16 @@ public class UserController {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
+    @GetMapping("/{id}")
+    @PreAuthorize("hasRole('ROLE_ADMIN') or #id == principal.userId")
+    public ResponseEntity<?> getUserProfile(@PathVariable Long id) {
+        try {
+            UserProfileResponse userProfile = userService.getUserProfile(id);
+            return ResponseEntity.ok(userProfile);
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
 
     @PostMapping("/register")
     public ResponseEntity<?> createUser(@RequestBody @Valid UserDTO userDTO, BindingResult result) {
@@ -77,7 +88,7 @@ public class UserController {
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody @Valid UserLoginDTO userLoginDTO) {
         try {
-                LoginResponseDTO loginResponseDTO = userService.login(userLoginDTO.getUserName(), userLoginDTO.getPassword());
+                LoginResponse loginResponseDTO = userService.login(userLoginDTO.getUserName(), userLoginDTO.getPassword());
             return ResponseEntity.ok(loginResponseDTO);
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(e.getMessage());

@@ -9,7 +9,7 @@ import lombok.*;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class LoginResponseDTO {
+public class LoginResponse {
     private String token;
 
     @JsonProperty("role_id")
