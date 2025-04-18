@@ -16,6 +16,7 @@ import TourBooking from '../pages/TourBooking';
 import Location from '../pages/Location';
 import PrivateRoute from './PrivateRoute';
 import Signup from '../pages/auth/Signup/Signup';
+import ProfileChangePassword from '../components/Profile/ProfileChangePassword';
 
 const AppRoutes = () => {
     return (
@@ -34,8 +35,8 @@ const AppRoutes = () => {
                         <Route path='/profile' element={<Profile />}></Route>
                         <Route path='/payment' element={<PrivateRoute><Payment /></PrivateRoute>}></Route>
                         <Route path='/tourbooking' element={<TourBooking />}></Route>
+                        <Route path='/changepassword' element={<ProfileChangePassword />}></Route>
                         <Route path='*' element={<NoPage />}></Route>
-
                     </Route>
                     <Route path='/login' element={<Login />}></Route>
                     <Route path='/signup' element={<Signup />}></Route>

@@ -26,9 +26,10 @@ const Login = () => {
             try {
                 setLoading(true)
                 const res = await loginApi(user_name, password);
-                console.log(typeof "kqua", res);
-                if (typeof res === "string") {
-                    localStorage.setItem("token", res)
+                console.log("kequa token", res);
+                if (res && res.token) {
+                    localStorage.setItem("token", res.token)
+                    localStorage.setItem("user_id", res.user_id)
                     setTimeout(() => {
                         toast.success("Đăng nhập thành công!");
                         navigate("/");
@@ -36,7 +37,6 @@ const Login = () => {
                 } else {
                     toast.error("Tên đăng nhập hoặc mật khẩu không đúng")
                 }
-
             } catch (error) {
                 console.error("Login error:", error);
                 toast.error("Lỗi kết nối server");

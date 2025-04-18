@@ -12,17 +12,17 @@ import useDarkMode from "../../hooks/useDarkMode";
 import { toast } from "react-toastify";
 
 
-const DropdownLinks = [
-    {
-        name: "Tour",
-        link: "/tours",
-    },
-    {
-        name: "Hướng Dẫn Viên",
-        link: "/tourguide",
-    },
+// const DropdownLinks = [
+//     {
+//         name: "Tour",
+//         link: "/tours",
+//     },
+//     {
+//         name: "Hướng Dẫn Viên",
+//         link: "/tourguide",
+//     },
 
-];
+// ];
 
 const Navbar = () => {
     const [isDarkMode, toggleDarkMode] = useDarkMode()
@@ -62,6 +62,7 @@ const Navbar = () => {
                         {/* Desktop Navbar */}
                         <div className="hidden md:block">
                             <ul className="flex items-center gap-6">
+                                {/* Trang chủ */}
                                 <li className="py-4 text-lg font-normal">
                                     <NavLink
                                         className={({ isActive }) => (isActive ? "active" : "")}
@@ -71,30 +72,39 @@ const Navbar = () => {
                                         Trang Chủ
                                     </NavLink>
                                 </li>
-                                {/* Dropdown section */}
-                                <li className="relative py-4 group">
+                                {/* Dropdown section tour */}
+                                <li
+                                    className={`relative py-4 group ${["/tours", "/tourguide"].some(path => window.location.pathname.includes(path)) ? "active" : ""
+                                        }`}
+                                >
                                     <div className="flex items-center cursor-pointer dropdown">
                                         <span>Tour</span>
                                         <span>
                                             <FaCaretDown className="transition-all duration-200 group-hover:rotate-180:" />
                                         </span>
                                         <div className="absolute -left-9 z-[9999] hidden w-[200px] top-[57px] rounded-md bg-white p-2 text-black group-hover:block shadow-md ">
-
                                             <ul className="space-y-3">
-                                                {DropdownLinks.map((data) => (
-                                                    <li key={data.name}>
-                                                        <a
-                                                            className="inline-block w-full p-2 text-lg font-medium rounded-md hover:bg-primary/20"
-                                                            href={data.link}
-                                                        >
-                                                            {data.name}
-                                                        </a>
-                                                    </li>
-                                                ))}
+                                                <NavLink
+                                                    to="/tours"
+                                                    className={({ isActive }) =>
+                                                        `inline-block w-full p-2 text-lg font-medium rounded-md hover:bg-primary/50 ${isActive ? "active" : ""}`
+                                                    }
+                                                >
+                                                    Tour
+                                                </NavLink>
+                                                <NavLink
+                                                    to="/tourguide"
+                                                    className={({ isActive }) =>
+                                                        `inline-block w-full p-2 text-lg font-medium rounded-md hover:bg-primary/50 ${isActive ? "active" : ""}`
+                                                    }
+                                                >
+                                                    Hướng dẫn viên
+                                                </NavLink>
                                             </ul>
                                         </div>
                                     </div>
                                 </li>
+                                {/* Giới thiệu */}
                                 <li className="py-4 text-lg font-normal">
                                     <NavLink
                                         className={({ isActive }) => (isActive ? "active" : "")}
@@ -104,6 +114,7 @@ const Navbar = () => {
                                         Giới Thiệu
                                     </NavLink>
                                 </li>
+                                {/* Điểm đến */}
                                 <li className="py-4 text-lg font-normal">
                                     <NavLink
                                         className={({ isActive }) => (isActive ? "active" : "")}
@@ -113,6 +124,7 @@ const Navbar = () => {
                                         Điểm Đến
                                     </NavLink>
                                 </li>
+                                {/* Liên hệ */}
                                 <li className="py-4 text-lg font-normal">
                                     <NavLink
                                         className={({ isActive }) => (isActive ? "active" : "")}
@@ -154,6 +166,7 @@ const Navbar = () => {
                                                     <li>
                                                         <NavLink
                                                             to="/profile"
+                                                            onClick={() => window.scrollTo(0, 0)}
                                                             className={({ isActive }) =>
                                                                 `inline-block w-full p-2 text-lg font-medium rounded-md hover:bg-primary/50 ${isActive ? "active" : ""
                                                                 }`

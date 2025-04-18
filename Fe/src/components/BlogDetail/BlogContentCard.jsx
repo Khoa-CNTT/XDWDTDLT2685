@@ -61,8 +61,8 @@ const BlogContentCard = ({ item }) => {
                     </div>
                 </div>
                 <BlogSchedule item={item} />
-                {/* <BlogReview item={item} /> */}
-                {/* <BlogFeedback item={item} /> */}
+                <BlogReview  />
+                <BlogFeedback />
                 <BlogAddComment />
             </div>
         </div>
