@@ -1,14 +1,14 @@
 import React, { useState } from 'react';
 import { FaCheck, FaTimes } from 'react-icons/fa';
 import { toast } from 'react-toastify';
-import { putChangePasswordId } from '../../services/profile';
 import { useNavigate } from 'react-router-dom';
+import { putChangeInformation } from '../../services/profile';
 
 const ProfileChangePassword = () => {
     const [oldPassword, setOldPassword] = useState('');
     const [newPassword, setNewPassword] = useState('');
     const [passwordConfirm, setPasswordConfirm] = useState('');
-    const navigate = useNavigate()
+    const navigate = useNavigate();
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -17,32 +17,30 @@ const ProfileChangePassword = () => {
 
         if (Object.keys(newErrors).length === 0) {
             const userId = localStorage.getItem('user_id');
-            console.log("user", userId)
-            console.log("dulieu", data)
+            const data = {
+                old_password: oldPassword,
+                new_password: newPassword,
+                confirm_password: passwordConfirm,
+            };
+            console.log(data)
             try {
-                const res = await putChangePasswordId({
-                    userId,
-                    old_password: oldPassword,
-                    new_password: newPassword,
-                    confirm_password: passwordConfirm,
-                });
+                const res = await putChangeInformation(userId, data);
                 console.log("RESPONSE FULL:", res);
-                if (res.success === 200) {
+                
+                if (res.status === 200) {
                     toast.success('Đổi mật khẩu thành công!');
                     setOldPassword('');
                     setNewPassword('');
                     setPasswordConfirm('');
-
                 } else {
-                    toast.error(res.data.message || 'Mật khẩu cũ không đúng');
+                    toast.error('Mật khẩu cũ không đúng');
                 }
             } catch (error) {
-                toast.error('Có lỗi xảy ra khi đổi mật khẩu!');
+                toast.error(error.response?.data?.message || 'Có lỗi xảy ra khi đổi mật khẩu!');
                 console.log(error);
             }
         }
     };
-
     const Validation = (oldPassword, newPassword, passwordConfirm) => {
         const newErrors = {};
         if (!oldPassword) {
@@ -94,7 +92,6 @@ const ProfileChangePassword = () => {
                                 className='w-[400px] dark:text-[#101828] p-3 border border-gray-400 rounded-lg'
                                 placeholder='Nhập mật khẩu mới...'
                             />
-
                         </div>
                         <div className='flex items-center gap-4'>
                             <label className='w-[200px] text-left font-semibold text-lg'>Nhập lại mật khẩu mới:</label>
@@ -122,5 +119,6 @@ const ProfileChangePassword = () => {
         </div>
     );
 };
+
 
 export default ProfileChangePassword;

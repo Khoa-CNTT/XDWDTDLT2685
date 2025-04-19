@@ -1,29 +1,43 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { toast } from 'react-toastify';
-import { putChangePasswordId } from '../../services/profile';
+import { putChangeInformation } from '../../services/profile';
 
-const ProfileInformation = () => {
+const ProfileInformation = ({ profile }) => {
     const [user_name, setUserName] = useState('');
     const [sdt, setSdt] = useState('');
     const [email, setEmail] = useState('');
     const [address, setAddress] = useState('');
 
+    // Gán dữ liệu profile vào state khi profile thay đổi
+    useEffect(() => {
+        if (profile) {
+            setUserName(profile.user_name || '');
+            setSdt(profile.phone_number || '');
+            setEmail(profile.email || '');
+            setAddress(profile.address || '');
+        }
+    }, [profile]);
+
     const handleSubmit = async (e) => {
         e.preventDefault();
         const userId = localStorage.getItem('user_id');
+        const data = {
+            user_name,
+            sdt,
+            email,
+            address,
+        };
 
         try {
-            const res = await putChangePasswordId(userId, {
-                user_name: user_name,
-                phone_number: sdt,
-                email: email,
-                address: address
-            });
-            console.log("thành công", res)
-            toast.success('Cập nhật thông tin thành công!');
+            const res = await putChangeInformation(userId, data);
+            if (res.success === 200) {
+                toast.success('Cập nhật thông tin thành công!');
+            } else {
+                toast.error('Cập nhật không thành công');
+            }
         } catch (error) {
-            toast.error('Cập nhật thất bại!');
-            console.error(error);
+            toast.error('Có lỗi xảy ra khi cập nhật thông tin!');
+            console.log(error);
         }
     };
 
