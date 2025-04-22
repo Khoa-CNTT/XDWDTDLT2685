@@ -27,19 +27,17 @@ const Login = () => {
                 setLoading(true)
                 const res = await loginApi(user_name, password);
                 console.log("kequa token", res);
-                if (res && res.token) {
-                    localStorage.setItem("token", res.token)
-                    localStorage.setItem("user_id", res.user_id)
+                if (res.data && res.data.token) {
+                    localStorage.setItem("token", res.data.token)
+                    localStorage.setItem("user_id", res.data.user_id)
                     setTimeout(() => {
                         toast.success("Đăng nhập thành công!");
                         navigate("/");
                     }, 1500);
-                } else {
-                    toast.error("Tên đăng nhập hoặc mật khẩu không đúng")
-                }
+                } 
             } catch (error) {
                 console.error("Login error:", error);
-                toast.error("Lỗi kết nối server");
+                toast.error("Tên đăng nhập hoặc mật khẩu không đúng")
                 setLoading(false)
             }
         }
@@ -49,7 +47,7 @@ const Login = () => {
         if (token) {
             navigate("/")
         }
-    })
+    }, [])
     const Validation = (user_name, password) => {
         const newErrors = {};
         if (!user_name) {
@@ -80,12 +78,12 @@ const Login = () => {
                             <p className='mt-2 text-gray-500 -text-lg max-w-[600px]'>Bạn có thể đăng nhập tài khoản của mình để sử dụng dịch vụ của chúng tôi.</p>
                         </div>
                         <form onSubmit={handleSubmit} className='items-center mt-3'>
-                            <label className='flex flex-col mb-2 text-gray-500 dark:text-white'>Email</label>
+                            <label className='flex flex-col mb-2 text-gray-500 dark:text-white'>Tên tài khoản</label>
                             <input type="text" name="user_name"
                                 value={user_name}
                                 onChange={(e) => setUserName(e.target.value)}
                                 className='p-3 w-full dark:text-[#101828] max-w-[500px] h-auto mx-auto border border-gray-400 rounded-lg'
-                                placeholder='Email của bạn...'
+                                placeholder='Tên của bạn...'
                             />
                             {errors.user_name && <div className='mt-2 text-sm text-rose-500'>{errors.user_name}</div>}
                             <div className='relative mt-3'>

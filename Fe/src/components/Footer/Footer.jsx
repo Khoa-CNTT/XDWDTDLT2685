@@ -10,8 +10,8 @@ const Footer = () => {
     return (
         <>
             <div className='flex pt-20 dark:bg-[#101828] dark:text-white'>
-                <div className='gap-3 grid h-[400px] md:grid-cols-3 w-full lg:grid-cols-4 bg-[#101828] dark:border dark:border-white'>
-                    <div className='px-4 py-8 ml-5  text-white w-[350px]'>
+                <div className='gap-3 grid h-auto md:grid-cols-3 w-full lg:grid-cols-4 bg-[#101828] dark:border dark:border-white'>
+                    <div className='px-4 py-8 ml-5  text-white w-full max-w-[400px]'>
                         <h1 className="flex items-center gap-3 text-xl font-bold text-justify text-white sm:text-3xl sm:text-left">
                             <img src={Logo2} alt="" className="max-h-[60px]" />
                         </h1>
@@ -41,7 +41,7 @@ const Footer = () => {
                         </div>
                     </div>
                     {/*  */}
-                    <div className="grid grid-cols-2 col-span-2 gap-x-[300px] sm:grid-cols-3 md:pl-20">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 col-span-2 gap-x-[300px]  md:pl-20">
                         <div className=' px-4 py-8 text-white cursor-pointer w-[300px]'>
                             <h1 className='mb-3 text-xl font-bold text-justify sm:text-left'>Giới Thiệu</h1>
                             <div className='space-y-5 text-left'>
@@ -79,5 +79,4 @@ const Footer = () => {
         </>
     );
 };
-
 export default Footer;

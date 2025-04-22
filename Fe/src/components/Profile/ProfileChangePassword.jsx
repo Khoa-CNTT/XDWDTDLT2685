@@ -22,22 +22,19 @@ const ProfileChangePassword = () => {
                 new_password: newPassword,
                 confirm_password: passwordConfirm,
             };
-            console.log(data)
+            // console.log(data)
             try {
                 const res = await putChangeInformation(userId, data);
-                console.log("RESPONSE FULL:", res);
-                
+                console.log("RESPONSE FULL: mk", res);
                 if (res.status === 200) {
                     toast.success('Đổi mật khẩu thành công!');
                     setOldPassword('');
                     setNewPassword('');
                     setPasswordConfirm('');
-                } else {
-                    toast.error('Mật khẩu cũ không đúng');
+                    navigate("/profile")
                 }
             } catch (error) {
-                toast.error(error.response?.data?.message || 'Có lỗi xảy ra khi đổi mật khẩu!');
-                console.log(error);
+                toast.warning('Mật khẩu cũ không đúng');
             }
         }
     };
@@ -66,7 +63,6 @@ const ProfileChangePassword = () => {
         }
         return newErrors;
     };
-
     return (
         <div className='pt-[150px]'>
             <div className='container'>

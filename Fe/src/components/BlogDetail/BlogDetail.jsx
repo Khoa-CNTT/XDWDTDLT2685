@@ -10,7 +10,7 @@ const BlogDetail = () => {
     const getDetail = async () => {
         try {
             const res = await getTourById(id);
-            setBlogDetail(res);
+            setBlogDetail(res.data);
         } catch (error) {
             console.log("Lỗi khi gọi API:", error);
         }
