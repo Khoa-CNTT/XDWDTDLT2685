@@ -12,9 +12,12 @@ import com.project.booktour.responses.UserResponse;
 import com.project.booktour.services.user.IUserService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.core.io.UrlResource;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.BindingResult;
@@ -22,6 +25,8 @@ import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.List;
 
 @RestController
@@ -43,7 +48,7 @@ public class UserController {
                     //Sort.by("createdAt").descending()
                     Sort.by("id").ascending()
             );
-            Page<UserResponse> userPage = userService.findAll(keyword, pageRequest)
+            Page<UserResponse> userPage = userService.getAllUser(keyword, pageRequest)
                     .map(UserResponse::fromUser);
             int totalPages = userPage.getTotalPages();
             List<UserResponse> userResponses = userPage.getContent();
@@ -66,7 +71,25 @@ public class UserController {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
+    @GetMapping("/avatars/{imageName}")
+    public ResponseEntity<?> viewImage(@PathVariable String imageName) {
+        try {
+            Path imagePath = Paths.get("uploads/avatars/" + imageName);
+            UrlResource resource = new UrlResource(imagePath.toUri());
 
+            if (resource.exists()) {
+                return ResponseEntity.ok()
+                        .contentType(MediaType.IMAGE_JPEG)
+                        .body(resource);
+            } else {
+                return ResponseEntity.ok()
+                        .contentType(MediaType.IMAGE_JPEG)
+                        .body(new UrlResource(Paths.get("uploads/avatars/default-avatar.jpg").toUri()));
+            }
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Cannot find avatar: " + e.getMessage());
+        }
+    }
     @PostMapping("/register")
     public ResponseEntity<?> createUser(@RequestBody @Valid UserDTO userDTO, BindingResult result) {
         try {
@@ -94,6 +117,7 @@ public class UserController {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
+
 
     @PutMapping("/{id}")
     public ResponseEntity<?> updateUser(@PathVariable Long id, @RequestBody UpdateUserDTO updatedUserDTO) {

@@ -21,7 +21,7 @@ public interface IUserService {
 
     User updateAvatar(Long userId, MultipartFile avatar) throws Exception;
     UserProfileResponse getUserProfile(Long userId) throws Exception;
-    Page<User> findAll(String keyword, Pageable pageable) throws Exception;
+    Page<User> getAllUser(String keyword, Pageable pageable) throws Exception;
 
     void blockOrEnable(Long userId, Boolean active) throws DataNotFoundException;
 }

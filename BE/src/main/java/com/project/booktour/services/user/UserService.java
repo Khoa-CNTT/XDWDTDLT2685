@@ -47,7 +47,6 @@ public class UserService implements IUserService {
     private final AuthenticationManager authenticationManager;
     private final TokenRepository tokenRepository;
     private static final String AVATAR_UPLOAD_DIR = "uploads/avatars/";
-    private static final String TOUR_UPLOAD_DIR = "uploads/";
     private static final String DEFAULT_AVATAR_PATH = "/uploads/avatars/default-avatar.jpg";
 
     @Override
@@ -204,7 +203,7 @@ public class UserService implements IUserService {
     }
 
     @Override
-    public Page<User> findAll(String keyword, Pageable pageable) {
+    public Page<User> getAllUser(String keyword, Pageable pageable) {
         return userRepository.findAll(keyword, pageable);
     }
 
@@ -221,12 +220,18 @@ public class UserService implements IUserService {
     public UserProfileResponse getUserProfile(Long userId) throws Exception {
         User existingUser = userRepository.findById(userId)
                 .orElseThrow(() -> new DataNotFoundException("Cannot find user with id: " + userId));
+        String avatarPath = existingUser.getAvatar();
+        if (avatarPath != null && !avatarPath.equals(DEFAULT_AVATAR_PATH)) {
+            avatarPath = "http://localhost:8088/api/v1/users/avatars/" + Paths.get(avatarPath).getFileName().toString();
+        } else {
+            avatarPath = "http://localhost:8088/api/v1/users/avatars/default-avatar.jpg";
+        }
 
         return UserProfileResponse.builder()
                 .userName(existingUser.getUsername())
                 .phoneNumber(existingUser.getPhoneNumber())
                 .email(existingUser.getEmail())
-                .avatarPath(existingUser.getAvatar())
+                .avatarPath(avatarPath)
                 .address(existingUser.getAddress())
                 .dateOfBirth(existingUser.getDateOfBirth())
                 .facebookAccountId(existingUser.getFacebookAccountId())
