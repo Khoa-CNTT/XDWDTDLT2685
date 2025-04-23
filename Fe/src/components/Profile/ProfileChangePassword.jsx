@@ -32,9 +32,11 @@ const ProfileChangePassword = () => {
                     setNewPassword('');
                     setPasswordConfirm('');
                     navigate("/profile")
+                } else {
+                    toast.warning('Mật khẩu cũ không đúng');
                 }
             } catch (error) {
-                toast.warning('Mật khẩu cũ không đúng');
+                toast.error('Lỗi kết nối server!');
             }
         }
     };
