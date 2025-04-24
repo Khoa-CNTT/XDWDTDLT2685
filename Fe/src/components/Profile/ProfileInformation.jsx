@@ -1,10 +1,10 @@
 import React, { useEffect, useState } from 'react';
 import { toast } from 'react-toastify';
-import { putChangeInformation } from '../../services/profile';
+import { putChangeInformation, putProfileImg } from '../../services/profile';
 
-const ProfileInformation = ({ profile }) => {
+const ProfileInformation = ({ profile, selectedFile }) => {
     const [user_name, setUserName] = useState('');
-    const [sdt, setSdt] = useState('');
+    const [phone_number, setPhoneNumber] = useState('');
     const [email, setEmail] = useState('');
     const [address, setAddress] = useState('');
 
@@ -12,7 +12,7 @@ const ProfileInformation = ({ profile }) => {
     useEffect(() => {
         if (profile) {
             setUserName(profile.user_name || '');
-            setSdt(profile.phone_number || '');
+            setPhoneNumber(profile.phone_number || '');
             setEmail(profile.email || '');
             setAddress(profile.address || '');
         }
@@ -23,21 +23,26 @@ const ProfileInformation = ({ profile }) => {
         const userId = localStorage.getItem('user_id');
         const data = {
             user_name,
-            sdt,
+            phone_number,
             email,
             address,
         };
 
         try {
             const res = await putChangeInformation(userId, data);
-            if (res.success === 200) {
+            console.log("RESPONSE FULL: thongtin", res.data);
+
+            // Nếu có file ảnh được chọn thì upload ảnh
+            if (selectedFile) {
+                const formData = new FormData();
+                formData.append("avatar", selectedFile);
+                await putProfileImg(userId, formData);
+            }
+            if (res.status === 200) {
                 toast.success('Cập nhật thông tin thành công!');
-            } else {
-                toast.error('Cập nhật không thành công');
             }
         } catch (error) {
-            toast.error('Có lỗi xảy ra khi cập nhật thông tin!');
-            console.log(error);
+            toast.error('Cập nhật không thành công');
         }
     };
 
@@ -48,10 +53,15 @@ const ProfileInformation = ({ profile }) => {
                 <form onSubmit={handleSubmit} className='items-center mt-3'>
                     <div className='flex flex-col px-6 space-y-5'>
                         <div>
-                            <label className='flex flex-col mb-2 font-semibold'>Họ và tên</label>
+                            <div className='flex items-center gap-3 mb-2'>
+                                <label className='font-semibold'>Tên tài khoản</label>
+                                <p className='text-red-500 '>*Không thể thay đổi</p>
+                            </div>
+
                             <input
                                 type='text'
                                 value={user_name}
+                                disabled
                                 onChange={(e) => setUserName(e.target.value)}
                                 className='w-[700px] dark:text-[#101828] h-auto p-3 border border-gray-400 rounded-lg'
                                 placeholder='Tên của bạn...'
@@ -62,19 +72,25 @@ const ProfileInformation = ({ profile }) => {
                             <label className='flex flex-col mb-2 font-semibold'>Số điện thoại</label>
                             <input
                                 type='tel'
-                                value={sdt}
-                                onChange={(e) => setSdt(e.target.value)}
+                                value={phone_number}
+                                onChange={(e) => setPhoneNumber(e.target.value)}
                                 className='h-auto w-[700px] dark:text-[#101828] p-3 border border-gray-400 rounded-lg'
                                 placeholder='Số điện thoại...'
                             />
                         </div>
 
                         <div>
-                            <label className='flex flex-col mb-2 font-semibold'>Email</label>
+                            <div className='flex items-center gap-2 mb-2'>
+                                <label className='font-semibold'>Email</label>
+                                <p className='text-red-500 '>*Không thể thay đổi</p>
+                            </div>
+
                             <input
                                 type='email'
                                 value={email}
+                                disabled
                                 onChange={(e) => setEmail(e.target.value)}
+
                                 className='w-[700px] dark:text-[#101828] p-3 border border-gray-400 rounded-lg'
                                 placeholder='Nhập email...'
                             />

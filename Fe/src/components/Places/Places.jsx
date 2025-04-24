@@ -19,8 +19,8 @@ const Places = ({
         try {
             const res = await getAllTour(page);
             console.log(res)
-            setTotalPages(res.totalPages)
-            setPlaceData(res.tours);
+            setTotalPages(res.data.totalPages)
+            setPlaceData(res.data.tours);
         } catch {
             console.log("Lỗi khi lấy dữ liệu");
         }

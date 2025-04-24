@@ -35,7 +35,7 @@ const Signup = () => {
                     confirm_password: passwordConfirm.trim(),
                     roleId: 1
                 });
-                if (res) {
+                if (res.data) {
                     setTimeout(() => {
                         toast.success("Đăng ký thành công");
                         navigate("/login");
