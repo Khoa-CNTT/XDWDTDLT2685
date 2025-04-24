@@ -1,6 +1,7 @@
 package com.project.booktour.controllers;
 
 import com.project.booktour.dtos.BookingDTO;
+import com.project.booktour.exceptions.DataNotFoundException;
 import com.project.booktour.models.Booking;
 import com.project.booktour.services.booking.BookingService;
 import jakarta.validation.Valid;
@@ -27,7 +28,7 @@ public class BookingController {
                 return ResponseEntity.badRequest().body(errorMessages);
             }
             Booking booking = bookingService.createBooking(bookingDTO);
-            return ResponseEntity.ok(booking);
+            return ResponseEntity.ok("Tour booked successfully");
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
@@ -52,8 +53,6 @@ public class BookingController {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
-
-    // Công việc của admin: cập nhật thông tin một booking
     @PutMapping("/{id}")
     public ResponseEntity<?> updateBooking(@Valid @PathVariable long id, @Valid @RequestBody BookingDTO bookingDTO) {
         try {
@@ -66,7 +65,12 @@ public class BookingController {
 
     @DeleteMapping("/{id}")
     public ResponseEntity<?> deleteBooking(@Valid @PathVariable Long id) {
-        bookingService.deleteBooking(id);
-        return ResponseEntity.ok("Xóa thông tin 1 booking");
+
+        try {
+            bookingService.deleteBooking(id);
+            return ResponseEntity.ok("Xóa thông tin 1 booking");
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
     }
 }

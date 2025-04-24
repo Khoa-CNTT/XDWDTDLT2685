@@ -34,8 +34,9 @@ public class Booking {
     @Column(name = "total_price", nullable = false)
     private Double totalPrice;
 
-    @Column(name = "booking_status", length = 255, nullable = false)
-    private String bookingStatus;
+    @Enumerated(EnumType.STRING)
+    @Column(name = "booking_status", nullable = false)
+    private BookingStatus bookingStatus;
 
     @Column(name = "special_requests", length = 255)
     private String specialRequests;
@@ -47,4 +48,16 @@ public class Booking {
     @ManyToOne
     @JoinColumn(name = "promotion_id")
     private Promotion promotion;
+
+    @Column(name = "full_name", length = 255, nullable = false)
+    private String fullName;
+
+    @Column(name = "email", length = 255, nullable = false)
+    private String email;
+
+    @Column(name = "address", length = 255)
+    private String address;
+
+    @Column(name = "phone_number", length = 20)
+    private String phoneNumber;
 }

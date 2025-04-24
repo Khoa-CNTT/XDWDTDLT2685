@@ -98,7 +98,6 @@ public class TourController {
                 return ResponseEntity.badRequest().body(errorMessages);
             }
             Tour newTour = tourService.createTour(tourDTO);
-            // Sử dụng getTourDetails để lấy TourResponse đầy đủ (bao gồm imageUrls)
             TourResponse tourResponse = tourService.getTourDetails(newTour.getTourId());
             return ResponseEntity.status(HttpStatus.CREATED).body(tourResponse);
         } catch (Exception e) {

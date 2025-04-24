@@ -16,6 +16,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.stereotype.Component;
+import org.springframework.util.AntPathMatcher;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
@@ -31,6 +32,7 @@ public class JwtTokenFilter extends OncePerRequestFilter {
 
     private final UserDetailsService userDetailsService;
     private final JwtTokenUtil jwtTokenUtil;
+    private final AntPathMatcher pathMatcher = new AntPathMatcher();
 
     @Override
     protected void doFilterInternal(@NonNull HttpServletRequest request,
@@ -39,20 +41,19 @@ public class JwtTokenFilter extends OncePerRequestFilter {
             throws ServletException, IOException {
         try {
             if (isBypassToken(request)) {
-                filterChain.doFilter(request, response); // Cho phép bypass
+                filterChain.doFilter(request, response);
                 return;
             }
             final String authHeader = request.getHeader("Authorization");
-            if (authHeader == null || !authHeader.startsWith("Bearer ")) { // Sửa điều kiện kiểm tra
+            if (authHeader == null || !authHeader.startsWith("Bearer ")) {
                 response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Unauthorized");
                 return;
             }
             final String token = authHeader.substring(7);
-            final String userName = jwtTokenUtil.extractUserName(token); // Đổi từ extractPhoneNumber thành extractUserName
+            final String userName = jwtTokenUtil.extractUserName(token);
             if (userName != null && SecurityContextHolder.getContext().getAuthentication() == null) {
                 User userDetails = (User) userDetailsService.loadUserByUsername(userName);
                 if (jwtTokenUtil.validateToken(token, userDetails)) {
-                    // Lấy authorities từ token
                     List<String> authorities = jwtTokenUtil.extractAuthorities(token);
                     List<SimpleGrantedAuthority> grantedAuthorities = authorities.stream()
                             .map(SimpleGrantedAuthority::new)
@@ -71,16 +72,18 @@ public class JwtTokenFilter extends OncePerRequestFilter {
 
     private boolean isBypassToken(@NonNull HttpServletRequest request) {
         final List<Pair<String, String>> bypassTokens = Arrays.asList(
-                Pair.of(apiPrefix + "/tours", "GET"),
+                Pair.of(apiPrefix + "/tours/**", "GET"),
                 Pair.of(apiPrefix + "/users/register", "POST"),
                 Pair.of(apiPrefix + "/users/login", "POST"),
-                Pair.of(apiPrefix + "/avatars/**", "GET")
-
+                Pair.of(apiPrefix + "/users/avatars/**", "GET"),
+                Pair.of(apiPrefix + "/tours/images/**", "GET")
         );
         String requestPath = request.getServletPath();
         String requestMethod = request.getMethod();
+        System.out.println("Request Path: " + requestPath + ", Method: " + requestMethod);
         for (Pair<String, String> bypassToken : bypassTokens) {
-            if (requestPath.contains(bypassToken.getFirst()) && requestMethod.equals(bypassToken.getSecond())) {
+            if (pathMatcher.match(bypassToken.getFirst(), requestPath) && requestMethod.equals(bypassToken.getSecond())) {
+                System.out.println("Bypassing token check for: " + requestPath);
                 return true;
             }
         }

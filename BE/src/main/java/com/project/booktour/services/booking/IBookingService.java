@@ -11,11 +11,11 @@ import java.util.List;
 public interface IBookingService {
     Booking createBooking(BookingDTO bookingDTO) throws Exception;
 
-    Booking getBooking(Long id);
+    Booking getBooking(Long id) throws DataNotFoundException;
 
     Booking updateBooking(Long id, BookingDTO bookingDTO) throws DataNotFoundException;
 
-    void deleteBooking(Long id);
+    void deleteBooking(Long id) throws DataNotFoundException;
 
     List<Booking> findByUserId(Long userId);
     boolean hasUserBookedTour(Long userId, Long tourId);

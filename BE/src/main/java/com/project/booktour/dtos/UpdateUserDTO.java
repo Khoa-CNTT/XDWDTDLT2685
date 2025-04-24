@@ -18,14 +18,10 @@ import java.util.Date;
 @Setter
 public class UpdateUserDTO {
 
-    @JsonProperty("user_name")
-    private String userName;
 
     @JsonProperty("phone_number")
     private String phoneNumber;
 
-    @Email(message = "Invalid email format")
-    private String email;
 
     private MultipartFile avatar;
 

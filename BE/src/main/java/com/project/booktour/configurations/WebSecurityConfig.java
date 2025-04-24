@@ -77,7 +77,7 @@ public class WebSecurityConfig {
                             .requestMatchers(POST, String.format("%s/social_accounts/**", apiPrefix)).hasRole("ADMIN")
                             .requestMatchers(PUT, String.format("%s/social_accounts/**", apiPrefix)).hasRole("ADMIN")
                             .requestMatchers(DELETE, String.format("%s/social_accounts/**", apiPrefix)).hasRole("ADMIN")
-                            .requestMatchers("/avatars/**").permitAll()
+                            .requestMatchers(String.format("%s/users/avatars/**", apiPrefix)).permitAll()
                             .anyRequest().authenticated();
                 });
 

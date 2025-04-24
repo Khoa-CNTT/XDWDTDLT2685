@@ -59,9 +59,9 @@ public class UserService implements IUserService {
         }
         Role role = roleRepository.findById(userDTO.getRoleId())
                 .orElseThrow(() -> new DataNotFoundException("Role not found"));
-        if (role.getName().toUpperCase().equals("ADMIN")) {
-            throw new PermissionDenyException("You cannot register an admin account");
-        }
+//        if (role.getName().toUpperCase().equals("ADMIN")) {
+//            throw new PermissionDenyException("You cannot register an admin account");
+//        }
         // Convert from userDTO -> user
         User newUser = User.builder()
                 .userName(userDTO.getUserName())
@@ -116,20 +116,8 @@ public class UserService implements IUserService {
             throw new DataNotFoundException("Incorrect old password");
         }
 
-        // Validate username uniqueness
-        String newUserName = updatedUserDTO.getUserName();
-        if (newUserName != null && !existingUser.getUsername().equals(newUserName) &&
-                userRepository.existsByUserName(newUserName)) {
-            throw new DataIntegrityViolationException("Username already exists");
-        }
-        if (updatedUserDTO.getUserName() != null) {
-            existingUser.setUserName(updatedUserDTO.getUserName());
-        }
         if (updatedUserDTO.getPhoneNumber() != null) {
             existingUser.setPhoneNumber(updatedUserDTO.getPhoneNumber());
-        }
-        if (updatedUserDTO.getEmail() != null) {
-            existingUser.setEmail(updatedUserDTO.getEmail());
         }
         if (updatedUserDTO.getAddress() != null) {
             existingUser.setAddress(updatedUserDTO.getAddress());
@@ -144,7 +132,6 @@ public class UserService implements IUserService {
             existingUser.setGoogleAccountId(updatedUserDTO.getGoogleAccountId());
         }
 
-        // Handle password update
         String newPassword = updatedUserDTO.getNewPassword();
         String confirmPassword = updatedUserDTO.getConfirmPassword();
         if (newPassword != null && !newPassword.isEmpty()) {
