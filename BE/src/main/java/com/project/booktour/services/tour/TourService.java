@@ -8,10 +8,7 @@ import com.project.booktour.dtos.TourImageDTO;
 import com.project.booktour.exceptions.DataNotFoundException;
 import com.project.booktour.exceptions.InvalidParamException;
 import com.project.booktour.exceptions.UnauthorizedException;
-import com.project.booktour.models.Review;
-import com.project.booktour.models.Tour;
-import com.project.booktour.models.TourImage;
-import com.project.booktour.models.User;
+import com.project.booktour.models.*;
 import com.project.booktour.repositories.ReviewRepository;
 import com.project.booktour.repositories.TourImageRepository;
 import com.project.booktour.repositories.TourRepository;
@@ -49,6 +46,7 @@ public class TourService implements ITourService {
                 .destination(tourDTO.getDestination())
                 .availability(tourDTO.isAvailability())
                 .itinerary(tourDTO.getItinerary() != null ? objectMapper.writeValueAsString(tourDTO.getItinerary()) : null)
+                .region(Region.valueOf(tourDTO.getRegion().toUpperCase()))
                 .tourImages(new ArrayList<>())
                 .build();
 
@@ -143,7 +141,7 @@ public class TourService implements ITourService {
             existingTour.setDestination(tourDTO.getDestination());
             existingTour.setAvailability(tourDTO.isAvailability());
             existingTour.setItinerary(tourDTO.getItinerary() != null ? objectMapper.writeValueAsString(tourDTO.getItinerary()) : null);
-
+            existingTour.setRegion(Region.valueOf(tourDTO.getRegion().toUpperCase()));
             tourImageRepository.deleteByTourTourId(id);
 
             if (tourDTO.getImages() != null && !tourDTO.getImages().isEmpty()) {

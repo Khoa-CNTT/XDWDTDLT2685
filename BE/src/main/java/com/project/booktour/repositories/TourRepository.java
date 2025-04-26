@@ -1,5 +1,6 @@
 package com.project.booktour.repositories;
 
+import com.project.booktour.models.Region;
 import com.project.booktour.models.Tour;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -8,6 +9,7 @@ import org.springframework.stereotype.Repository;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
+import java.util.List;
 import java.util.Optional;
 
 @Repository
@@ -26,4 +28,5 @@ public interface TourRepository extends JpaRepository<Tour, Long> {
             "LEFT JOIN t.reviews r " +
             "GROUP BY t")
     Page<Object[]> findAllWithAverageRatingAndFirstImage(Pageable pageable);
+    List<Tour> findByRegion(Region region);
 }

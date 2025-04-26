@@ -43,5 +43,7 @@ public class TourDTO {
 
     @NotNull(message = "Itinerary cannot be null")
     private List<ScheduleDTO> itinerary;
+    @NotNull(message = "Region cannot be null")
+    private String region;
 
 }
