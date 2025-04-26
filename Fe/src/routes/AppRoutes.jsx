@@ -1,6 +1,5 @@
 import React from 'react';
 import { BrowserRouter, Routes, Route } from 'react-router-dom'
-import Layout from '../pages/Layout'
 import About from '../pages/About'
 import Home from '../pages/Home'
 import NoPage from '../pages/NoPage'
@@ -17,6 +16,8 @@ import Location from '../pages/Location';
 import PrivateRoute from './PrivateRoute';
 import Signup from '../pages/auth/Signup/Signup';
 import ProfileChangePassword from '../components/Profile/ProfileChangePassword';
+import Layout from '../layout/Layout';
+import Search from '../pages/Search';
 
 const AppRoutes = () => {
     return (
@@ -32,11 +33,21 @@ const AppRoutes = () => {
                         <Route path='/contact' element={<Contact />}></Route>
                         <Route path='/tours' element={<Tours />}></Route>
                         <Route path='/tourguide' element={<TourGuide />}></Route>
-                        <Route path='/profile' element={<Profile />}></Route>
-                        <Route path='/payment' element={<PrivateRoute><Payment /></PrivateRoute>}></Route>
+                        <Route path='/profile' element={
+                            <PrivateRoute>
+                                <Profile />
+                            </PrivateRoute>}>
+                        </Route>
+                        <Route path='/payment' element={
+                            <PrivateRoute>
+                                <Payment />
+                            </PrivateRoute>}>
+                        </Route>
                         <Route path='/tourbooking' element={<TourBooking />}></Route>
                         <Route path='/changepassword' element={<ProfileChangePassword />}></Route>
                         <Route path='*' element={<NoPage />}></Route>
+                        <Route path='/search' element={<Search />}></Route>
+
                     </Route>
                     <Route path='/login' element={<Login />}></Route>
                     <Route path='/signup' element={<Signup />}></Route>

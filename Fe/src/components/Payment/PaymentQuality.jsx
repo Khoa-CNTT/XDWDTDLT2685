@@ -1,10 +1,7 @@
 import React, { useState } from 'react';
 import { FaPlus, FaMinus } from "react-icons/fa";
 
-const PaymentQuality = () => {
-    const [countAdult, setCountAdult] = useState(0);
-    const [countChildren, setCountChildren] = useState(0);
-
+const PaymentQuality = ({ countAdult, setCountAdult, countChildren, setCountChildren }) => {
     const incrAdult = () => setCountAdult(countAdult + 1)
     const decrAdult = () => countAdult > 0 && setCountAdult(countAdult - 1)
 

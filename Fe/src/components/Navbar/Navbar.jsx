@@ -12,29 +12,20 @@ import useDarkMode from "../../hooks/useDarkMode";
 import { toast } from "react-toastify";
 
 
-// const DropdownLinks = [
-//     {
-//         name: "Tour",
-//         link: "/tours",
-//     },
-//     {
-//         name: "Hướng Dẫn Viên",
-//         link: "/tourguide",
-//     },
-
-// ];
-
 const Navbar = () => {
     const [isDarkMode, toggleDarkMode] = useDarkMode()
     const [showMenu, setShowMenu] = useState(false);
     const navigate = useNavigate()
     let token = localStorage.getItem("token")
+    const avatar = localStorage.getItem("avatar");
 
     const toggleMenu = () => {
         setShowMenu(!showMenu);
     };
     const handleLogout = () => {
         localStorage.removeItem("token");
+        localStorage.removeItem("user_id");
+        localStorage.removeItem("avatar");
         toast.success("Đăng xuất thành công!");
         navigate("/login")
     }
@@ -155,7 +146,17 @@ const Navbar = () => {
                             </Link>
                             <div className="relative py-4 group">
                                 <div className="flex items-center cursor-pointer dropdown">
-                                    <FaUserAlt className="w-6 h-6" />
+                                    {
+                                        avatar ? (
+                                            <img
+                                                src={avatar} 
+                                                alt="Avatar"
+                                                className="object-cover w-10 h-10 rounded-full"
+                                            />
+                                        ) : (
+                                            <FaUserAlt className="w-6 h-6" />
+                                        )
+                                    }
                                     <span>
                                         <FaCaretDown className="transition-all duration-200 group-hover:rotate-180:" />
                                     </span>

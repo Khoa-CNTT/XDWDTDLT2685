@@ -1,6 +1,7 @@
 import React from 'react';
 import AboutImg from '../../assets/Travel/BannerAbout.jpg';
 import { AiOutlineRight } from 'react-icons/ai';
+import { Link } from 'react-router-dom';
 const HeaderImg = ({ title,currenPage }) => {
     return (
         <div className='relative pt-10'>
@@ -10,7 +11,7 @@ const HeaderImg = ({ title,currenPage }) => {
                 <p data-aos="fade-right" className='text-4xl font-bold'>{title}</p>
                 {/*bên phải */}
                 <div data-aos="fade-left" className='flex items-center text-lg font-semibold'>
-                    <p>Trang chủ</p>
+                    <Link to="/">Trang chủ</Link>
                     <AiOutlineRight />
                     <p className='underline cursor-pointer'>{currenPage}</p>
                 </div>
