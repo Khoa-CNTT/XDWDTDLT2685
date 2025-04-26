@@ -38,6 +38,8 @@ public class SimplifiedTourResponse  extends BaseResponse {
 
     private Float star;
 
+    private String code;
+
     public static SimplifiedTourResponse fromTour(Tour tour, ObjectMapper objectMapper) throws Exception {
         SimplifiedTourResponse simplifiedTourResponse = new SimplifiedTourResponse();
         simplifiedTourResponse.setId(String.valueOf(tour.getTourId()));
@@ -49,7 +51,38 @@ public class SimplifiedTourResponse  extends BaseResponse {
         simplifiedTourResponse.setDate(tour.getDuration());
         simplifiedTourResponse.setCreatedAt(tour.getCreatedAt());
         simplifiedTourResponse.setUpdatedAt(tour.getUpdatedAt());
+
+        String code = generateCodeFromTitle(tour.getTitle());
+        simplifiedTourResponse.setCode(code);
         return simplifiedTourResponse;
     }
+    private static String generateCodeFromTitle(String title) {
+        if (title == null || !title.contains("|")) return "";
+
+        String[] parts = title.split("\\|");
+        String durationPart = parts[0].trim(); // ví dụ: "MIỀN TRUNG 4N3Đ"
+        String locationsPart = parts[1].trim(); // ví dụ: "ĐÀ NẴNG – SƠN TRÀ – BÀ NÀ..."
+
+        // 👉 Lấy phần thời lượng, ví dụ: 4N3Đ
+        String duration = durationPart.replaceAll(".*?(\\d+N\\d+Đ).*", "$1").toUpperCase();
+        duration = duration.replace("Đ", "D");
+
+        // 👉 Tách các địa danh
+        String[] locations = locationsPart.split("–|\\-");
+        StringBuilder codeBuilder = new StringBuilder();
+
+        for (String location : locations) {
+            String[] words = location.trim().split("\\s+");
+            for (String word : words) {
+                if (!word.isEmpty()) {
+                    codeBuilder.append(Character.toUpperCase(word.charAt(0)));
+                }
+            }
+        }
+
+        codeBuilder.append(duration);
+        return codeBuilder.toString();
+    }
+
 }
 

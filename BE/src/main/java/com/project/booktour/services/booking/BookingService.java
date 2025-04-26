@@ -9,6 +9,8 @@ import com.project.booktour.repositories.TourRepository;
 import com.project.booktour.repositories.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
@@ -67,9 +69,45 @@ public class BookingService implements IBookingService {
     }
 
     @Override
-    public Booking getBooking(Long id) throws DataNotFoundException {
-        return bookingRepository.findById(id)
+    public Page<BookingDTO> getAllBookings(PageRequest pageRequest) {
+        Page<Booking> bookingPage = bookingRepository.findAll(pageRequest);
+        return bookingPage.map(booking -> BookingDTO.builder()
+                .userId(booking.getUser().getUserId())
+                .tourId(booking.getTour().getTourId())
+                .bookingDate(booking.getBookingDate())
+                .numAdults(booking.getNumAdults())
+                .numChildren(booking.getNumChildren())
+                .totalPrice(booking.getTotalPrice())
+                .bookingStatus(booking.getBookingStatus())
+                .specialRequests(booking.getSpecialRequests())
+                .promotionId(booking.getPromotion() != null ? booking.getPromotion().getPromotionId() : null)
+                .fullName(booking.getFullName())
+                .email(booking.getEmail())
+                .address(booking.getAddress())
+                .phoneNumber(booking.getPhoneNumber())
+                .build());
+    }
+
+    @Override
+    public BookingDTO getBooking(Long id) throws DataNotFoundException {
+        Booking booking = bookingRepository.findById(id)
                 .orElseThrow(() -> new DataNotFoundException("Cannot find booking with id: " + id));
+
+        return BookingDTO.builder()
+                .userId(booking.getUser().getUserId())
+                .tourId(booking.getTour().getTourId())
+                .bookingDate(booking.getBookingDate())
+                .numAdults(booking.getNumAdults())
+                .numChildren(booking.getNumChildren())
+                .totalPrice(booking.getTotalPrice())
+                .bookingStatus(booking.getBookingStatus())
+                .specialRequests(booking.getSpecialRequests())
+                .promotionId(booking.getPromotion() != null ? booking.getPromotion().getPromotionId() : null)
+                .fullName(booking.getFullName())
+                .email(booking.getEmail())
+                .address(booking.getAddress())
+                .phoneNumber(booking.getPhoneNumber())
+                .build();
     }
 
     @Override
