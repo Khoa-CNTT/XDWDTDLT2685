@@ -1,25 +1,61 @@
-import React from 'react';
-import { Link } from 'react-router-dom';
-import { GoArrowUpRight } from "react-icons/go";
+import React, { useState } from 'react';
 import Button from '../Button/Button';
 import { FiPhoneCall } from "react-icons/fi";
 import { MdOutlineMail } from "react-icons/md";
+import { useNavigate } from 'react-router-dom';
+import { toast } from 'react-toastify';
 
 const BlogSidebar = ({ item }) => {
+    const navigate = useNavigate()
+    const [startDate, setStartDate] = useState('');
+
+    const handleClick = () => {
+        if (!startDate) {
+            toast.warning("Vui lòng chọn ngày bắt đầu tour!");
+            return;
+        }
+    
+        const daysMatch = item.duration.match(/(\d+)\s*ngày/);
+        const numDays = daysMatch ? parseInt(daysMatch[1]) : 0;
+    
+        const start = new Date(startDate);
+        const end = new Date(start);
+        end.setDate(start.getDate() + numDays - 1); // Trừ 1 vì ngày bắt đầu tính là ngày 1
+    
+        // Format lại dd/mm/yyyy
+        const format = (date) => {
+            const d = new Date(date);
+            const day = String(d.getDate()).padStart(2, '0');
+            const month = String(d.getMonth() + 1).padStart(2, '0');
+            const year = d.getFullYear();
+            return `${day}-${month}-${year}`;
+        };
+    
+        navigate('/payment', {
+            state: {
+                item: item,
+                startDate: format(start),
+                endDate: format(end)
+            },
+        })
+    }
     return (
-        <div data-aos="fade-up" className='bg-gray-100 border dark:bg-[#101828] dark:text-white border-gray-200 rounded-xl shadow-lg w-[310px] h-[530px]'>
+        <div data-aos="fade-up" className='bg-gray-100 border dark:bg-[#101828] dark:text-white border-gray-200 rounded-xl shadow-lg w-[310px] h-[450px]'>
             <div className='p-5 '>
                 <h1 className='text-xl font-semibold '>Tour Booking</h1>
                 <hr className='mt-5 border-gray-300' />
                 <div className='flex flex-col pt-5 space-y-10'>
                     <div className='flex gap-3'>
                         <label className='text-base font-semibold'>Ngày bắt đầu</label>
-                        <input type="date" className='w-[150px] px-2 border border-gray-300 ' />
+                        <input
+                            type="date"
+                            className='w-[150px] px-2 border border-gray-300 '
+                            value={startDate}
+                            min={new Date().toISOString().split('T')[0]}
+                            onChange={(e) => setStartDate(e.target.value)}
+                        />
                     </div>
-                    <div className='flex gap-3 '>
-                        <label className='text-base font-semibold'>Ngày kết thúc</label>
-                        <input type="date" className='w-[150px] px-2 border border-gray-300 ' placeholder='ngày kết thúc' />
-                    </div>
+
                 </div>
                 <hr className='mt-5 border-gray-300' />
                 <div className='flex items-center justify-between mt-5'>
@@ -40,7 +76,13 @@ const BlogSidebar = ({ item }) => {
                         </div>
                     </div>
                 </div>
-                <Button text="Đặt Ngay" to="/payment" width="max-w-[500px]" />
+                {/* <Button text="Đặt Ngay"  width="max-w-[500px]" /> */}
+                <button
+                    onClick={handleClick}
+                    className="w-full py-2 mt-5 font-semibold text-white rounded-lg bg-primary"
+                >
+                    Đặt ngay
+                </button>
                 <p className='mt-2 text-center cursor-pointer hover:underline'>Bạn cần trợ giúp không?</p>
             </div>
 

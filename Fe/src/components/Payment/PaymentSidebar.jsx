@@ -1,14 +1,19 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { BsTicketPerforated } from "react-icons/bs";
 import { MdArrowRightAlt } from "react-icons/md";
+import { useLocation } from 'react-router-dom';
+
 
 const PaymentSidebar = ({ agreed, countAdult, countChildren }) => {
-    const priceAdult = 3999000;
-    const priceChild = 2000000;
+    const location = useLocation();
+    const { item, startDate, endDate } = location.state || {};
+
+    const priceAdult = item.price_adult;
+    const priceChild = item.price_child;
 
     const total = countAdult * priceAdult + countChildren * priceChild;
-
     return (
+
         <div className='pt-10'>
             <div className='w-full h-auto dark:bg-[#101828] dark:text-white border border-gray-200 p-10 rounded-lg shadow-xl bg-white'>
                 <div className='space-y-4'>
@@ -17,14 +22,20 @@ const PaymentSidebar = ({ agreed, countAdult, countChildren }) => {
                         <p className='text-lg'>Mã tour:</p>
                         <p className='font-semibold'>HNLCSP4N3D</p>
                     </div>
-                    <p className='text-xl font-bold'>MIỀN BẮC 4N3Đ | HÀ NỘI – LÀO CAI – SA PA</p>
-                    <div className='flex items-center gap-2'>
-                        <p className='text-lg text-gray-500'>22-03-2025</p>
-                        <MdArrowRightAlt className='w-6 h-6' />
-                        <p className='text-lg text-gray-500'>26-03-2025</p>
+                    <p className='text-xl font-bold'>{item.title}</p>
+                    <div className="space-y-3">
+                        <div className="flex items-center gap-2">
+                            <p className="text-lg font-semibold w-36">Ngày khởi hành:</p> {/* thêm w-40 */}
+                            <p className="text-lg ">{startDate}</p>
+                        </div>
+                        <div className="flex items-center gap-2">
+                            <p className="text-lg font-semibold w-36">Ngày kết thúc:</p> {/* thêm w-40 */}
+                            <p className="text-lg ">{endDate}</p>
+                        </div>
                     </div>
+
                     <hr className='border-gray-400 ' />
-                    
+
                     <div className='flex flex-col space-y-6'>
                         <div className='flex justify-between text-lg'>
                             <p>Người lớn</p>
