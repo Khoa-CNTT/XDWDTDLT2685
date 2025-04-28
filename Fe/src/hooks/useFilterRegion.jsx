@@ -1,0 +1,39 @@
+import React from 'react';
+import { useState, useEffect } from 'react';
+import { getAllTour, getFilterTour } from '../services/tour';
+
+// Map tên hiển thị -> region API
+const regionMap = {
+    "Miền Bắc": "NORTH",
+    "Miền Trung": "CENTRAL",
+    "Miền Nam": "SOUTH"
+};
+const useFilterRegion = () => {
+    const [selected, setSelected] = useState("Tất cả");
+    const [tours, setTours] = useState([]);
+
+    useEffect(() => {
+        filterTours();
+    }, [selected]);
+
+    const filterTours = async () => {
+        try {
+            if (selected === "Tất cả") {
+                const res = await getAllTour(0, 6);
+                setTours(res.data.tours);
+            } else {
+                const res = await getFilterTour(0, 6, regionMap[selected]);
+                setTours(res.data.tours);
+            }
+        } catch (error) {
+            console.error(error);
+        }
+    };
+    return {
+        selected,
+        setSelected,
+        tours
+    };
+};
+
+export default useFilterRegion;

@@ -10,4 +10,10 @@ export const getAllTour = async (page, limit = 6) => {
     });
 };
 
+export const getFilterTour = async (page, limit = 6, region) => {
+    return axios.get('tours', {
+        params: { page, limit, region }
+    });
+};
+
 

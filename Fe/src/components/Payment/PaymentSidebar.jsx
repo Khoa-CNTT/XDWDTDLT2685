@@ -14,7 +14,7 @@ const PaymentSidebar = ({ agreed, countAdult, countChildren, full_name, email, p
     const priceChild = item.price_child;
 
     const total = countAdult * priceAdult + countChildren * priceChild;
-
+    const total_quality = countAdult + countChildren;
     const handleSubmit = async () => {
         try {
             const tour_id = localStorage.getItem('tour_id');
@@ -25,6 +25,7 @@ const PaymentSidebar = ({ agreed, countAdult, countChildren, full_name, email, p
                 booking_date: startDate,
                 num_adults: countAdult,
                 num_children: countChildren,
+                total_quality : total_quality,
                 total_price: total,
                 booking_status: "PENDING",
                 full_name: full_name,
@@ -35,6 +36,7 @@ const PaymentSidebar = ({ agreed, countAdult, countChildren, full_name, email, p
             console.log("Sending data:", data);
             const res = await postBooking(data);
             console.log("res", res)
+            
             if (res.status === 200) {
                 toast.success('Đặt tour thành công!');
                 console.log('Đặt tour thành công', res.data);

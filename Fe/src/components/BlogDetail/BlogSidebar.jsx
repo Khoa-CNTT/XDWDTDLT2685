@@ -68,15 +68,14 @@ const BlogSidebar = ({ item }) => {
                     <div className='space-y-3'>
                         <div className='flex items-center justify-between ' >
                             <p className='font-semibold'>Người lớn</p>
-                            <p className='text-gray-500 dark:text-white'>{item.price_adult}VNĐ</p>
+                            <p className='text-gray-500 dark:text-white'>{item.price_adult.toLocaleString()}VNĐ</p>
                         </div>
                         <div className='flex items-center justify-between'>
                             <p className='font-semibold'>Trẻ em(5 đến 11 tuổi)</p>
-                            <p className='text-gray-500 dark:text-white'>{item.price_child}VNĐ</p>
+                            <p className='text-gray-500 dark:text-white'>{item.price_child.toLocaleString()}VNĐ</p>
                         </div>
                     </div>
                 </div>
-                {/* <Button text="Đặt Ngay"  width="max-w-[500px]" /> */}
                 <button
                     onClick={handleClick}
                     className="w-full py-2 mt-5 font-semibold text-white rounded-lg bg-primary"
