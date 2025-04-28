@@ -6,6 +6,7 @@ import com.project.booktour.dtos.TourDTO;
 import com.project.booktour.dtos.TourImageDTO;
 import com.project.booktour.exceptions.DataNotFoundException;
 import com.project.booktour.exceptions.InvalidParamException;
+import com.project.booktour.models.Region;
 import com.project.booktour.models.Review;
 import com.project.booktour.models.Tour;
 import com.project.booktour.models.TourImage;
@@ -23,8 +24,10 @@ public interface ITourService {
     Tour createTour(TourDTO tourDTO) throws DataNotFoundException, JsonProcessingException, InvalidParamException;
 
     Tour getTourById(Long tourId) throws Exception;
+
     TourResponse getTourDetails(Long id) throws DataNotFoundException;
-    Page<SimplifiedTourResponse> getAllTours(PageRequest pageRequest);
+
+    Page<SimplifiedTourResponse> getAllTours(PageRequest pageRequest, Double priceMin, Double priceMax, String region, Float starRating, String duration);
 
     Tour updateTour(Long id, TourDTO tourDTO) throws Exception;
 
@@ -33,6 +36,7 @@ public interface ITourService {
     boolean existsByTitle(String title);
 
     TourImage createTourImage(Long tourId, TourImageDTO tourImageDTO) throws Exception;
+
     Review createReview(ReviewDTO reviewDTO) throws Exception;
 
     // Thêm các phương thức mới cho reviews

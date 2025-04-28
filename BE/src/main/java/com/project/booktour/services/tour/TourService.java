@@ -17,6 +17,8 @@ import com.project.booktour.responses.SimplifiedTourResponse;
 import com.project.booktour.responses.TourResponse;
 import com.project.booktour.services.booking.BookingService;
 import lombok.RequiredArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
@@ -27,6 +29,7 @@ import java.util.stream.Collectors;
 @Service
 @RequiredArgsConstructor
 public class TourService implements ITourService {
+    private static final Logger logger = LoggerFactory.getLogger(TourService.class);
     private final TourRepository tourRepository;
     private final TourImageRepository tourImageRepository;
     private final ObjectMapper objectMapper;
@@ -51,27 +54,8 @@ public class TourService implements ITourService {
                 .build();
 
         Tour savedTour = tourRepository.save(newTour);
-
-        if (tourDTO.getImages() != null && !tourDTO.getImages().isEmpty()) {
-            if (tourDTO.getImages().size() > 5) {
-                throw new InvalidParamException("Number of images must be <= 5");
-            }
-
-            List<TourImage> tourImages = tourDTO.getImages().stream()
-                    .map(imageUrl -> {
-                        TourImage tourImage = new TourImage();
-                        tourImage.setTour(savedTour);
-                        String fileName = imageUrl.replace("http://localhost:8088/api/v1/tours/images/", "");
-                        tourImage.setImageUrl(fileName);
-                        return tourImage;
-                    })
-                    .collect(Collectors.toList());
-
-            savedTour.setTourImages(tourImages);
-            tourRepository.save(savedTour);
-        }
-
-        return savedTour;
+        savedTour.setTourImages(createTourImagesFromDTO(savedTour, tourDTO.getImages()));
+        return tourRepository.save(savedTour);
     }
 
     @Override
@@ -85,7 +69,8 @@ public class TourService implements ITourService {
         Tour tour = tourRepository.findById(id)
                 .orElseThrow(() -> new DataNotFoundException("Tour not found with id: " + id));
 
-        List<String> imageUrls = tour.getTourImages().stream()
+        // Truy vấn tourImages trực tiếp từ repository để tránh N+1 query
+        List<String> imageUrls = tourImageRepository.findByTourTourId(id).stream()
                 .map(TourImage::getImageUrl)
                 .filter(Objects::nonNull)
                 .map(url -> "http://localhost:8088/api/v1/tours/images/" + url)
@@ -102,9 +87,13 @@ public class TourService implements ITourService {
         }
     }
 
+
     @Override
-    public Page<SimplifiedTourResponse> getAllTours(PageRequest pageRequest) {
-        return tourRepository.findAllWithAverageRatingAndFirstImage(pageRequest)
+    public Page<SimplifiedTourResponse> getAllTours(PageRequest pageRequest, Double priceMin, Double priceMax, String region, Float starRating, String duration) {
+        logger.info("Fetching tours with filters: priceMin={}, priceMax={}, region={}, starRating={}, duration={}",
+                priceMin, priceMax, region, starRating, duration);
+
+        return tourRepository.findAllWithFilters(pageRequest, priceMin, priceMax, region, starRating, duration)
                 .map(result -> {
                     Tour tour = (Tour) result[0];
                     Double avgRating = (Double) result[1];
@@ -112,14 +101,14 @@ public class TourService implements ITourService {
 
                     try {
                         SimplifiedTourResponse response = SimplifiedTourResponse.fromTour(tour, objectMapper);
-                        response.setStar(avgRating.floatValue());
+                        response.setStar(avgRating != null ? avgRating.floatValue() : 0.0f);
 
-                        String imageUrl = null;
                         if (firstImageUrl != null && !firstImageUrl.isEmpty()) {
                             String baseUrl = "http://localhost:8088/api/v1/tours/images/";
-                            imageUrl = baseUrl + firstImageUrl;
+                            response.setImage(baseUrl + firstImageUrl);
+                        } else {
+                            response.setImage("http://localhost:8088/api/v1/tours/images/notfound.jpeg");
                         }
-                        response.setImage(imageUrl);
 
                         return response;
                     } catch (Exception e) {
@@ -142,27 +131,9 @@ public class TourService implements ITourService {
             existingTour.setAvailability(tourDTO.isAvailability());
             existingTour.setItinerary(tourDTO.getItinerary() != null ? objectMapper.writeValueAsString(tourDTO.getItinerary()) : null);
             existingTour.setRegion(Region.valueOf(tourDTO.getRegion().toUpperCase()));
+
             tourImageRepository.deleteByTourTourId(id);
-
-            if (tourDTO.getImages() != null && !tourDTO.getImages().isEmpty()) {
-                if (tourDTO.getImages().size() > 5) {
-                    throw new InvalidParamException("Number of images must be <= 5");
-                }
-
-                List<TourImage> newTourImages = tourDTO.getImages().stream()
-                        .map(imageUrl -> {
-                            TourImage tourImage = new TourImage();
-                            tourImage.setTour(existingTour);
-                            String fileName = imageUrl.replace("http://localhost:8088/api/v1/tours/images/", "");
-                            tourImage.setImageUrl(fileName);
-                            return tourImage;
-                        })
-                        .collect(Collectors.toList());
-                existingTour.setTourImages(newTourImages);
-            } else {
-                existingTour.setTourImages(new ArrayList<>());
-            }
-
+            existingTour.setTourImages(createTourImagesFromDTO(existingTour, tourDTO.getImages()));
             return tourRepository.save(existingTour);
         }
         return null;
@@ -253,5 +224,23 @@ public class TourService implements ITourService {
         existingReview.setRating(reviewDTO.getRating());
 
         reviewRepository.save(existingReview);
+    }
+
+    private List<TourImage> createTourImagesFromDTO(Tour tour, List<String> imageUrls) throws InvalidParamException {
+        if (imageUrls == null || imageUrls.isEmpty()) {
+            return new ArrayList<>();
+        }
+        if (imageUrls.size() > 5) {
+            throw new InvalidParamException("Number of images must be <= 5");
+        }
+        return imageUrls.stream()
+                .map(imageUrl -> {
+                    TourImage tourImage = new TourImage();
+                    tourImage.setTour(tour);
+                    String fileName = imageUrl.replace("http://localhost:8088/api/v1/tours/images/", "");
+                    tourImage.setImageUrl(fileName);
+                    return tourImage;
+                })
+                .collect(Collectors.toList());
     }
 }
