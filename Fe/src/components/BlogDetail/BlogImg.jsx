@@ -6,7 +6,8 @@ import { AiOutlineRight, AiOutlineLeft } from 'react-icons/ai';
 const BlogImg = ({ item }) => {
     const [selectedIndex, setSelectedIndex] = useState(0);
     const [selectedImg, setSelectedImg] = useState(item.img[0]);
-
+    
+    
     const handlePrev = () => {
         setSelectedIndex(prev => {
             const newIndex = prev === 0 ? item.img.length - 1 : prev - 1;

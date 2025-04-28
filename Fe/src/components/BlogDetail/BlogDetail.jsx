@@ -4,7 +4,7 @@ import BlogImg from './BlogImg';
 import { getTourById } from '../../services/tour';
 
 const BlogDetail = () => {
-    const { id } = useParams(); 
+    const { id } = useParams();
     const [blogDetail, setBlogDetail] = useState();
 
     const getDetail = async () => {
