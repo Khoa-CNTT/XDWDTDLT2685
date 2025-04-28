@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import com.project.booktour.dtos.TourDTO;
 import com.project.booktour.dtos.TourImageDTO;
+import com.project.booktour.models.Region;
 import com.project.booktour.models.Tour;
 import com.project.booktour.models.TourImage;
 import com.project.booktour.responses.SimplifiedTourResponse;
@@ -13,6 +14,7 @@ import com.project.booktour.services.tour.ITourService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.apache.tika.Tika;
+import org.slf4j.LoggerFactory;
 import org.springframework.core.io.UrlResource;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -33,28 +35,77 @@ import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
+import org.slf4j.Logger;
 
 @RestController
 @RequestMapping("${api.prefix}/tours")
 @RequiredArgsConstructor
 public class TourController {
+    private static final Logger logger = LoggerFactory.getLogger(TourController.class);
     private final ITourService tourService;
     private final ObjectMapper objectMapper;
 
     @GetMapping("")
-    public ResponseEntity<TourListResponse> getTours(
-            @RequestParam("page") int page,
-            @RequestParam("limit") int limit) {
-        PageRequest pageRequest = PageRequest.of(page, limit, Sort.by("id").ascending());
-        Page<SimplifiedTourResponse> tourPage = tourService.getAllTours(pageRequest);
+    public ResponseEntity<?> getTours(@RequestParam Map<String, String> params) {
+        try {
+            logger.info("Received request to get tours with params: {}", params);
 
-        int totalPages = tourPage.getTotalPages();
-        List<SimplifiedTourResponse> tours = tourPage.getContent();
-        return ResponseEntity.ok(TourListResponse.builder()
-                .tours(tours)
-                .totalPages(totalPages)
-                .build());
+            // Lấy page và limit, mặc định page=0, limit=10
+            int page = Integer.parseInt(params.getOrDefault("page", "0"));
+            int limit = Integer.parseInt(params.getOrDefault("limit", "10"));
+
+            if (page < 0 || limit <= 0) {
+                return ResponseEntity.badRequest().body("Page must be >= 0 and limit must be > 0");
+            }
+
+            PageRequest pageRequest = PageRequest.of(page, limit, Sort.by("id").ascending());
+
+            // Lấy các tham số bộ lọc
+            Double priceMin = params.containsKey("priceMin") ? Double.parseDouble(params.get("priceMin")) : null;
+            Double priceMax = params.containsKey("priceMax") ? Double.parseDouble(params.get("priceMax")) : null;
+            String region = params.get("region");
+            Float starRating = params.containsKey("starRating") ? Float.parseFloat(params.get("starRating")) : null;
+            String duration = params.get("duration");
+
+            // Validate tham số bộ lọc
+            if (priceMin != null && priceMin < 0) {
+                return ResponseEntity.badRequest().body("priceMin must be >= 0");
+            }
+            if (priceMax != null && priceMax < 0) {
+                return ResponseEntity.badRequest().body("priceMax must be >= 0");
+            }
+            if (priceMin != null && priceMax != null && priceMin > priceMax) {
+                return ResponseEntity.badRequest().body("priceMin must be <= priceMax");
+            }
+            if (starRating != null && (starRating < 0 || starRating > 5)) {
+                return ResponseEntity.badRequest().body("starRating must be between 0 and 5");
+            }
+            if (region != null) {
+                try {
+                    Region.valueOf(region.toUpperCase());
+                } catch (IllegalArgumentException e) {
+                    return ResponseEntity.badRequest().body("Invalid region: " + region);
+                }
+            }
+
+            // Gọi TourService với các tham số bộ lọc
+            Page<SimplifiedTourResponse> tourPage = tourService.getAllTours(pageRequest, priceMin, priceMax, region, starRating, duration);
+
+            int totalPages = tourPage.getTotalPages();
+            List<SimplifiedTourResponse> tours = tourPage.getContent();
+            return ResponseEntity.ok(TourListResponse.builder()
+                    .tours(tours)
+                    .totalPages(totalPages)
+                    .build());
+        } catch (NumberFormatException e) {
+            logger.error("Invalid number format for parameters: {}", params, e);
+            return ResponseEntity.badRequest().body("Invalid number format for parameters: " + e.getMessage());
+        } catch (Exception e) {
+            logger.error("Error while fetching tours: {}", e.getMessage(), e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Server error: " + e.getMessage());
+        }
     }
 
     @GetMapping("/{id}")
