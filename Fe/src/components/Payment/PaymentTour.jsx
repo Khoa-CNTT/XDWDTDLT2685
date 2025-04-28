@@ -9,11 +9,22 @@ const PaymentTour = () => {
     const [agreed, setAgreed] = useState(false);
     const [countAdult, setCountAdult] = useState(0);
     const [countChildren, setCountChildren] = useState(0);
+
+    // thông tin người dùng
+    const [full_name, setFullName] = useState('');
+    const [email, setEmail] = useState('');
+    const [phone_number, setPhoneNumber] = useState('');
+    const [address, setAddress] = useState('');
     return (
         <div className='container flex gap-10 '>
             {/* bên phải */}
             <div className='w-3/5'>
-                <PaymentInformation />
+                <PaymentInformation
+                    full_name={full_name} setFullName={setFullName}
+                    email={email} setEmail={setEmail}
+                    phone_number={phone_number} setPhoneNumber={setPhoneNumber}
+                    address={address} setAddress={setAddress}
+                />
                 <PaymentQuality
                     countAdult={countAdult}
                     setCountAdult={setCountAdult}
@@ -29,6 +40,10 @@ const PaymentTour = () => {
                         agreed={agreed}
                         countAdult={countAdult}
                         countChildren={countChildren}
+                        full_name={full_name}
+                        email={email}
+                        phone_number={phone_number}
+                        address={address}
                     />
                 </div>
             </div>

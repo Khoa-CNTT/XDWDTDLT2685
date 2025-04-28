@@ -27,7 +27,18 @@ const ProfileInformation = ({ profile, selectedFile }) => {
             email,
             address,
         };
+        // Kiểm tra nếu không có gì thay đổi
+        const noInfoChanged =
+            (user_name === (profile?.user_name || '')) &&
+            (phone_number === (profile?.phone_number || '')) &&
+            (email === (profile?.email || '')) &&
+            (address === (profile?.address || '')) &&
+            !selectedFile;
 
+        if (noInfoChanged) {
+            toast.warning('Không có thay đổi nào!');
+            return;
+        }
         try {
             const res = await putChangeInformation(userId, data);
             console.log("RESPONSE FULL: thongtin", res.data);

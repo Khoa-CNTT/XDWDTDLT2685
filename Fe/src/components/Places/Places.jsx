@@ -29,7 +29,8 @@ const Places = ({
     useEffect(() => {
         getAllTours(0);
     }, []);
-
+    
+   
     return (
         <div className='py-10 dark:bg-[#101828] dark:text-white'>
             <section data-aos="fade-up " className={container ? 'container' : ''} >
@@ -47,6 +48,7 @@ const Places = ({
                             size={size}
                             left={left}
                             star={star}
+                          
                         />
                     ))}
                 </div>

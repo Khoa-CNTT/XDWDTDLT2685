@@ -1,17 +1,52 @@
 import React, { useEffect, useState } from 'react';
 import { BsTicketPerforated } from "react-icons/bs";
-import { MdArrowRightAlt } from "react-icons/md";
 import { useLocation } from 'react-router-dom';
+import { toast } from 'react-toastify';
+import { postBooking } from '../../services/booking';
 
 
-const PaymentSidebar = ({ agreed, countAdult, countChildren }) => {
+const PaymentSidebar = ({ agreed, countAdult, countChildren, full_name, email, phone_number, address }) => {
     const location = useLocation();
     const { item, startDate, endDate } = location.state || {};
+    // console.log("1111", item)
 
     const priceAdult = item.price_adult;
     const priceChild = item.price_child;
 
     const total = countAdult * priceAdult + countChildren * priceChild;
+
+    const handleSubmit = async () => {
+        try {
+            const tour_id = localStorage.getItem('tour_id');
+            const user_id = localStorage.getItem('user_id');
+            const data = {
+                tour_id: tour_id,
+                user_id: user_id,
+                booking_date: startDate,
+                num_adults: countAdult,
+                num_children: countChildren,
+                total_price: total,
+                booking_status: "PENDING",
+                full_name: full_name,
+                email: email,
+                address: address,
+                phone_number: phone_number
+            };
+            console.log("Sending data:", data);
+            const res = await postBooking(data);
+            console.log("res", res)
+            if (res.status === 200) {
+                toast.success('Đặt tour thành công!');
+                console.log('Đặt tour thành công', res.data);
+            } else {
+                toast.warning('Đặt tour không thành công!');
+            }
+        } catch (error) {
+            toast.error('Có lỗi xảy ra khi đặt tour!');
+            console.error('Lỗi hệ thống:', error);
+        }
+    };
+
     return (
 
         <div className='pt-10'>
@@ -73,8 +108,9 @@ const PaymentSidebar = ({ agreed, countAdult, countChildren }) => {
                         <button
                             className="w-full p-2 text-lg font-semibold text-white bg-orange-500 rounded-lg"
                             disabled={!agreed}
+                            onClick={handleSubmit}
                         >
-                            Xác nhận
+                            Đặt Ngay
                         </button>
 
                         {!agreed && (
