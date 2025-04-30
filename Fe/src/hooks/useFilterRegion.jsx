@@ -1,6 +1,6 @@
 import React from 'react';
 import { useState, useEffect } from 'react';
-import { getAllTour, getFilterTour } from '../services/tour';
+import { getAllTour, getFilterTours } from '../services/tour';
 
 // Map tên hiển thị -> region API
 const regionMap = {
@@ -22,7 +22,7 @@ const useFilterRegion = () => {
                 const res = await getAllTour(0, 6);
                 setTours(res.data.tours);
             } else {
-                const res = await getFilterTour(0, 6, regionMap[selected]);
+                const res = await getFilterTours(0, 6, regionMap[selected]);
                 setTours(res.data.tours);
             }
         } catch (error) {

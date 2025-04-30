@@ -7,7 +7,7 @@ const LocationList = () => {
     const { selected, setSelected, tours } = useFilterRegion();
     return (
         <div className='pt-10 dark:bg-[#101828] dark:text-white'>
-            <div className='container flex flex-col justify-center'>
+            <div className='flex flex-col justify-center '>
                 <div className="inline-flex items-center justify-center p-3 bg-white border border-gray-300 rounded-full dark:bg-[#101828] dark:border-white shadow-sm w-fit mx-auto">
                     {regions.map((region) => (
                         <button

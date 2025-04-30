@@ -2,7 +2,7 @@ import React from 'react';
 
 const Sort = () => {
     return (
-        <div className='pt-10'>
+        <div className=''>
             <div className='ml-[20px]'>
                 <div className='flex items-center justify-between'>
                     <h1 className='text-lg font-semibold'>Tours tìm thấy</h1>
