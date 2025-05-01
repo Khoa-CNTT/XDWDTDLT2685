@@ -7,7 +7,7 @@ import BannerImg from '../components/BannerImg/BannerImg';
 import Banner from '../components/Banner/Banner';
 import Evaluate from '../components/Evaluate/Evaluate';
 import Popular from './Popular';
-import ChatBoxImg from '../components/Chatbox/ChatBoxImg';
+import ChatBox from '../components/Chatbox/ChatBox';
 
 const Home = () => {
     return (
@@ -31,7 +31,7 @@ const Home = () => {
 
             {/* Chat Box fixed bottom left */}
             <div className="fixed z-50 bottom-4 left-2">
-                <ChatBoxImg />
+                <ChatBox />
             </div>
         </div>
     );
