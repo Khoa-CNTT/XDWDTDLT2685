@@ -27,7 +27,7 @@ public interface ITourService {
 
     TourResponse getTourDetails(Long id) throws DataNotFoundException;
 
-    Page<SimplifiedTourResponse> getAllTours(PageRequest pageRequest, Double priceMin, Double priceMax, String region, Float starRating, String duration);
+    Page<SimplifiedTourResponse> getAllTours(PageRequest pageRequest, Double priceMin, Double priceMax, String region, Float starRating, String duration, String search);
 
     Tour updateTour(Long id, TourDTO tourDTO) throws Exception;
 

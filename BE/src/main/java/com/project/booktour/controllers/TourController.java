@@ -60,7 +60,24 @@ public class TourController {
                 return ResponseEntity.badRequest().body("Page must be >= 0 and limit must be > 0");
             }
 
-            PageRequest pageRequest = PageRequest.of(page, limit, Sort.by("id").ascending());
+            // Lấy tham số tìm kiếm và sắp xếp
+            String search = params.get("search");
+            String sortBy = params.getOrDefault("sortBy", "createdAt");
+            String sortDir = params.getOrDefault("sortDir", "desc");
+
+            // Validate sortBy
+            List<String> validSortFields = List.of("createdAt", "priceAdult");
+            if (!validSortFields.contains(sortBy)) {
+                return ResponseEntity.badRequest().body("Invalid sortBy field: " + sortBy + ". Must be 'createdAt' or 'priceAdult'");
+            }
+
+            // Validate sortDir
+            if (!sortDir.equalsIgnoreCase("asc") && !sortDir.equalsIgnoreCase("desc")) {
+                return ResponseEntity.badRequest().body("sortDir must be 'asc' or 'desc'");
+            }
+
+            Sort sort = Sort.by(sortDir.equalsIgnoreCase("asc") ? Sort.Direction.ASC : Sort.Direction.DESC, sortBy);
+            PageRequest pageRequest = PageRequest.of(page, limit, sort);
 
             // Lấy các tham số bộ lọc
             Double priceMin = params.containsKey("priceMin") ? Double.parseDouble(params.get("priceMin")) : null;
@@ -90,8 +107,8 @@ public class TourController {
                 }
             }
 
-            // Gọi TourService với các tham số bộ lọc
-            Page<SimplifiedTourResponse> tourPage = tourService.getAllTours(pageRequest, priceMin, priceMax, region, starRating, duration);
+            // Gọi TourService với các tham số bộ lọc và tìm kiếm
+            Page<SimplifiedTourResponse> tourPage = tourService.getAllTours(pageRequest, priceMin, priceMax, region, starRating, duration, search);
 
             int totalPages = tourPage.getTotalPages();
             List<SimplifiedTourResponse> tours = tourPage.getContent();
@@ -107,6 +124,7 @@ public class TourController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Server error: " + e.getMessage());
         }
     }
+
 
     @GetMapping("/{id}")
     public ResponseEntity<?> getTourResponseById(@PathVariable("id") Long tourId) {

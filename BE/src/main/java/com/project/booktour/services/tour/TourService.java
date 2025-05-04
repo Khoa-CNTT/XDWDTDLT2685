@@ -89,11 +89,11 @@ public class TourService implements ITourService {
 
 
     @Override
-    public Page<SimplifiedTourResponse> getAllTours(PageRequest pageRequest, Double priceMin, Double priceMax, String region, Float starRating, String duration) {
-        logger.info("Fetching tours with filters: priceMin={}, priceMax={}, region={}, starRating={}, duration={}",
-                priceMin, priceMax, region, starRating, duration);
+    public Page<SimplifiedTourResponse> getAllTours(PageRequest pageRequest, Double priceMin, Double priceMax, String region, Float starRating, String duration, String search) {
+        logger.info("Fetching tours with filters: priceMin={}, priceMax={}, region={}, starRating={}, duration={}, search={}",
+                priceMin, priceMax, region, starRating, duration, search);
 
-        return tourRepository.findAllWithFilters(pageRequest, priceMin, priceMax, region, starRating, duration)
+        return tourRepository.findAllWithFilters(pageRequest, priceMin, priceMax, region, starRating, duration, search)
                 .map(result -> {
                     Tour tour = (Tour) result[0];
                     Double avgRating = (Double) result[1];
@@ -116,7 +116,6 @@ public class TourService implements ITourService {
                     }
                 });
     }
-
     @Override
     public Tour updateTour(Long id, TourDTO tourDTO) throws Exception {
         Tour existingTour = getTourById(id);

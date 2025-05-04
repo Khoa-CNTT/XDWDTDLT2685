@@ -26,7 +26,7 @@ public class Tour extends BaseEntity {
     @Column(name = "description", columnDefinition = "LONGTEXT", nullable = false)
     private String description;
 
-    @OneToMany(mappedBy = "tour", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "tour", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     private List<TourImage> tourImages = new ArrayList<>();
 
     @Column(name = "quantity", nullable = false)
