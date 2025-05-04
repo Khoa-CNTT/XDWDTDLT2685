@@ -26,6 +26,7 @@ const Navbar = () => {
         localStorage.removeItem("token");
         localStorage.removeItem("user_id");
         localStorage.removeItem("avatar");
+        localStorage.removeItem("tour_id");
         toast.success("Đăng xuất thành công!");
         navigate("/login")
     }
@@ -149,7 +150,7 @@ const Navbar = () => {
                                     {
                                         avatar ? (
                                             <img
-                                                src={avatar} 
+                                                src={avatar}
                                                 alt="Avatar"
                                                 className="object-cover w-10 h-10 rounded-full"
                                             />

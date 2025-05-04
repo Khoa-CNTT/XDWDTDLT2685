@@ -19,7 +19,11 @@ const BlogDetail = () => {
     useEffect(() => {
         if (id) getDetail();
     }, [id]);
-
+    useEffect(() => {
+        if (id) {
+            localStorage.setItem('tour_id', id);
+        }
+    }, [id]);
     return (
         <div>
             {blogDetail && <BlogImg item={blogDetail} />}
