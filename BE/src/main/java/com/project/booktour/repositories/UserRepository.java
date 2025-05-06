@@ -18,4 +18,6 @@ public interface UserRepository extends JpaRepository<User, Long> {
 
     @Query("SELECT u FROM User u WHERE u.userName LIKE %:keyword% OR u.email LIKE %:keyword% OR u.phoneNumber LIKE %:keyword%")
     Page<User> findAll(@Param("keyword") String keyword, Pageable pageable);
+
+    boolean existsByEmail(String email);
 }

@@ -12,7 +12,7 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class Review {
+public class Review extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "review_id")
@@ -32,6 +32,4 @@ public class Review {
     @Column(name = "comment", length = 255, nullable = false)
     private String comment;
 
-    @Column(name = "create_date", nullable = false)
-    private LocalDateTime createDate;
 }

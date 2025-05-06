@@ -11,7 +11,7 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class ReviewResponse {
+public class ReviewResponse extends BaseResponse {
     @JsonProperty("review_id")
     private Long reviewId;
 
@@ -25,17 +25,18 @@ public class ReviewResponse {
 
     private Float rating;
 
-    @JsonProperty("create_date")
-    private LocalDateTime createDate;
+
 
     public static ReviewResponse fromReview(com.project.booktour.models.Review review) {
-        return ReviewResponse.builder()
+        ReviewResponse reviewResponse =  ReviewResponse.builder()
                 .reviewId(review.getReviewId())
                 .tourId(review.getTour().getTourId())
                 .userId(review.getUser().getUserId())
                 .comment(review.getComment())
                 .rating(review.getRating())
-                .createDate(review.getCreateDate())
                 .build();
+        reviewResponse.setCreatedAt(review.getCreatedAt());
+        reviewResponse.setUpdatedAt(review.getUpdatedAt());
+        return reviewResponse;
     }
 }

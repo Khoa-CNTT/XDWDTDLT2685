@@ -53,9 +53,13 @@ public class UserService implements IUserService {
     public User createUser(UserDTO userDTO) throws Exception {
         // Đăng ký tài khoản
         String userName = userDTO.getUserName();
+        String email = userDTO.getEmail();
         // Kiểm tra xem userName đã tồn tại hay chưa
         if (userRepository.existsByUserName(userName)) {
             throw new DataIntegrityViolationException("Username already exists");
+        }
+        if (userRepository.existsByEmail(email)) {
+            throw new DataIntegrityViolationException("Email already exists");
         }
         Role role = roleRepository.findById(userDTO.getRoleId())
                 .orElseThrow(() -> new DataNotFoundException("Role not found"));
