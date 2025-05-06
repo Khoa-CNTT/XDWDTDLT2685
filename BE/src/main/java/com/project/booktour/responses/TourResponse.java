@@ -7,6 +7,7 @@ import com.project.booktour.dtos.ScheduleDTO;
 import com.project.booktour.models.Tour;
 import lombok.*;
 
+import java.time.LocalDate;
 import java.util.Arrays;
 import java.util.List;
 
@@ -35,6 +36,8 @@ public class TourResponse extends BaseResponse {
     private List<ScheduleDTO> itinerary;
     private List<String> include;
     private List<String> notinclude;
+    private LocalDate startDate;
+    private LocalDate endDate;
 
 
     public static TourResponse fromTour(Tour tour, ObjectMapper objectMapper, List<String> imageUrls) throws Exception {
@@ -73,6 +76,8 @@ public class TourResponse extends BaseResponse {
                 .include(includeList)
                 .notinclude(notIncludeList)
                 .itinerary(itinerary)
+                .startDate(tour.getStartDate())
+                .endDate(tour.getEndDate())
                 .build();
         tourResponse.setCreatedAt(tour.getCreatedAt());
         tourResponse.setUpdatedAt(tour.getUpdatedAt());

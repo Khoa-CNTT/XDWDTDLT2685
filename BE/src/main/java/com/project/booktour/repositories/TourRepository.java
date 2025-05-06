@@ -19,7 +19,7 @@ public interface TourRepository extends JpaRepository<Tour, Long> {
             "AND (:priceMax IS NULL OR t.priceAdult <= :priceMax) " +
             "AND (:region IS NULL OR UPPER(t.region) = UPPER(:region)) " +
             "AND (:duration IS NULL OR t.duration = :duration) " +
-            "AND (:search IS NULL OR LOWER(t.title) LIKE LOWER(CONCAT('%', :search, '%'))) " +
+            "AND (:title IS NULL OR LOWER(t.title) LIKE LOWER(CONCAT('%', :title, '%'))) " +
             "GROUP BY t " +
             "HAVING (:starRating IS NULL OR (AVG(r.rating) >= :starRating OR AVG(r.rating) IS NULL))")
     Page<Object[]> findAllWithFilters(PageRequest pageRequest,
@@ -28,5 +28,5 @@ public interface TourRepository extends JpaRepository<Tour, Long> {
                                       @Param("region") String region,
                                       @Param("starRating") Float starRating,
                                       @Param("duration") String duration,
-                                      @Param("search") String search);
+                                      @Param("title") String title);
 }

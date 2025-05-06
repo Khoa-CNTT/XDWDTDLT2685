@@ -47,20 +47,16 @@ public class BookingDTO {
 
     @JsonProperty("promotion_id")
     private Long promotionId;
-
-    @NotBlank(message = "Full name is required")
     @JsonProperty("full_name")
     private String fullName;
 
-    @NotBlank(message = "Email is required")
-    @Email(message = "Email must be valid")
     @JsonProperty("email")
     private String email;
 
     @JsonProperty("address")
     private String address;
 
-    @NotBlank(message = "Phone number is required")
     @JsonProperty("phone_number")
     private String phoneNumber;
+
 }

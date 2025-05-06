@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.validation.constraints.*;
 import lombok.*;
 
+import java.time.LocalDate;
 import java.util.List;
 
 @Data
@@ -45,5 +46,16 @@ public class TourDTO {
     private List<ScheduleDTO> itinerary;
     @NotNull(message = "Region cannot be null")
     private String region;
+    @NotNull(message = "Start date cannot be null")
+    private LocalDate startDate;
+
+    @NotNull(message = "End date cannot be null")
+    private LocalDate endDate;
+
+    // Optional: Validate endDate >= startDate
+    @AssertTrue(message = "End date must be after or equal to start date")
+    public boolean isEndDateValid() {
+        return endDate == null || startDate == null || !endDate.isBefore(startDate);
+    }
 
 }

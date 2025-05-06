@@ -50,6 +50,8 @@ public class TourService implements ITourService {
                 .availability(tourDTO.isAvailability())
                 .itinerary(tourDTO.getItinerary() != null ? objectMapper.writeValueAsString(tourDTO.getItinerary()) : null)
                 .region(Region.valueOf(tourDTO.getRegion().toUpperCase()))
+                .startDate(tourDTO.getStartDate())
+                .endDate(tourDTO.getEndDate())
                 .tourImages(new ArrayList<>())
                 .build();
 
@@ -89,11 +91,11 @@ public class TourService implements ITourService {
 
 
     @Override
-    public Page<SimplifiedTourResponse> getAllTours(PageRequest pageRequest, Double priceMin, Double priceMax, String region, Float starRating, String duration, String search) {
-        logger.info("Fetching tours with filters: priceMin={}, priceMax={}, region={}, starRating={}, duration={}, search={}",
-                priceMin, priceMax, region, starRating, duration, search);
+    public Page<SimplifiedTourResponse> getAllTours(PageRequest pageRequest, Double priceMin, Double priceMax, String region, Float starRating, String duration, String title) {
+        logger.info("Fetching tours with filters: priceMin={}, priceMax={}, region={}, starRating={}, duration={}, title={}",
+                priceMin, priceMax, region, starRating, duration, title);
 
-        return tourRepository.findAllWithFilters(pageRequest, priceMin, priceMax, region, starRating, duration, search)
+        return tourRepository.findAllWithFilters(pageRequest, priceMin, priceMax, region, starRating, duration, title)
                 .map(result -> {
                     Tour tour = (Tour) result[0];
                     Double avgRating = (Double) result[1];
@@ -129,6 +131,8 @@ public class TourService implements ITourService {
             existingTour.setDestination(tourDTO.getDestination());
             existingTour.setAvailability(tourDTO.isAvailability());
             existingTour.setItinerary(tourDTO.getItinerary() != null ? objectMapper.writeValueAsString(tourDTO.getItinerary()) : null);
+            existingTour.setRegion(Region.valueOf(tourDTO.getRegion().toUpperCase()));
+            existingTour.setStartDate(tourDTO.getStartDate());
             existingTour.setRegion(Region.valueOf(tourDTO.getRegion().toUpperCase()));
 
             tourImageRepository.deleteByTourTourId(id);

@@ -48,16 +48,4 @@ public class Booking {
     @ManyToOne
     @JoinColumn(name = "promotion_id")
     private Promotion promotion;
-
-    @Column(name = "full_name", length = 255, nullable = false)
-    private String fullName;
-
-    @Column(name = "email", length = 255, nullable = false)
-    private String email;
-
-    @Column(name = "address", length = 255)
-    private String address;
-
-    @Column(name = "phone_number", length = 20)
-    private String phoneNumber;
 }

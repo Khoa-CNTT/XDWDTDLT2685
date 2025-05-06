@@ -3,6 +3,7 @@ package com.project.booktour.models;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -53,6 +54,12 @@ public class Tour extends BaseEntity {
     @Enumerated(EnumType.STRING)
     @Column(name = "region", nullable = false)
     private Region region;
+
+    @Column(name = "start_date", nullable = false)
+    private LocalDate startDate;
+
+    @Column(name = "end_date", nullable = false)
+    private LocalDate endDate;
 
     @OneToMany(mappedBy = "tour", fetch = FetchType.LAZY)
     private List<Review> reviews;

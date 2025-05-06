@@ -13,6 +13,7 @@ import com.project.booktour.models.Review;
 import com.project.booktour.models.Tour;
 import lombok.*;
 
+import java.time.LocalDate;
 import java.util.List;
 
 @Getter
@@ -40,6 +41,9 @@ public class SimplifiedTourResponse  extends BaseResponse {
 
     private String code;
 
+    private LocalDate startDate;
+
+
     public static SimplifiedTourResponse fromTour(Tour tour, ObjectMapper objectMapper) throws Exception {
         SimplifiedTourResponse simplifiedTourResponse = new SimplifiedTourResponse();
         simplifiedTourResponse.setId(String.valueOf(tour.getTourId()));
@@ -51,7 +55,7 @@ public class SimplifiedTourResponse  extends BaseResponse {
         simplifiedTourResponse.setDate(tour.getDuration());
         simplifiedTourResponse.setCreatedAt(tour.getCreatedAt());
         simplifiedTourResponse.setUpdatedAt(tour.getUpdatedAt());
-
+        simplifiedTourResponse.setStartDate(tour.getStartDate());
         String code = generateCodeFromTitle(tour.getTitle());
         simplifiedTourResponse.setCode(code);
         return simplifiedTourResponse;

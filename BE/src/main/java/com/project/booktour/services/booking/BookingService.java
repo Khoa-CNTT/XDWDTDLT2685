@@ -14,6 +14,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @RequiredArgsConstructor
@@ -30,6 +31,22 @@ public class BookingService implements IBookingService {
         // Tìm user
         User user = userRepository.findById(bookingDTO.getUserId())
                 .orElseThrow(() -> new DataNotFoundException("Cannot find user with id: " + bookingDTO.getUserId()));
+
+        // Cập nhật thông tin user từ bookingDTO
+        if (bookingDTO.getFullName() != null) {
+            user.setFullName(bookingDTO.getFullName());
+        }
+        if (bookingDTO.getEmail() != null) {
+            user.setEmail(bookingDTO.getEmail());
+        }
+        if (bookingDTO.getAddress() != null) {
+            user.setAddress(bookingDTO.getAddress());
+        }
+        if (bookingDTO.getPhoneNumber() != null) {
+            user.setPhoneNumber(bookingDTO.getPhoneNumber());
+        }
+        user.setUpdatedAt(LocalDateTime.now());
+        userRepository.save(user);
 
         // Tìm tour
         Tour tour = tourRepository.findById(bookingDTO.getTourId())
@@ -61,10 +78,6 @@ public class BookingService implements IBookingService {
         booking.setUser(user);
         booking.setTour(tour);
         booking.setPromotion(promotion);
-        booking.setFullName(bookingDTO.getFullName());
-        booking.setEmail(bookingDTO.getEmail());
-        booking.setAddress(bookingDTO.getAddress());
-        booking.setPhoneNumber(bookingDTO.getPhoneNumber());
         return bookingRepository.save(booking);
     }
 
@@ -81,10 +94,10 @@ public class BookingService implements IBookingService {
                 .bookingStatus(booking.getBookingStatus())
                 .specialRequests(booking.getSpecialRequests())
                 .promotionId(booking.getPromotion() != null ? booking.getPromotion().getPromotionId() : null)
-                .fullName(booking.getFullName())
-                .email(booking.getEmail())
-                .address(booking.getAddress())
-                .phoneNumber(booking.getPhoneNumber())
+                .fullName(booking.getUser().getFullName())
+                .email(booking.getUser().getEmail())
+                .address(booking.getUser().getAddress())
+                .phoneNumber(booking.getUser().getPhoneNumber())
                 .build());
     }
 
@@ -103,10 +116,10 @@ public class BookingService implements IBookingService {
                 .bookingStatus(booking.getBookingStatus())
                 .specialRequests(booking.getSpecialRequests())
                 .promotionId(booking.getPromotion() != null ? booking.getPromotion().getPromotionId() : null)
-                .fullName(booking.getFullName())
-                .email(booking.getEmail())
-                .address(booking.getAddress())
-                .phoneNumber(booking.getPhoneNumber())
+                .fullName(booking.getUser().getFullName())
+                .email(booking.getUser().getEmail())
+                .address(booking.getUser().getAddress())
+                .phoneNumber(booking.getUser().getPhoneNumber())
                 .build();
     }
 
@@ -119,6 +132,22 @@ public class BookingService implements IBookingService {
         // Tìm user
         User user = userRepository.findById(bookingDTO.getUserId())
                 .orElseThrow(() -> new DataNotFoundException("Cannot find user with id: " + bookingDTO.getUserId()));
+
+        // Cập nhật thông tin user từ bookingDTO
+        if (bookingDTO.getFullName() != null) {
+            user.setFullName(bookingDTO.getFullName());
+        }
+        if (bookingDTO.getEmail() != null) {
+            user.setEmail(bookingDTO.getEmail());
+        }
+        if (bookingDTO.getAddress() != null) {
+            user.setAddress(bookingDTO.getAddress());
+        }
+        if (bookingDTO.getPhoneNumber() != null) {
+            user.setPhoneNumber(bookingDTO.getPhoneNumber());
+        }
+        user.setUpdatedAt(LocalDateTime.now());
+        userRepository.save(user);
 
         // Tìm tour
         Tour tour = tourRepository.findById(bookingDTO.getTourId())
@@ -149,10 +178,6 @@ public class BookingService implements IBookingService {
         booking.setUser(user);
         booking.setTour(tour);
         booking.setPromotion(promotion);
-        booking.setFullName(bookingDTO.getFullName());
-        booking.setEmail(bookingDTO.getEmail());
-        booking.setAddress(bookingDTO.getAddress());
-        booking.setPhoneNumber(bookingDTO.getPhoneNumber());
         return bookingRepository.save(booking);
     }
 

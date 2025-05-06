@@ -1,6 +1,8 @@
 package com.project.booktour.models;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotBlank;
 import lombok.*;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -24,6 +26,9 @@ public class User extends BaseEntity implements UserDetails {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "user_id")
     private Long userId;
+
+    @Column(name = "full_name" , length = 50, nullable = false)
+    private String fullName;
 
     @Column(name = "user_name", length = 50, nullable = false)
     private String userName;

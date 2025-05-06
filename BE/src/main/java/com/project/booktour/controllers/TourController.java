@@ -61,7 +61,7 @@ public class TourController {
             }
 
             // Lấy tham số tìm kiếm và sắp xếp
-            String search = params.get("search");
+            String title = params.get("title");
             String sortBy = params.getOrDefault("sortBy", "createdAt");
             String sortDir = params.getOrDefault("sortDir", "desc");
 
@@ -78,8 +78,6 @@ public class TourController {
 
             Sort sort = Sort.by(sortDir.equalsIgnoreCase("asc") ? Sort.Direction.ASC : Sort.Direction.DESC, sortBy);
             PageRequest pageRequest = PageRequest.of(page, limit, sort);
-
-            // Lấy các tham số bộ lọc
             Double priceMin = params.containsKey("priceMin") ? Double.parseDouble(params.get("priceMin")) : null;
             Double priceMax = params.containsKey("priceMax") ? Double.parseDouble(params.get("priceMax")) : null;
             String region = params.get("region");
@@ -108,8 +106,7 @@ public class TourController {
             }
 
             // Gọi TourService với các tham số bộ lọc và tìm kiếm
-            Page<SimplifiedTourResponse> tourPage = tourService.getAllTours(pageRequest, priceMin, priceMax, region, starRating, duration, search);
-
+            Page<SimplifiedTourResponse> tourPage = tourService.getAllTours(pageRequest, priceMin, priceMax, region, starRating, duration, title);
             int totalPages = tourPage.getTotalPages();
             List<SimplifiedTourResponse> tours = tourPage.getContent();
             return ResponseEntity.ok(TourListResponse.builder()
