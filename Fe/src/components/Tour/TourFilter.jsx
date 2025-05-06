@@ -1,8 +1,8 @@
 import React from 'react';
 import StarDisplay from '../Star/StarDisplay';
-import useFilter from '../../hooks/useFilter';
 import Sort from '../Sort/Sort';
 import Places from '../Places/Places';
+import useTourFilterSort from '../../hooks/useTourFilterSort';
 
 const region = ["Miền Bắc", "Miền Trung", "Miền Nam"];
 const prices = [
@@ -21,9 +21,11 @@ const TourFilter = () => {
         setSelectedPrice,
         selectedDuration,
         setSelectedDuration,
+        sortValue,
+        setSortValue,
         tours,
         resetFilters
-    } = useFilter();
+    } = useTourFilterSort(); 
 
     return (
         <div className='pt-10'>
@@ -113,8 +115,16 @@ const TourFilter = () => {
                     </div>
                 </div>
                 <div className=''>
-                    <Sort />
-                    <Places hideTitle={false} booking={false} size="small" left={true} container={false} star={true} tours={tours} />
+                    <Sort sortValue={sortValue} setSortValue={setSortValue} />
+                    <Places
+                        hideTitle={false}
+                        booking={false}
+                        size="small"
+                        left={true}
+                        container={false}
+                        star={true}
+                        tours={tours}
+                    />
                 </div>
             </div>
         </div>
