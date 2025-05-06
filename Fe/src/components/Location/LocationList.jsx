@@ -4,7 +4,7 @@ import useFilterRegion from '../../hooks/useFilterRegion';
 
 const LocationList = () => {
     const regions = ["Tất cả", "Miền Bắc", "Miền Trung", "Miền Nam"];
-    const { selected, setSelected, tours } = useFilterRegion();
+    const { selected, setSelected, tours  } = useFilterRegion();
     return (
         <div className='pt-10 dark:bg-[#101828] dark:text-white'>
             <div className='flex flex-col justify-center '>
@@ -25,7 +25,7 @@ const LocationList = () => {
                 </div>
 
                 {/* Truyền danh sách tours xuống Places */}
-                <Places hideTitle={false} showPagination={false} tours={tours} />
+                <Places hideTitle={false} tours={tours}  />
             </div>
         </div>
     );

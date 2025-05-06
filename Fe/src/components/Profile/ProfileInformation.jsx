@@ -27,7 +27,8 @@ const ProfileInformation = ({ profile, selectedFile }) => {
             email,
             address,
         };
-        // Kiểm tra nếu không có gì thay đổi
+
+
         const noInfoChanged =
             (user_name === (profile?.user_name || '')) &&
             (phone_number === (profile?.phone_number || '')) &&
@@ -39,11 +40,15 @@ const ProfileInformation = ({ profile, selectedFile }) => {
             toast.warning('Không có thay đổi nào!');
             return;
         }
+        const phoneChanged = phone_number !== (profile?.phone_number || '');
+        const isValidPhone = /^[0-9]{10}$/.test(phone_number) && !/^(\d)\1{9}$/.test(phone_number);
+        if (phoneChanged && !isValidPhone) {
+            toast.error('Số điện thoại không hợp lệ!');
+            return;
+        }
+
         try {
             const res = await putChangeInformation(userId, data);
-            console.log("RESPONSE FULL: thongtin", res.data);
-
-            // Nếu có file ảnh được chọn thì upload ảnh
             if (selectedFile) {
                 const formData = new FormData();
                 formData.append("avatar", selectedFile);
@@ -56,6 +61,7 @@ const ProfileInformation = ({ profile, selectedFile }) => {
             toast.error('Cập nhật không thành công');
         }
     };
+
 
     return (
         <div>
@@ -82,7 +88,7 @@ const ProfileInformation = ({ profile, selectedFile }) => {
                         <div>
                             <label className='flex flex-col mb-2 font-semibold'>Số điện thoại</label>
                             <input
-                                type='tel'
+                                type='number'
                                 value={phone_number}
                                 onChange={(e) => setPhoneNumber(e.target.value)}
                                 className='h-auto w-[700px] dark:text-[#101828] p-3 border border-gray-400 rounded-lg'

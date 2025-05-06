@@ -8,7 +8,7 @@ const Pagination = ({ totalPages, getAllTours }) => {
 
     const handlePageClick = (page) => {
         setCurrentPage(page);
-        console.log(page);
+        // console.log(page);
         getAllTours(page - 1);
     };
 
