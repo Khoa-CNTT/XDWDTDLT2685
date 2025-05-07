@@ -5,7 +5,6 @@ import CopyPrintComponent from "../../components/Tool";
 import { getDataTour } from "../../services/tourService";
 import EntriesFilter from "../../components/Pagination";
 import TourTable from "./TourTable";
-
 import GoBack from "../../components/GoBack/Goback";
 import CreateTour from "../../components/Tour/Create";
 
@@ -20,7 +19,10 @@ function ShowTour() {
         const fetchApi = async () => {
             try {
                 const res = await getDataTour();
-                const dataArray = res.reverse() || [];
+                console.log("Response from getDataTour:", res);
+
+                const dataArray = res.data?.tours && Array.isArray(res.data.tours) ? res.data.tours.reverse() : [];
+
                 setData(dataArray);
                 setOriginalData(dataArray);
             } catch (error) {
@@ -50,7 +52,7 @@ function ShowTour() {
 
         const searchTermNoDiacritics = removeDiacritics(searchTerm);
         const filteredData = originalData.filter((tour) => {
-            const tourName = tour.tourName?.toLowerCase() || "";
+            const tourName = tour.title?.toLowerCase() || "";
             const tourNameNoDiacritics = removeDiacritics(tourName);
             return tourName.includes(searchTerm) || tourNameNoDiacritics.includes(searchTermNoDiacritics);
         });
@@ -92,7 +94,7 @@ function ShowTour() {
                                 {...register("name")}
                                 type="text"
                                 placeholder="Tìm kiếm theo tên tour"
-                                className="*dark:placeholder:text-slate-400 w-full bg-transparent text-slate-900 outline-0 placeholder:text-slate-300 dark:text-slate-50"
+                                className="w-full bg-transparent text-slate-900 outline-0 placeholder:text-slate-300 dark:text-slate-50 dark:placeholder:text-slate-400"
                             />
                         </div>
                     </form>

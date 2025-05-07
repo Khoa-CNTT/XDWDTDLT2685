@@ -7,14 +7,12 @@ const { FaMap } = icons;
 
 function TourStatistics() {
     const [domesticData, setDomesticData] = useState([]);
-    // const [internationalData, setInternationalData] = useState([]);
 
     useEffect(() => {
         const fetchApi = async () => {
             try {
                 const res = await getTourStatistics();
                 setDomesticData(res?.domestic || []);
-                // setInternationalData(res?.international || []);
             } catch (error) {
                 console.error("Lỗi khi lấy dữ liệu thống kê:", error);
             }
@@ -67,8 +65,6 @@ function TourStatistics() {
                             </ResponsiveContainer>
                         </div>
                     </div>
-
-                    {/* Bảng - ẩn khi nhỏ hơn sm */}
                     <div className="hidden w-full sm:block sm:w-1/2">
                         <table className="w-full border-collapse text-left dark:text-amber-50">
                             <thead>

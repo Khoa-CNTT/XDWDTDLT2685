@@ -2,8 +2,6 @@ import DeleteTour from "../../components/Tour/Delete";
 import EditTour from "../../components/Tour/Edit";
 import icons from "../../util/icon";
 
-import { Link } from "react-router-dom";
-
 const { MdBlock } = icons;
 
 function TourTable({ currentEntries }) {
@@ -19,7 +17,7 @@ function TourTable({ currentEntries }) {
                         <th className="border px-4 py-2">Giá người lớn</th>
                         <th className="border px-4 py-2">Giá trẻ em</th>
                         <th className="border px-4 py-2">Điểm đến</th>
-                        <th className="border px-4 py-2">Khả dụng</th>
+                        <th className="border px-4 py-2">Trạng Thái</th>
                         <th className="border px-4 py-2">Ngày bắt đầu</th>
                         <th className="border px-4 py-2">Ngày kết thúc</th>
                         <th className="edit-column border px-4 py-2 text-center">Sửa</th>
@@ -32,24 +30,45 @@ function TourTable({ currentEntries }) {
                             key={index}
                             className="transition hover:bg-gray-100 dark:hover:bg-slate-700"
                         >
-                            <td className="border px-4 py-2">
-                                <Link>{item.tourName}</Link>
-                            </td>
-                            <td className="border px-4 py-2">{item.duration}</td>
+                            <td className="border px-4 py-2">{item.title}</td>
+                            <td className="border px-4 py-2">{item.date}</td>
                             <td className="border px-4 py-2">{item.description}</td>
                             <td className="border px-4 py-2">{item.quantity}</td>
-                            <td className="border px-4 py-2">{item.priceAdult}</td>
+                            <td className="border px-4 py-2">{item.price}</td>
                             <td className="border px-4 py-2">{item.priceChild}</td>
-                            <td className="items-center border px-4 py-2">
-                                <ul>{Array.isArray(item.highlights) && item.highlights.map((highlight, idx) => <li key={idx}>{highlight}</li>)}</ul>
+                            <td className="border px-4 py-2">{item.location}</td>
+                            <td className="available-column border px-4 py-2 text-center">
+                                {item.availability === true ? (
+                                    <span className="text-green-500">
+                                        <svg
+                                            xmlns="http://www.w3.org/2000/svg"
+                                            className="h-5 w-5 text-green-500"
+                                            viewBox="0 0 20 20"
+                                            fill="currentColor"
+                                            aria-hidden="true"
+                                        >
+                                            <path
+                                                fillRule="evenodd"
+                                                d="M10 18a8 8 0 100-16 8 8 0 000 16zm1.293-11.293a1 1 0 00-1.414 0L8.586 9.586l-.707-.707a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4a1 1 0 00-1.414-1.414l-3.293 3.293z"
+                                                clipRule="evenodd"
+                                            />
+                                        </svg>
+                                    </span>
+                                ) : item.availability === false ? (
+                                    <span className="flex items-center justify-center text-red-500">
+                                        <MdBlock
+                                            size={20}
+                                            className="mr-1"
+                                        />
+                                    </span>
+                                ) : null}
                             </td>
-                            <td className="items-center border px-4 py-2">{item.available ? "1" : <MdBlock />}</td>
                             <td className="border px-4 py-2">{item.startDate}</td>
                             <td className="border px-4 py-2">{item.endDate}</td>
-                            <td className="edit-column border px-4 py-2">
+                            <td className="edit-column border px-4 py-2 text-center">
                                 <EditTour item={item} />
                             </td>
-                            <td className="delete-column border px-4 py-2">
+                            <td className="delete-column border px-4 py-2 text-center">
                                 <DeleteTour item={item} />
                             </td>
                         </tr>

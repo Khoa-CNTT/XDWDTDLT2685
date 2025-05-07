@@ -11,7 +11,7 @@ export const handleCopy = (data, type) => {
         content = data
             .map(
                 (item) =>
-                    `Tên:${item.tourName}\nThời gian:${item.duration}\nMô tả:${item.description}\nSố lượng người còn trống:${item.quantity}\nGiá người lớn:${item.priceAdult}\nGiá trẻ em:${item.priceChild}\nĐiểm đến:${item.highlights.join(",")}\nKhả dụng:${item.available ? "1" : "0"}\nNgày bắt đầu:${item.startDate}\nNgày kết thúc:${item.endDate}`,
+                    `Tên:${item.title}\nThời gian:${item.date}\nMô tả:${item.description}\nSố lượng người còn trống:${item.quantity}\nGiá người lớn:${item.price}\nGiá trẻ em:${item.priceChild}\nĐiểm đến:${item.location}\nKhả dụng:${item.available ? "1" : "0"}\nNgày bắt đầu:${item.startDate}\nNgày kết thúc:${item.endDate}`,
             )
             .join("\n\n");
     } else if (type === "booking") {
@@ -43,7 +43,6 @@ export const handlePrint = (type) => {
         paymentColumns.forEach((col) => (col.style.display = "none"));
         action.forEach((col) => (col.style.display = "none"));
     }
-    // Nếu là invoice, in thêm thông tin công ty hoặc hóa đơn
 
     //Tao cua so in
     const printWindow = window.open("", "", "width=800,height=600");
@@ -102,14 +101,14 @@ export const renderCSV = (data, type) => {
             "Ngày kết thúc",
         ];
         rows = data.map((t) => [
-            t.tourName,
-            t.duration,
+            t.title,
+            t.date,
             t.description,
             t.quantity,
-            t.priceAdult,
+            t.price,
             t.priceChild,
-            t.highlights.join(", "),
-            t.available ? "1" : "0",
+            t.location,
+            t.availability ? "1" : "0",
             t.startDate,
             t.endDate,
         ]);
@@ -166,16 +165,16 @@ export const handleExcel = (data, type) => {
     const rows = data.map((item) =>
         type === "tour"
             ? {
-                  Tên: item.tourName,
-                  "Thời gian": item.duration,
-                  "Mô tả": item.description,
-                  "Số lượng còn": item.quantity,
-                  "Giá NL": item.priceAdult,
-                  "Giá TE": item.priceChild,
-                  "Điểm đến": item.highlights.join(", "),
-                  "Khả dụng": item.available ? "Có" : "Không",
-                  "Bắt đầu": item.startDate,
-                  "Kết thúc": item.endDate,
+                  Tên: item.title || "N/A",
+                  "Thời gian": item.date || "N/A",
+                  "Mô tả": item.description || "N/A",
+                  "Số lượng còn": item.quantity || "N/A",
+                  "Giá NL": item.price || "N/A",
+                  "Giá TE": item.priceChild || "N/A",
+                  "Điểm đến": item.location || "N/A",
+                  "Khả dụng": item.availability ? "Có" : "Không",
+                  "Bắt đầu": item.startDate || "N/A",
+                  "Kết thúc": item.endDate || "N/A",
               }
             : {
                   "Khách hàng": item.customerName,
@@ -205,18 +204,18 @@ export const handleExcel = (data, type) => {
 };
 // Hàm xuất PDF
 export const handleToPdf = (data, type) => {
-    const doc = new jsPDF("landscape", "pt", "a4"); //
+    const doc = new jsPDF("landscape", "pt", "a4");
     const rows = data.map((item) =>
         type === "tour"
             ? [
-                  item.tourName || "N/A",
-                  item.duration || "N/A",
+                  item.title || "N/A",
+                  item.date || "N/A",
                   item.description || "N/A",
                   item.quantity || 0,
-                  item.priceAdult || 0,
+                  item.price || 0,
                   item.priceChild || 0,
-                  item.highlights.join(", ") || "N/A",
-                  item.available ? "Có" : "Không",
+                  item.location || "N/A",
+                  item.availability ? "Có" : "Không",
                   item.startDate || "N/A",
                   item.endDate || "N/A",
               ]
