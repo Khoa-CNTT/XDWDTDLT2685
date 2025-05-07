@@ -40,7 +40,7 @@ function Logout() {
                     nav("/login");
                 }, 2000);
             } else {
-                nav(-1); // Quay lại trang trước nếu hủy
+                nav(-1);
             }
         });
     }, []);

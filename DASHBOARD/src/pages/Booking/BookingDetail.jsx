@@ -37,6 +37,7 @@ function BookingDetail() {
                 item={bookingDetail}
                 key={bookingDetail.id}
             />
+            <GoBack />
         </>
     );
 }

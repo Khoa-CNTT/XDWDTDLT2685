@@ -2,21 +2,18 @@ import React, { useEffect, useState } from "react";
 import Swal from "sweetalert2";
 
 import EditButton from "../../Button/EditButton";
-import { getDataRegion, updateTour } from "../../../services/tourService";
+import { updateTour } from "../../../services/tourService";
 import TourModal from "../ModelTour";
 
 function EditTour({ item }) {
     const [showModal, setShowModal] = useState(false);
     const [data, setData] = useState(item || {});
-    const [dataRegion, setDataRegion] = useState([]);
+
     const [timeline, setTimeline] = useState([]);
-    const [files, setFiles] = useState([]); // Thêm state để lưu trữ danh sách ảnh
+    const [files, setFiles] = useState([]);
 
     useEffect(() => {
-        const fetchData = async () => {
-            const result = await getDataRegion();
-            setDataRegion(result);
-        };
+        const fetchData = async () => {};
         fetchData();
         if (item?.timeline) {
             setTimeline(item.timeline);
@@ -27,7 +24,7 @@ function EditTour({ item }) {
         const today = new Date();
         const startDate = new Date(item.startDate + "T00:00:00");
 
-        if (!item.available || startDate <= today) {
+        if (!item.availability || startDate <= today) {
             Swal.fire({
                 position: "CENTER",
                 icon: "warning",
@@ -75,10 +72,10 @@ function EditTour({ item }) {
             if (!isNaN(start) && !isNaN(end) && end >= start) {
                 const diffTime = Math.abs(end - start);
                 const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)) + 1;
-                updatedData.duration = `${diffDays} ngày`;
+                updatedData.date = `${diffDays} ngày`;
                 setTimeline(Array.from({ length: diffDays }, () => ({ title: "", content: "" })));
             } else {
-                updatedData.duration = "";
+                updatedData.date = "";
             }
         }
 
@@ -131,7 +128,6 @@ function EditTour({ item }) {
                 isOpen={showModal}
                 closeModal={closeModal}
                 data={data}
-                dataRegion={dataRegion}
                 timeline={timeline}
                 handleChange={handleChange}
                 handleTimelineChange={handleTimelineChange}
