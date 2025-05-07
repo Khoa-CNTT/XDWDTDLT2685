@@ -1,6 +1,6 @@
 import React from 'react';
 import { useState, useEffect } from 'react';
-import { getAllTour, getFilterSortTours,  } from '../services/tour';
+import { getAllTour, getFilterSortTours } from '../services/tour';
 
 // Map tên hiển thị -> region API
 const regionMap = {
@@ -12,8 +12,6 @@ const useFilterRegion = () => {
     const [selected, setSelected] = useState("Tất cả");
     const [tours, setTours] = useState([]);
     
-
-
     useEffect(() => {
         filterTours();
     }, [selected]);
