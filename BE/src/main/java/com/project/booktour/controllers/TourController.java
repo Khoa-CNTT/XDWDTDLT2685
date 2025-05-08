@@ -213,13 +213,23 @@ public class TourController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<String> deleteTour(@PathVariable Long id) {
+    public ResponseEntity<?> deleteTour(@PathVariable Long id) {
         try {
             tourService.deleteTour(id);
-            return ResponseEntity.ok(String.format("Tour with id = %d deleted successfully", id));
+            return ResponseEntity.ok().body(Map.of(
+                    "success", true,
+                    "message", "Xóa tour thành công"
+            ));
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(404).body(Map.of(
+                    "error", "Không tìm thấy tour",
+                    "message", e.getMessage()
+            ));
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                    .body("Tour not found with id: " + id);
+            return ResponseEntity.internalServerError().body(Map.of(
+                    "error", "Lỗi khi xóa tour",
+                    "details", e.getMessage()
+            ));
         }
     }
 

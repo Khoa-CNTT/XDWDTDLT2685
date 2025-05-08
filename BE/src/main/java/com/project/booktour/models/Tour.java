@@ -27,8 +27,22 @@ public class Tour extends BaseEntity {
     @Column(name = "description", columnDefinition = "LONGTEXT", nullable = false)
     private String description;
 
-    @OneToMany(mappedBy = "tour", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+
+    @OneToMany(
+            mappedBy = "tour",
+            fetch = FetchType.LAZY,  // Nên dùng LAZY thay vì EAGER
+            cascade = CascadeType.ALL,
+            orphanRemoval = true
+    )
     private List<TourImage> tourImages = new ArrayList<>();
+
+    @OneToMany(
+            mappedBy = "tour",
+            fetch = FetchType.LAZY,
+            cascade = CascadeType.ALL,
+            orphanRemoval = true
+    )
+    private List<Review> reviews;
 
     @Column(name = "quantity", nullable = false)
     private Integer quantity;
@@ -61,6 +75,4 @@ public class Tour extends BaseEntity {
     @Column(name = "end_date", nullable = false)
     private LocalDate endDate;
 
-    @OneToMany(mappedBy = "tour", fetch = FetchType.LAZY)
-    private List<Review> reviews;
 }

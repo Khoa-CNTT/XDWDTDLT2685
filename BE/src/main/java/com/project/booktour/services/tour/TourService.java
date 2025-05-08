@@ -16,6 +16,7 @@ import com.project.booktour.repositories.UserRepository;
 import com.project.booktour.responses.SimplifiedTourResponse;
 import com.project.booktour.responses.TourResponse;
 import com.project.booktour.services.booking.BookingService;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -142,13 +143,20 @@ public class TourService implements ITourService {
         return null;
     }
 
-    @Override
+
+    @Transactional
     public void deleteTour(Long id) {
-        Optional<Tour> optionalTour = tourRepository.findById(id);
-        optionalTour.ifPresent(tour -> {
-            tourImageRepository.deleteByTourTourId(id);
-            tourRepository.delete(tour);
-        });
+        Tour tour = tourRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Tour not found with id: " + id));
+
+        // Xóa tất cả ảnh liên quan (cascade đã tự động xóa nếu dùng ALL)
+        tourImageRepository.deleteAll(tour.getTourImages());
+
+        // Xóa tất cả review liên quan
+        reviewRepository.deleteAll(tour.getReviews());
+
+        // Cuối cùng xóa tour
+        tourRepository.delete(tour);
     }
 
     @Override

@@ -38,10 +38,7 @@ public class UserResponse {
 
     @JsonProperty("role")
     private Role role;
-
     private String avatar;
-
-
     public static UserResponse fromUser(com.project.booktour.models.User user) {
         String avatarFileName = user.getAvatar();
         String baseUrl = "http://localhost:8088";
