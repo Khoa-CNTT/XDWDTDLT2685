@@ -1,8 +1,10 @@
+// import BlockUser from "../../components/User/Block";
 import DeleteUser from "../../components/User/Delete";
-import EditUser from "../../components/User/Edit";
 
 function UserPr(props) {
     const { user } = props;
+
+    console.log("user", user);
 
     const getRoleName = () => {
         if (!user.role) return "N/A";
@@ -18,7 +20,7 @@ function UserPr(props) {
                     <div className="h-50 w-50 overflow-hidden rounded-full border border-amber-300">
                         <img
                             src={user.avatar || "https://images.icon-icons.com/1378/PNG/512/avatardefault_92824.png"}
-                            alt={user.name}
+                            alt={user.fullname}
                             className="h-full w-full object-cover"
                         />
                     </div>
@@ -27,16 +29,16 @@ function UserPr(props) {
                 {/* Thông tin người dùng */}
                 <div className="mt-4 flex w-full flex-col sm:mt-0 sm:w-1/2 sm:pr-4">
                     <div className="flex flex-1 flex-col">
-                        <h3 className="mt-0 text-lg font-bold text-gray-900 dark:text-white">{user.name}</h3>
+                        <h3 className="mt-0 text-lg font-bold text-gray-900 dark:text-white">{user.fullname}</h3>
                         <div className="mt-2 space-y-2 text-sm text-gray-700 dark:text-gray-300">
                             <p>
-                                <span className="font-semibold">About:</span> {user.about || "Chưa có thông tin"}
+                                <span className="font-semibold">About:</span> {user.user_name || "Chưa có thông tin"}
                             </p>
                             <p>
                                 <span className="font-semibold">Address:</span> {user.address || "N/A"}
                             </p>
                             <p>
-                                <span className="font-semibold">Phone:</span> {user.phone || "N/A"}
+                                <span className="font-semibold">Phone:</span> {user.phone_number || "N/A"}
                             </p>
                             <p>
                                 <span className="font-semibold">Email:</span> {user.email || "N/A"}
@@ -47,13 +49,14 @@ function UserPr(props) {
                         </div>
                     </div>
                     {/* Button */}
+
                     <div className="mt-4 flex flex-wrap items-center justify-center gap-4 sm:justify-start">
-                        <div className="w-fit flex-shrink-0">
-                            <EditUser
+                        {/* <div className="w-fit flex-shrink-0">
+                            <BlockUser
                                 user={user}
                                 className="w-full min-w-[120px] px-4 py-2"
                             />
-                        </div>
+                        </div> */}
                         <div className="w-fit flex-shrink-0">
                             <DeleteUser
                                 user={user}

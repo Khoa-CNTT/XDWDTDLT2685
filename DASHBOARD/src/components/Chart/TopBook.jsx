@@ -64,38 +64,6 @@ function TopbookedTour() {
                             </tbody>
                         </table>
                     </div>
-                    {/* International Tours */}
-                    {/* <h2 className="card-title mt-8 mb-4">✈️ Top Ngoài Nước</h2>
-
-                    <div className="overflow-x-hidden">
-                        <table className="w-fit min-w-full table-auto border-collapse md:w-1 dark:text-amber-50">
-                            <thead>
-                                <tr className="bg-blue-100 text-black">
-                                    <th className="border border-gray-300 px-4 py-2">ID</th>
-                                    <th className="border border-gray-300 px-4 py-2">Tên Tour</th>
-                                    <th className="border border-gray-300 px-4 py-2">Lượt Đặt Chỗ</th>
-                                    <th className="border border-gray-300 px-4 py-2">Giá (USD)</th>
-                                    <th className="border border-gray-300 px-4 py-2">Đánh Giá</th>
-                                    <th className="border border-gray-300 px-4 py-2">Thời Gian</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {internationalData.map((tour, index) => (
-                                    <tr
-                                        key={tour.tourId || index} // Use `tour.tourId` if available, otherwise fallback to `index`
-                                        className="text-center"
-                                    >
-                                        <td className="border border-gray-300 px-4 py-2">{tour.tourId}</td>
-                                        <td className="border border-gray-300 px-4 py-2">{tour.tourName}</td>
-                                        <td className="border border-gray-300 px-4 py-2">{tour.bookings}</td>
-                                        <td className="border border-gray-300 px-4 py-2">{tour.price}</td>
-                                        <td className="border border-gray-300 px-4 py-2">{tour.rating}</td>
-                                        <td className="border border-gray-300 px-4 py-2">{tour.duration}</td>
-                                    </tr>
-                                ))}
-                            </tbody>
-                        </table>
-                    </div> */}
                 </div>
             </div>
         </>

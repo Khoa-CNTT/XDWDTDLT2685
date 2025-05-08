@@ -39,7 +39,16 @@ public class UserResponse {
     @JsonProperty("role")
     private Role role;
 
+    private String avatar;
+
+
     public static UserResponse fromUser(com.project.booktour.models.User user) {
+        String avatarFileName = user.getAvatar();
+        String baseUrl = "http://localhost:8088";
+        String avatarUrl = (avatarFileName != null && !avatarFileName.isEmpty())
+                ? baseUrl + "/avatars/" + avatarFileName
+                : baseUrl + "/avatars/default-avatar.jpg";
+
         return UserResponse.builder()
                 .id(user.getUserId())
                 .fullName(user.getUsername())
@@ -50,6 +59,8 @@ public class UserResponse {
                 .facebookAccountId(user.getFacebookAccountId())
                 .googleAccountId(user.getGoogleAccountId())
                 .role(user.getRole())
+                .avatar(avatarUrl)
                 .build();
     }
+
 }

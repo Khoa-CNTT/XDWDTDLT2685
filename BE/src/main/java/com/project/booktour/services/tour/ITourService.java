@@ -6,7 +6,6 @@ import com.project.booktour.dtos.TourDTO;
 import com.project.booktour.dtos.TourImageDTO;
 import com.project.booktour.exceptions.DataNotFoundException;
 import com.project.booktour.exceptions.InvalidParamException;
-import com.project.booktour.models.Region;
 import com.project.booktour.models.Review;
 import com.project.booktour.models.Tour;
 import com.project.booktour.models.TourImage;

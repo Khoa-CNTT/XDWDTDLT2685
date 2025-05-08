@@ -458,7 +458,7 @@
       ],
       "id": "13f6",
       "region": "Miền Bắc",
-      "timeline": [
+      "itinerary": [
         {
           "title": "Ngày 1: Khởi hành từ Hà Nội",
           "content": "Buổi sáng: Đón khách tại Hà Nội, tham quan Lăng Bác.\nBuổi chiều: Khám phá Văn Miếu Quốc Tử Giám."
@@ -509,7 +509,7 @@
       ],
       "id": "157f",
       "region": "Miền Bắc",
-      "timeline": [
+      "itinerary": [
         {
           "title": "Ngày 1: Hà Nội - Sa Pa",
           "content": "Buổi sáng: Khởi hành từ Hà Nội đến Sa Pa.\nBuổi chiều: Tham quan bản Cát Cát."
@@ -552,7 +552,7 @@
       ],
       "id": "69ca",
       "region": "Miền Nam",
-      "timeline": [
+      "itinerary": [
         {
           "title": "Ngày 1: TP. Hồ Chí Minh - Cần Thơ",
           "content": "Buổi sáng: Khởi hành từ TP. Hồ Chí Minh đến Cần Thơ.\nBuổi chiều: Tham quan chợ nổi Cái Răng."
@@ -591,7 +591,7 @@
       ],
       "id": "3675",
       "region": "Miền Trung",
-      "timeline": [
+      "itinerary": [
         {
           "title": "Ngày 1: Đà Nẵng",
           "content": "Buổi sáng: Đón khách tại Đà Nẵng, tham quan cầu Vàng.\nBuổi chiều: Tắm biển Mỹ Khê."
@@ -638,7 +638,7 @@
       ],
       "id": "708c",
       "region": "Tây Nguyên",
-      "timeline": [
+      "itinerary": [
         {
           "title": "Ngày 1: TP. Hồ Chí Minh - Buôn Ma Thuột",
           "content": "Buổi sáng: Khởi hành từ TP. Hồ Chí Minh đến Buôn Ma Thuột.\nBuổi chiều: Tham quan bảo tàng Đắk Lắk."
@@ -681,7 +681,7 @@
       ],
       "id": "7069",
       "region": "Tây Nguyên",
-      "timeline": [
+      "itinerary": [
         {
           "title": "Ngày 1: TP. Hồ Chí Minh - Đà Lạt",
           "content": "Buổi sáng: Khởi hành từ TP. Hồ Chí Minh đến Đà Lạt.\nBuổi chiều: Tham quan hồ Xuân Hương."
@@ -720,7 +720,7 @@
       ],
       "id": "6220",
       "region": "Miền Nam",
-      "timeline": [
+      "itinerary": [
         {
           "title": "Ngày 1: TP. Hồ Chí Minh - Côn Đảo",
           "content": "Buổi sáng: Bay từ TP. Hồ Chí Minh đến Côn Đảo.\nBuổi chiều: Tham quan nhà tù Côn Đảo."
@@ -755,7 +755,7 @@
       ],
       "id": "2b66",
       "region": "Miền Trung",
-      "timeline": [
+      "itinerary": [
         {
           "title": "Ngày 1: Đà Nẵng - Huế",
           "content": "Buổi sáng: Khởi hành từ Đà Nẵng đến Huế.\nBuổi chiều: Tham quan cầu Trường Tiền."
@@ -794,7 +794,7 @@
       ],
       "id": "53e3",
       "region": "Miền Trung",
-      "timeline": [
+      "itinerary": [
         {
           "title": "Ngày 1: Nha Trang - Phú Yên",
           "content": "Buổi sáng: Khởi hành từ Nha Trang đến Phú Yên.\nBuổi chiều: Tham quan Gành Đá Đĩa."
@@ -837,7 +837,7 @@
       ],
       "id": "9553",
       "region": "Miền Bắc",
-      "timeline": [
+      "itinerary": [
         {
           "title": "Ngày 1: Hà Nội - Hà Giang",
           "content": "Buổi sáng: Khởi hành từ Hà Nội đến Hà Giang.\nBuổi chiều: Tham quan cột cờ Lũng Cú."
@@ -884,7 +884,7 @@
       ],
       "id": "8e89",
       "region": "Miền Trung",
-      "timeline": [
+      "itinerary": [
         {
           "title": "Ngày 1: Nha Trang - Quy Nhơn",
           "content": "Buổi sáng: Khởi hành từ Nha Trang đến Quy Nhơn.\nBuổi chiều: Tham quan Eo Gió."
@@ -923,7 +923,7 @@
       ],
       "id": "a242",
       "region": "Miền Bắc",
-      "timeline": [
+      "itinerary": [
         {
           "title": "Ngày 1: Hà Nội - Lạng Sơn",
           "content": "Buổi sáng: Khởi hành từ Hà Nội đến Lạng Sơn.\nBuổi chiều: Tham quan chợ Đông Kinh."
@@ -958,7 +958,7 @@
       ],
       "id": "333a",
       "region": "Miền Bắc",
-      "timeline": [
+      "itinerary": [
         {
           "title": "Ngày 1: Hà Nội - Ninh Bình",
           "content": "Buổi sáng: Khởi hành từ Hà Nội đến Ninh Bình.\nBuổi chiều: Chèo thuyền ở Tràng An."
@@ -993,7 +993,7 @@
       ],
       "id": "fccf",
       "region": "Miền Nam",
-      "timeline": [
+      "itinerary": [
         {
           "title": "Ngày 1: TP. Hồ Chí Minh - Vũng Tàu",
           "content": "Buổi sáng: Khởi hành từ TP. Hồ Chí Minh đến Vũng Tàu.\nBuổi chiều: Tắm biển tại Bãi Sau."
@@ -1024,7 +1024,7 @@
       ],
       "id": "04af",
       "region": "Miền Nam",
-      "timeline": [
+      "itinerary": [
         {
           "title": "Ngày 1: TP. Hồ Chí Minh - Cà Mau",
           "content": "Buổi sáng: Khởi hành từ TP. Hồ Chí Minh đến Cà Mau.\nBuổi chiều: Tham quan chợ nổi Cà Mau."
@@ -1063,7 +1063,7 @@
       ],
       "id": "80a0",
       "region": "Miền Bắc",
-      "timeline": [
+      "itinerary": [
         {
           "title": "Ngày 1: Hà Nội - Điện Biên",
           "content": "Buổi sáng: Bay từ Hà Nội đến Điện Biên.\nBuổi chiều: Tham quan bảo tàng Điện Biên."
@@ -1106,7 +1106,7 @@
       ],
       "id": "f2c2",
       "region": "Miền Trung",
-      "timeline": [
+      "itinerary": [
         {
           "title": "Ngày 1: Đà Nẵng - Lý Sơn",
           "content": "Buổi sáng: Di chuyển từ Đà Nẵng đến cảng Sa Kỳ, lên tàu ra Lý Sơn.\nBuổi chiều: Tham quan cổng Tò Vò."
@@ -1141,7 +1141,7 @@
       ],
       "id": "e24c",
       "region": "Miền Bắc",
-      "timeline": [
+      "itinerary": [
         {
           "title": "Ngày 1: Hà Nội - Sơn La",
           "content": "Buổi sáng: Khởi hành từ Hà Nội đến Sơn La.\nBuổi chiều: Tham quan nhà tù Sơn La."
@@ -1180,7 +1180,7 @@
       ],
       "id": "9846",
       "region": "Miền Nam",
-      "timeline": [
+      "itinerary": [
         {
           "title": "Ngày 1: TP. Hồ Chí Minh - Cần Thơ",
           "content": "Buổi sáng: Khởi hành từ TP. Hồ Chí Minh đến Cần Thơ.\nBuổi chiều: Tham quan cầu Cần Thơ."
@@ -1215,7 +1215,7 @@
       ],
       "id": "e7bc",
       "region": "Miền Bắc",
-      "timeline": [
+      "itinerary": [
         {
           "title": "Ngày 1: Hà Nội - Yên Bái",
           "content": "Buổi sáng: Khởi hành từ Hà Nội đến Yên Bái.\nBuổi chiều: Tham quan ruộng bậc thang Mù Cang Chải."
@@ -1258,7 +1258,7 @@
       ],
       "id": "a713",
       "region": "Miền Bắc",
-      "timeline": [
+      "itinerary": [
         {
           "title": "Ngày 1: Hà Nội - Nam Định",
           "content": "Buổi sáng: Khởi hành từ Hà Nội đến Nam Định.\nBuổi chiều: Tham quan chùa Phổ Minh."
@@ -1293,7 +1293,7 @@
       ],
       "id": "b12c",
       "region": "Miền Bắc",
-      "timeline": [
+      "itinerary": [
         {
           "title": "Ngày 1: Hà Nội - Quảng Ninh",
           "content": "Buổi sáng: Khởi hành từ Hà Nội đến Quảng Ninh.\nBuổi chiều: Tham quan bảo tàng Quảng Ninh."
@@ -1332,7 +1332,7 @@
       ],
       "id": "c45d",
       "region": "Miền Trung",
-      "timeline": [
+      "itinerary": [
         {
           "title": "Ngày 1: Hà Nội - Sầm Sơn",
           "content": "Buổi sáng: Khởi hành từ Hà Nội đến Sầm Sơn.\nBuổi chiều: Tắm biển Sầm Sơn."
@@ -1367,7 +1367,7 @@
       ],
       "id": "d78e",
       "region": "Miền Bắc",
-      "timeline": [
+      "itinerary": [
         {
           "title": "Ngày 1: Hà Nội - Sa Pa",
           "content": "Buổi sáng: Khởi hành từ Hà Nội đến Sa Pa.\nBuổi chiều: Tham quan bản Cát Cát."
@@ -1418,7 +1418,7 @@
       ],
       "id": "e91f",
       "region": "Miền Nam",
-      "timeline": [
+      "itinerary": [
         {
           "title": "Ngày 1: TP. Hồ Chí Minh - Bình Thuận",
           "content": "Buổi sáng: Khởi hành từ TP. Hồ Chí Minh đến Bình Thuận.\nBuổi chiều: Tắm biển Mũi Né."
@@ -1457,7 +1457,7 @@
       ],
       "id": "f12g",
       "region": "Miền Nam",
-      "timeline": [
+      "itinerary": [
         {
           "title": "Ngày 1: TP. Hồ Chí Minh - An Giang",
           "content": "Buổi sáng: Khởi hành từ TP. Hồ Chí Minh đến An Giang.\nBuổi chiều: Tham quan chợ Châu Đốc."
@@ -1500,7 +1500,7 @@
       ],
       "id": "g34h",
       "region": "Miền Trung",
-      "timeline": [
+      "itinerary": [
         {
           "title": "Ngày 1: Huế - Quảng Bình",
           "content": "Buổi sáng: Khởi hành từ Huế đến Quảng Bình.\nBuổi chiều: Tắm biển Nhật Lệ."
@@ -1547,7 +1547,7 @@
       ],
       "id": "h56i",
       "region": "Miền Nam",
-      "timeline": [
+      "itinerary": [
         {
           "title": "Ngày 1: TP. Hồ Chí Minh - Bà Rịa Vũng Tàu",
           "content": "Buổi sáng: Khởi hành từ TP. Hồ Chí Minh đến Vũng Tàu.\nBuổi chiều: Tắm biển Hồ Tràm."
@@ -1582,7 +1582,7 @@
       ],
       "id": "i78j",
       "region": "Miền Bắc",
-      "timeline": [
+      "itinerary": [
         {
           "title": "Ngày 1: Hà Nội - Tuyên Quang",
           "content": "Buổi sáng: Khởi hành từ Hà Nội đến Tuyên Quang.\nBuổi chiều: Tham quan khu di tích Tân Trào."
@@ -1621,7 +1621,7 @@
       ],
       "id": "j90k",
       "region": "Miền Nam",
-      "timeline": [
+      "itinerary": [
         {
           "title": "Ngày 1: TP. Hồ Chí Minh - Rạch Giá",
           "content": "Buổi sáng: Khởi hành từ TP. Hồ Chí Minh đến Rạch Giá.\nBuổi chiều: Tham quan chợ Rạch Giá."
@@ -1664,7 +1664,7 @@
       ],
       "id": "k12l",
       "region": "Miền Bắc",
-      "timeline": [
+      "itinerary": [
         {
           "title": "Ngày 1: Hà Nội - Cao Bằng",
           "content": "Buổi sáng: Khởi hành từ Hà Nội đến Cao Bằng.\nBuổi chiều: Tham quan chợ Cao Bằng."
@@ -1711,7 +1711,7 @@
       ],
       "id": "l34m",
       "region": "Miền Trung",
-      "timeline": [
+      "itinerary": [
         {
           "title": "Ngày 1: Đà Nẵng",
           "content": "Buổi sáng: Đón khách tại Đà Nẵng.\nBuổi chiều: Tắm biển Mỹ Khê."
@@ -1750,7 +1750,7 @@
       ],
       "id": "m56n",
       "region": "Miền Bắc",
-      "timeline": [
+      "itinerary": [
         {
           "title": "Ngày 1: Hà Nội - Lai Châu",
           "content": "Buổi sáng: Khởi hành từ Hà Nội đến Lai Châu.\nBuổi chiều: Tham quan đèo Ô Quy Hồ."
@@ -1793,7 +1793,7 @@
       ],
       "id": "n78o",
       "region": "Miền Nam",
-      "timeline": [
+      "itinerary": [
         {
           "title": "Ngày 1: TP. Hồ Chí Minh - Bạc Liêu",
           "content": "Buổi sáng: Khởi hành từ TP. Hồ Chí Minh đến Bạc Liêu.\nBuổi chiều: Tham quan nhà Công Tử Bạc Liêu."
@@ -1828,7 +1828,7 @@
       ],
       "id": "o90p",
       "region": "Miền Trung",
-      "timeline": [
+      "itinerary": [
         {
           "title": "Ngày 1: Huế - Quảng Trị",
           "content": "Buổi sáng: Khởi hành từ Huế đến Quảng Trị.\nBuổi chiều: Tham quan Thành cổ Quảng Trị."
@@ -1867,7 +1867,7 @@
       ],
       "id": "p12q",
       "region": "Miền Bắc",
-      "timeline": [
+      "itinerary": [
         {
           "title": "Ngày 1: Hà Nội - Cát Bà",
           "content": "Buổi sáng: Khởi hành từ Hà Nội đến Cát Bà.\nBuổi chiều: Tắm biển Cát Cò."
@@ -1902,7 +1902,7 @@
       ],
       "id": "q34r",
       "region": "Tây Nguyên",
-      "timeline": [
+      "itinerary": [
         {
           "title": "Ngày 1: TP. Hồ Chí Minh - Kon Tum",
           "content": "Buổi sáng: Khởi hành từ TP. Hồ Chí Minh đến Kon Tum.\nBuổi chiều: Tham quan nhà rông Kon Tum."
@@ -1945,7 +1945,7 @@
       ],
       "id": "r56s",
       "region": "Miền Bắc",
-      "timeline": [
+      "itinerary": [
         {
           "title": "Ngày 1: Hà Nội - Thái Nguyên",
           "content": "Buổi sáng: Khởi hành từ Hà Nội đến Thái Nguyên.\nBuổi chiều: Tham quan đồi chè Tân Cương."
@@ -1980,7 +1980,7 @@
       ],
       "id": "s78t",
       "region": "Miền Bắc",
-      "timeline": [
+      "itinerary": [
         {
           "title": "Ngày 1: Hà Nội - Hạ Long",
           "content": "Buổi sáng: Khởi hành từ Hà Nội đến Hạ Long.\nBuổi chiều: Du thuyền trên Vịnh Hạ Long."
@@ -2019,7 +2019,7 @@
       ],
       "id": "t90u",
       "region": "Tây Nguyên",
-      "timeline": [
+      "itinerary": [
         {
           "title": "Ngày 1: TP. Hồ Chí Minh - Gia Lai",
           "content": "Buổi sáng: Khởi hành từ TP. Hồ Chí Minh đến Gia Lai.\nBuổi chiều: Tham quan biển hồ Pleiku."
@@ -2062,7 +2062,7 @@
       ],
       "id": "u12v",
       "region": "Miền Bắc",
-      "timeline": [
+      "itinerary": [
         {
           "title": "Ngày 1: Hà Nội - Hòa Bình",
           "content": "Buổi sáng: Khởi hành từ Hà Nội đến Hòa Bình.\nBuổi chiều: Tham quan nhà máy thủy điện Hòa Bình."
@@ -2097,7 +2097,7 @@
       ],
       "id": "v01",
       "region": "Miền Bắc",
-      "timeline": [
+      "itinerary": [
         {
           "title": "Ngày 1: Hà Nội - Vịnh Hạ Long",
           "content": "Buổi sáng: Khởi hành từ Hà Nội đến Hạ Long.\nBuổi chiều: Du thuyền ngủ đêm trên Vịnh, thăm hang Sửng Sốt."
@@ -2128,7 +2128,7 @@
       ],
       "id": "v02",
       "region": "Miền Bắc",
-      "timeline": [
+      "itinerary": [
         {
           "title": "Ngày 1: Hà Nội - Sa Pa",
           "content": "Buổi sáng: Khởi hành từ Hà Nội đến Sa Pa.\nBuổi chiều: Tham quan bản Cát Cát."
@@ -2163,7 +2163,7 @@
       ],
       "id": "v03",
       "region": "Miền Trung",
-      "timeline": [
+      "itinerary": [
         {
           "title": "Ngày 1: Đà Nẵng - Hội An",
           "content": "Buổi sáng: Khởi hành từ Đà Nẵng đến Hội An.\nBuổi chiều: Đạp xe ven sông Thu Bồn."
@@ -2194,7 +2194,7 @@
       ],
       "id": "v04",
       "region": "Miền Trung",
-      "timeline": [
+      "itinerary": [
         {
           "title": "Ngày 1: TP. Hồ Chí Minh - Nha Trang",
           "content": "Buổi sáng: Khởi hành từ TP. Hồ Chí Minh đến Nha Trang.\nBuổi chiều: Tắm biển tại Bãi Dài."
@@ -2233,7 +2233,7 @@
       ],
       "id": "v05",
       "region": "Tây Nguyên",
-      "timeline": [
+      "itinerary": [
         {
           "title": "Ngày 1: TP. Hồ Chí Minh - Đà Lạt",
           "content": "Buổi sáng: Khởi hành từ TP. Hồ Chí Minh đến Đà Lạt.\nBuổi chiều: Tham quan hồ Xuân Hương."
@@ -2268,7 +2268,7 @@
       ],
       "id": "v06",
       "region": "Miền Nam",
-      "timeline": [
+      "itinerary": [
         {
           "title": "Ngày 1: TP. Hồ Chí Minh - Cần Thơ",
           "content": "Buổi sáng: Khởi hành từ TP. Hồ Chí Minh đến Cần Thơ.\nBuổi chiều: Tham quan chợ nổi Cái Răng."
@@ -2299,7 +2299,7 @@
       ],
       "id": "v07",
       "region": "Miền Nam",
-      "timeline": [
+      "itinerary": [
         {
           "title": "Ngày 1: TP. Hồ Chí Minh - Phú Quốc",
           "content": "Buổi sáng: Bay từ TP. Hồ Chí Minh đến Phú Quốc.\nBuổi chiều: Tắm biển Bãi Sao."
@@ -2334,7 +2334,7 @@
       ],
       "id": "v08",
       "region": "Miền Nam",
-      "timeline": [
+      "itinerary": [
         {
           "title": "Ngày 1: TP. Hồ Chí Minh - Côn Đảo",
           "content": "Buổi sáng: Bay từ TP. Hồ Chí Minh đến Côn Đảo.\nBuổi chiều: Tham quan nhà tù Côn Đảo."
@@ -2369,7 +2369,7 @@
       ],
       "id": "v09",
       "region": "Miền Trung",
-      "timeline": [
+      "itinerary": [
         {
           "title": "Ngày 1: Tham Quan Đại Nội Huế",
           "content": "Buổi sáng: Đón khách tại khách sạn, tham quan Đại Nội Huế - nơi ở và làm việc của vua chúa triều Nguyễn.\nBuổi chiều: Tham quan Chùa Thiên Mụ, dạo chơi quanh sông Hương."
@@ -2400,7 +2400,7 @@
       ],
       "id": "v10",
       "region": "Miền Trung",
-      "timeline": [
+      "itinerary": [
         {
           "title": "Ngày 1: Huế - Quảng Bình",
           "content": "Buổi sáng: Khởi hành từ Huế đến Quảng Bình.\nBuổi chiều: Chuẩn bị cho hành trình khám phá hang Sơn Đoòng."

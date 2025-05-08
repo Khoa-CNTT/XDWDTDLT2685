@@ -205,7 +205,7 @@ public class TourController {
                 );
                 tourImages.add(tourImage);
             }
-            return ResponseEntity.ok(tourImages);
+            return ResponseEntity.ok("Upload successful");
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                     .body("Failed to upload images: " + e.getMessage());

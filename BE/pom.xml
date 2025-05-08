@@ -79,7 +79,7 @@
 		<dependency>
 			<groupId>org.modelmapper</groupId>
 			<artifactId>modelmapper</artifactId>
-			<version>3.1.0</version> <!-- Thay thế bằng phiên bản mới nhất -->
+			<version>3.1.0</version>
 		</dependency>
 
 		<dependency>
@@ -109,6 +109,10 @@
             <artifactId>docker-java-api</artifactId>
             <version>3.3.0</version>
         </dependency>
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-oauth2-client</artifactId>
+		</dependency>
     </dependencies>
 
 	<build>

@@ -1,11 +1,11 @@
 import { MdOutlineAttachFile } from "react-icons/md";
 
-function AdminAvatar({ tempImage, avatarUrl, name, handleImageChange }) {
+function AdminAvatar({ tempImage, name, handleImageChange }) {
     return (
         <div className="flex w-full flex-col items-center justify-center p-8 md:w-1/2">
-            <div className="mb-5 h-40 w-40 overflow-hidden rounded-full border border-amber-300 md:h-60 md:w-60">
+            <div className="mb-5 h-40 w-40 overflow-hidden rounded-full border-2 border-amber-300 md:h-60 md:w-60">
                 <img
-                    src={tempImage || avatarUrl || "https://images.icon-icons.com/1378/PNG/512/avatardefault_92824.png"}
+                    src={tempImage || "https://images.icon-icons.com/1378/PNG/512/avatardefault_92824.png"}
                     alt={name}
                     className="h-full w-full object-cover"
                 />

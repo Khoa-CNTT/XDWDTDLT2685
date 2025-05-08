@@ -5,16 +5,15 @@ import lombok.*;
 
 @Entity
 @Table(name = "social_accounts")
-@Getter
-@Setter
-@AllArgsConstructor
-@NoArgsConstructor
 @Data
+@NoArgsConstructor
+@AllArgsConstructor
 @Builder
 public class SocialAccount {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    @Column(name = "social_account_id") // Đảm bảo khớp với tên cột trong DB
+    private Long socialAccountId;
+
     @Column(name = "provider", nullable = false, length = 20)
     private String provider;
 
@@ -26,8 +25,9 @@ public class SocialAccount {
 
     @Column(name = "email", length = 150)
     private String email;
-//    @ManyToOne
-//    @JoinColumn(name = "user_id")
-//    private User user;
+
+    @ManyToOne
+    @JoinColumn(name = "user_id")
+    private User user;
 
 }

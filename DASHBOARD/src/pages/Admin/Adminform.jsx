@@ -1,7 +1,7 @@
+import { NavLink } from "react-router-dom";
 import EditButton from "../../components/Button/EditButton";
-import PasswordInput from "./PassWord";
 
-function AdminForm({ formData, onChange, onSubmit, showPassword, setShowPassword }) {
+function AdminForm({ formData, onChange, onSubmit }) {
     return (
         <div className="w-full p-8 md:w-1/2">
             <form
@@ -19,14 +19,9 @@ function AdminForm({ formData, onChange, onSubmit, showPassword, setShowPassword
                         onChange={onChange}
                         required
                         className="mt-1 w-full rounded-md border border-gray-300 px-4 py-2 focus:ring-2 focus:ring-green-500 focus:outline-none"
+                        readOnly
                     />
                 </div>
-
-                <PasswordInput
-                    show={showPassword}
-                    toggleShow={() => setShowPassword((prev) => !prev)}
-                    value={formData.password}
-                />
 
                 <div>
                     <label className="lbl_title block">Email</label>
@@ -39,16 +34,33 @@ function AdminForm({ formData, onChange, onSubmit, showPassword, setShowPassword
                     />
                 </div>
                 <div>
+                    <label className="lbl_title block">Số điện thoại</label>
+                    <input
+                        type="tel"
+                        name="phone_number"
+                        value={formData.phone_number}
+                        onChange={onChange}
+                        className="mt-1 w-full rounded-md border border-gray-300 px-4 py-2 focus:ring-2 focus:ring-green-500 focus:outline-none"
+                    />
+                </div>
+                <div>
                     <label className="lbl_title block">Địa chỉ</label>
                     <input
-                        type="address"
+                        type="text"
                         name="address"
                         value={formData.address}
                         onChange={onChange}
                         className="mt-1 w-full rounded-md border border-gray-300 px-4 py-2 focus:ring-2 focus:ring-green-500 focus:outline-none"
                     />
                 </div>
-
+                <div className="mt-2 text-right">
+                    <NavLink
+                        to="/admin/change-password"
+                        className="text-[#019fb5] hover:underline"
+                    >
+                        Thay đổi mật khẩu
+                    </NavLink>
+                </div>
                 <div className="mt-4 flex items-center gap-3">
                     <EditButton>Cập nhật</EditButton>
                 </div>

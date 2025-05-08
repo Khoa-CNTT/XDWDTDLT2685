@@ -7,7 +7,6 @@ const Location = () => {
         <div>
             <LocationTitle />
             <LocationList />
-
         </div>
     );
 };

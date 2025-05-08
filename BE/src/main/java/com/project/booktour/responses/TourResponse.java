@@ -28,6 +28,8 @@ public class TourResponse extends BaseResponse {
     @JsonProperty("img")
     private List<String> images;
 
+    private String code;
+
     private int quantity;
     private String description;
     private String duration;
@@ -81,6 +83,45 @@ public class TourResponse extends BaseResponse {
                 .build();
         tourResponse.setCreatedAt(tour.getCreatedAt());
         tourResponse.setUpdatedAt(tour.getUpdatedAt());
+        String code = generateCodeFromTitle(tour.getDestination());
+        tourResponse.setCode(code);
         return tourResponse;
     }
+    private static String generateCodeFromTitle(String destination) {
+        if (destination == null || destination.isBlank()) {
+            return "UNKNOWN";
+        }
+
+        // Tách các điểm đến theo dấu '-'
+        String[] parts = destination.split("-");
+        StringBuilder codeBuilder = new StringBuilder();
+
+        for (String part : parts) {
+            // Xóa khoảng trắng đầu/cuối và chuyển thành chữ in hoa
+            part = part.trim().toUpperCase();
+
+            // Tách theo khoảng trắng để lấy chữ cái đầu tiên của mỗi từ (VD: "Hà Nội" → HN)
+            String[] words = part.split("\\s+");
+            for (String word : words) {
+                if (!word.isEmpty()) {
+                    codeBuilder.append(removeVietnameseAccent(word.charAt(0)));
+                }
+            }
+        }
+
+        return codeBuilder.toString();
+    }
+
+    // Hàm hỗ trợ để loại bỏ dấu tiếng Việt
+    private static char removeVietnameseAccent(char c) {
+        String original = "ÀÁÂÃÈÉÊÌÍÒÓÔÕÙÚĂĐĨŨƠƯàáâãèéêìíòóôõùúăđĩũơư";
+        String replacement = "AAAAEEEIIOOOOUUAĐIUOUaaaaeeeiioooouuadiuou";
+
+        int index = original.indexOf(c);
+        if (index >= 0) {
+            return replacement.charAt(index);
+        }
+        return c;
+    }
+
 }

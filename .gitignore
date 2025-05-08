@@ -1,3 +1,4 @@
 Fe/.vite/
 Fe/node_modules/
 BE/target/
+BE/src/main/resources/application.yml

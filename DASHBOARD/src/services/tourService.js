@@ -1,65 +1,88 @@
-// src/services/tourService.js
 import { del, edit, get, post } from "../util/requestserver";
 
 // Lấy tất cả tour
 export const getDataTour = async () => {
     try {
-        return await get("tours");
+        const res = await get("tours");
+        return {
+            status: res.status,
+            data: res.data,
+        };
     } catch (error) {
         console.error("Error fetching tours:", error);
-        throw error;
-    }
-};
-
-// Tạo tour mới
-export const createDataTour = async (data) => {
-    try {
-        return await post("tours", data);
-    } catch (error) {
-        console.error("Error creating tour:", error);
-        throw error;
+        return {
+            status: error.response?.status || 500,
+            data: error.response?.data || "Lỗi khi lấy danh sách tour",
+        };
     }
 };
 
 // Xóa tour theo ID
 export const deleteTour = async (id) => {
     try {
-        return await del(`tours/${id}`);
+        const res = await del(`tours/${id}`);
+        return {
+            status: res.status,
+            data: res.data,
+        };
     } catch (error) {
         console.error(`Error deleting tour with ID ${id}:`, error);
-        throw error;
+        return {
+            status: error.response?.status || 500,
+            data: error.response?.data || "Lỗi khi xóa tour",
+        };
     }
 };
 
 // Cập nhật tour
 export const updateTour = async (id, data) => {
     try {
-        return await edit(`tours/${id}`, data);
+        const res = await edit(`tours/${id}`, data);
+        return {
+            status: res.status,
+            data: res.data,
+        };
     } catch (error) {
         console.error(`Error updating tour with ID ${id}:`, error);
-        throw error;
+        return {
+            status: error.response?.status || 500,
+            data: error.response?.data || "Lỗi khi cập nhật tour",
+        };
     }
 };
-
-// Lấy danh sách khu vực
-export const getDataRegion = async () => {
+// Tạo tour mới
+export const createDataTour = async (data) => {
     try {
-        return await get("regions");
+        const res = await post("tours", data);
+        return {
+            status: res.status,
+            data: res.data,
+        };
     } catch (error) {
-        console.error("Error fetching regions:", error);
-        throw error;
+        console.error("Error creating tour:", error);
+        return {
+            status: error.response?.status || 500,
+            data: error.response?.data || "Lỗi khi tạo tour",
+        };
     }
 };
-// Upload ảnh cho tour
-export const uploadImageTour = async (formData) => {
+// Upload ảnh tour
+export const uploadImageTour = async (tourId, formData) => {
     try {
-        return await post("tours/upload", formData, {
+        const res = await post(`tours/uploads/${tourId}`, formData, {
             headers: {
                 "Content-Type": "multipart/form-data",
             },
         });
+        return {
+            status: res.status,
+            data: res.data,
+        };
     } catch (error) {
-        console.error("Error uploading tour images:", error);
-        throw error;
+        console.error(`Lỗi khi upload ảnh tour cho tour ${tourId}:`, error);
+        return {
+            status: error.response?.status || 500,
+            data: error.response?.data || "Lỗi khi upload ảnh tour",
+        };
     }
 };
