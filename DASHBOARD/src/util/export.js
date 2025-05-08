@@ -11,7 +11,7 @@ export const handleCopy = (data, type) => {
         content = data
             .map(
                 (item) =>
-                    `Tên:${item.title}\nThời gian:${item.date}\nMô tả:${item.description}\nSố lượng người còn trống:${item.quantity}\nGiá người lớn:${item.price}\nGiá trẻ em:${item.priceChild}\nĐiểm đến:${item.location}\nKhả dụng:${item.available ? "1" : "0"}\nNgày bắt đầu:${item.startDate}\nNgày kết thúc:${item.endDate}`,
+                    `Tên:${item.title}\nThời gian:${item.duration}\nMô tả:${item.description}\nSố lượng người còn trống:${item.quantity}\nGiá người lớn:${item.price_adult || "N/A"}\nGiá trẻ em:${item.price_child || "N/A"}\nĐiểm đến:${item.destination || "N/A"}\nKhả dụng:${item.available ? "1" : "0"}\nNgày bắt đầu:${item.startDate}\nNgày kết thúc:${item.endDate}`,
             )
             .join("\n\n");
     } else if (type === "booking") {
@@ -102,12 +102,12 @@ export const renderCSV = (data, type) => {
         ];
         rows = data.map((t) => [
             t.title,
-            t.date,
+            t.duration,
             t.description,
             t.quantity,
-            t.price,
-            t.priceChild,
-            t.location,
+            t.price_adult || "N/A",
+            t.price_child || "N/A",
+            t.destination || "N/A",
             t.availability ? "1" : "0",
             t.startDate,
             t.endDate,
@@ -166,12 +166,12 @@ export const handleExcel = (data, type) => {
         type === "tour"
             ? {
                   Tên: item.title || "N/A",
-                  "Thời gian": item.date || "N/A",
+                  "Thời gian": item.duration || "N/A",
                   "Mô tả": item.description || "N/A",
                   "Số lượng còn": item.quantity || "N/A",
-                  "Giá NL": item.price || "N/A",
-                  "Giá TE": item.priceChild || "N/A",
-                  "Điểm đến": item.location || "N/A",
+                  "Giá NL": item.price_adult || "N/A",
+                  "Giá TE": item.price_child || "N/A",
+                  "Điểm đến": item.destination || "N/A",
                   "Khả dụng": item.availability ? "Có" : "Không",
                   "Bắt đầu": item.startDate || "N/A",
                   "Kết thúc": item.endDate || "N/A",
@@ -209,12 +209,12 @@ export const handleToPdf = (data, type) => {
         type === "tour"
             ? [
                   item.title || "N/A",
-                  item.date || "N/A",
+                  item.duration || "N/A",
                   item.description || "N/A",
                   item.quantity || 0,
-                  item.price || 0,
-                  item.priceChild || 0,
-                  item.location || "N/A",
+                  item.price_adult || 0,
+                  item.price_child || 0,
+                  item.destination || "N/A",
                   item.availability ? "Có" : "Không",
                   item.startDate || "N/A",
                   item.endDate || "N/A",

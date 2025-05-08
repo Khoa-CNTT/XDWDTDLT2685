@@ -31,12 +31,12 @@ function TourTable({ currentEntries }) {
                             className="transition hover:bg-gray-100 dark:hover:bg-slate-700"
                         >
                             <td className="border px-4 py-2">{item.title}</td>
-                            <td className="border px-4 py-2">{item.date}</td>
+                            <td className="border px-4 py-2">{item.duration}</td>
                             <td className="border px-4 py-2">{item.description}</td>
                             <td className="border px-4 py-2">{item.quantity}</td>
-                            <td className="border px-4 py-2">{item.priceAdult}</td>
-                            <td className="border px-4 py-2">{item.priceChild}</td>
-                            <td className="border px-4 py-2">{item.location}</td>
+                            <td className="border px-4 py-2">{item.price_adult}</td>
+                            <td className="border px-4 py-2">{item.price_child}</td>
+                            <td className="border px-4 py-2">{item.destination}</td>
                             <td className="available-column border px-4 py-2 text-center">
                                 {item.availability === true ? (
                                     <span className="flex items-center justify-center text-green-500">

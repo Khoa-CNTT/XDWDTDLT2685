@@ -20,6 +20,7 @@ function ShowTour() {
             try {
                 // Gọi API để lấy dữ liệu tour
                 const res = await getDataTour();
+                console.log("res", res);
 
                 // Nếu API trả về dữ liệu tour hợp lệ, cập nhật vào state
                 const dataArray = res.data?.tours && Array.isArray(res.data.tours) ? res.data.tours.reverse() : [];
