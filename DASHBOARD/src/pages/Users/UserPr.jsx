@@ -1,5 +1,5 @@
+// import BlockUser from "../../components/User/Block";
 import DeleteUser from "../../components/User/Delete";
-import EditUser from "../../components/User/Edit";
 
 function UserPr(props) {
     const { user } = props;
@@ -49,13 +49,14 @@ function UserPr(props) {
                         </div>
                     </div>
                     {/* Button */}
+
                     <div className="mt-4 flex flex-wrap items-center justify-center gap-4 sm:justify-start">
-                        <div className="w-fit flex-shrink-0">
-                            <EditUser
+                        {/* <div className="w-fit flex-shrink-0">
+                            <BlockUser
                                 user={user}
                                 className="w-full min-w-[120px] px-4 py-2"
                             />
-                        </div>
+                        </div> */}
                         <div className="w-fit flex-shrink-0">
                             <DeleteUser
                                 user={user}

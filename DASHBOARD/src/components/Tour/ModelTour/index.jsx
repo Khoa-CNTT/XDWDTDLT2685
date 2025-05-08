@@ -1,21 +1,8 @@
 import React from "react";
 import Modal from "react-modal";
-
 import TourForm from "../FormTour";
 
-function TourModal({
-    isOpen,
-    closeModal,
-    data,
-    dataRegion,
-    timeline,
-    handleChange,
-    handleTimelineChange,
-    handleSubmit,
-    renderAnh,
-    handleImageChange,
-    files,
-}) {
+function TourModal({ isOpen, closeModal, data, itinerary, handleChange, handleItineraryChange, handleSubmit, renderAnh, handleImageChange, files }) {
     const customStyles = {
         content: {
             top: "50%",
@@ -46,14 +33,13 @@ function TourModal({
             isOpen={isOpen}
             onRequestClose={closeModal}
             style={customStyles}
-            contentLabel="Create Tour Modal"
+            contentLabel="Tạo Tour Mới"
         >
             <TourForm
                 data={data}
-                dataRegion={dataRegion}
-                timeline={timeline}
+                itinerary={itinerary}
                 handleChange={handleChange}
-                handleTimelineChange={handleTimelineChange}
+                handleItineraryChange={handleItineraryChange}
                 handleSubmit={handleSubmit}
                 closeModal={closeModal}
                 renderAnh={renderAnh}

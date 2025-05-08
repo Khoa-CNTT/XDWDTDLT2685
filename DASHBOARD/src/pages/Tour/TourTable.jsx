@@ -2,7 +2,7 @@ import DeleteTour from "../../components/Tour/Delete";
 import EditTour from "../../components/Tour/Edit";
 import icons from "../../util/icon";
 
-const { MdBlock } = icons;
+const { MdBlock, MdCheckCircle } = icons;
 
 function TourTable({ currentEntries }) {
     return currentEntries?.length > 0 ? (
@@ -34,25 +34,16 @@ function TourTable({ currentEntries }) {
                             <td className="border px-4 py-2">{item.date}</td>
                             <td className="border px-4 py-2">{item.description}</td>
                             <td className="border px-4 py-2">{item.quantity}</td>
-                            <td className="border px-4 py-2">{item.price}</td>
+                            <td className="border px-4 py-2">{item.priceAdult}</td>
                             <td className="border px-4 py-2">{item.priceChild}</td>
                             <td className="border px-4 py-2">{item.location}</td>
                             <td className="available-column border px-4 py-2 text-center">
                                 {item.availability === true ? (
-                                    <span className="text-green-500">
-                                        <svg
-                                            xmlns="http://www.w3.org/2000/svg"
-                                            className="h-5 w-5 text-green-500"
-                                            viewBox="0 0 20 20"
-                                            fill="currentColor"
-                                            aria-hidden="true"
-                                        >
-                                            <path
-                                                fillRule="evenodd"
-                                                d="M10 18a8 8 0 100-16 8 8 0 000 16zm1.293-11.293a1 1 0 00-1.414 0L8.586 9.586l-.707-.707a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4a1 1 0 00-1.414-1.414l-3.293 3.293z"
-                                                clipRule="evenodd"
-                                            />
-                                        </svg>
+                                    <span className="flex items-center justify-center text-green-500">
+                                        <MdCheckCircle
+                                            size={20}
+                                            className="mr-1"
+                                        />
                                     </span>
                                 ) : item.availability === false ? (
                                     <span className="flex items-center justify-center text-red-500">

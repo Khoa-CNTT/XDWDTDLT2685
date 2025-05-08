@@ -5,7 +5,7 @@ import { useForm } from "react-hook-form";
 import UserPr from "./UserPr";
 import icons from "../../util/icon";
 import GoBack from "../../components/GoBack/Goback";
-import CreateUser from "../../components/User/Create";
+
 const { FaSearch } = icons;
 function User() {
     const [data, setData] = useState([]);
@@ -67,7 +67,6 @@ function User() {
             {/* Search + Add User */}
             <div className="my-6 flex flex-col items-center gap-2 md:flex-row">
                 <div className="mb-4 flex w-full items-center space-x-2 sm:mb-0 sm:w-auto">
-                    <CreateUser />
                     <form
                         className="inline w-full sm:w-auto"
                         onSubmit={handleSubmit(onSearch)} // Khi form được submit, gọi hàm onSearch

@@ -17,23 +17,6 @@ export const getDataTour = async () => {
     }
 };
 
-// Tạo tour mới
-export const createDataTour = async (data) => {
-    try {
-        const res = await post("tours", data);
-        return {
-            status: res.status,
-            data: res.data,
-        };
-    } catch (error) {
-        console.error("Error creating tour:", error);
-        return {
-            status: error.response?.status || 500,
-            data: error.response?.data || "Lỗi khi tạo tour",
-        };
-    }
-};
-
 // Xóa tour theo ID
 export const deleteTour = async (id) => {
     try {
@@ -67,11 +50,26 @@ export const updateTour = async (id, data) => {
         };
     }
 };
-
-// Upload ảnh tour
-export const uploadImageTour = async (formData) => {
+// Tạo tour mới
+export const createDataTour = async (data) => {
     try {
-        const res = await post("tours/upload", formData, {
+        const res = await post("tours", data);
+        return {
+            status: res.status,
+            data: res.data,
+        };
+    } catch (error) {
+        console.error("Error creating tour:", error);
+        return {
+            status: error.response?.status || 500,
+            data: error.response?.data || "Lỗi khi tạo tour",
+        };
+    }
+};
+// Upload ảnh tour
+export const uploadImageTour = async (tourId, formData) => {
+    try {
+        const res = await post(`tours/uploads/${tourId}`, formData, {
             headers: {
                 "Content-Type": "multipart/form-data",
             },
@@ -81,7 +79,7 @@ export const uploadImageTour = async (formData) => {
             data: res.data,
         };
     } catch (error) {
-        console.error("Error uploading tour images:", error);
+        console.error(`Lỗi khi upload ảnh tour cho tour ${tourId}:`, error);
         return {
             status: error.response?.status || 500,
             data: error.response?.data || "Lỗi khi upload ảnh tour",

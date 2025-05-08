@@ -1,4 +1,4 @@
-import { del, edit, get, post } from "../util/requestserver";
+import { del, get } from "../util/requestserver";
 
 // Lấy danh sách khách hàng
 export const getDataUser = async () => {
@@ -34,40 +34,6 @@ export const getDataUserById = async (id) => {
     }
 };
 
-// Tạo khách hàng mới
-export const createDataUser = async (data) => {
-    try {
-        const res = await post("users", data);
-        return {
-            status: res.status,
-            data: res.data,
-        };
-    } catch (error) {
-        console.error("Lỗi khi tạo khách hàng:", error);
-        return {
-            status: error.response?.status || 500,
-            data: error.response?.data || "Lỗi khi tạo người dùng",
-        };
-    }
-};
-
-// Cập nhật thông tin khách hàng
-export const editUser = async (id, option) => {
-    try {
-        const res = await edit(`users/${id}`, option);
-        return {
-            status: res.status,
-            data: res.data,
-        };
-    } catch (error) {
-        console.error(`Lỗi khi cập nhật khách hàng với ID ${id}:`, error);
-        return {
-            status: error.response?.status || 500,
-            data: error.response?.data || "Lỗi khi cập nhật người dùng",
-        };
-    }
-};
-
 // Xóa khách hàng theo ID
 export const deleteUser = async (id) => {
     try {
@@ -81,6 +47,38 @@ export const deleteUser = async (id) => {
         return {
             status: error.response?.status || 500,
             data: error.response?.data || "Lỗi khi xóa người dùng",
+        };
+    }
+};
+
+// Khóa khách hàng theo ID
+export const blockUser = async (id) => {
+    try {
+        const res = await del(`users/${id}/block`);
+        return {
+            status: res.status,
+            data: res.data,
+        };
+    } catch (error) {
+        console.error(`Lỗi khi khóa khách hàng với ID ${id}:`, error);
+        return {
+            status: error.response?.status || 500,
+            data: error.response?.data || "Lỗi khi khóa người dùng",
+        };
+    }
+};
+export const getAvatar = async (id) => {
+    try {
+        const res = await get(`users/${id}/avatar`);
+        return {
+            status: res.status,
+            data: res.data,
+        };
+    } catch (error) {
+        console.error(`Lỗi khi lấy ảnh đại diện của khách hàng với ID ${id}:`, error);
+        return {
+            status: error.response?.status || 500,
+            data: error.response?.data || "Lỗi khi lấy ảnh đại diện của người dùng",
         };
     }
 };

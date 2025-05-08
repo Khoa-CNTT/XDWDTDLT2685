@@ -14,11 +14,12 @@ function AdminForm({ formData, onChange, onSubmit }) {
                     </label>
                     <input
                         type="text"
-                        name="fullname"
-                        value={formData.fullname}
+                        name="user_name"
+                        value={formData.user_name}
                         onChange={onChange}
                         required
                         className="mt-1 w-full rounded-md border border-gray-300 px-4 py-2 focus:ring-2 focus:ring-green-500 focus:outline-none"
+                        readOnly
                     />
                 </div>
 
@@ -30,7 +31,6 @@ function AdminForm({ formData, onChange, onSubmit }) {
                         value={formData.email}
                         onChange={onChange}
                         className="mt-1 w-full rounded-md border border-gray-300 px-4 py-2 focus:ring-2 focus:ring-green-500 focus:outline-none"
-                        readOnly
                     />
                 </div>
                 <div>
