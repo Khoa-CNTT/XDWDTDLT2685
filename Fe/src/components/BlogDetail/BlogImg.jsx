@@ -3,7 +3,7 @@ import BlogHeader from './BlogHeader';
 import BlogContentCard from './BlogContentCard';
 import { AiOutlineRight, AiOutlineLeft } from 'react-icons/ai';
 
-const BlogImg = ({ item }) => {
+const   BlogImg = ({ item }) => {
     const [selectedIndex, setSelectedIndex] = useState(0);
     const [selectedImg, setSelectedImg] = useState(item.img[0]);
     

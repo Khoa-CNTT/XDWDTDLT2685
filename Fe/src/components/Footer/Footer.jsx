@@ -1,5 +1,5 @@
 import React from 'react';
-import Logo2 from '../../assets/Travel/logo2.webp'
+import Logo2 from '../../assets/Travel/Logo1.png'
 import { FaPhoneAlt } from 'react-icons/fa';
 import { MdEmail } from "react-icons/md";
 import { FaFacebook } from "react-icons/fa";
@@ -13,18 +13,18 @@ const Footer = () => {
                 <div className='gap-3 grid h-auto md:grid-cols-3 w-full lg:grid-cols-4 bg-[#101828] dark:border dark:border-white'>
                     <div className='px-4 py-8 ml-5  text-white w-full max-w-[400px]'>
                         <h1 className="flex items-center gap-3 text-xl font-bold text-justify text-white sm:text-3xl sm:text-left">
-                            <img src={Logo2} alt="" className="max-h-[60px]" />
+                            <img src={Logo2} alt="GoViet" className="h-[100px] object-cover w-[200px]" />
                         </h1>
                         <div className='mt-5 space-y-5 text-base text-left'>
-                            <p className='mt-3 '>Công ty TNHH Du Lịch và Dịch Vụ Mixivivu</p>
-                            <p className=''>Tầng 7, số nhà 25, ngõ 38 phố Yên Lãng, phường Láng Hạ, quận Đống Đa, TP. Hà Nội</p>
+                            <p className='mt-3 '>Công ty TNHH Du Lịch và Dịch Vụ GoViet</p>
+                            <p className=''>Kiệt 374/12 Núi Thành, Quận Hải Châu, Thành Phố Đà Nẵng</p>
                             <div className="flex items-center gap-3">
                                 <FaPhoneAlt className="w-4 h-4" />
-                                <p>Hotline: 0922222016</p>
+                                <p>Hotline: 0362137238</p>
                             </div>
                             <div className="flex items-center gap-3">
                                 <MdEmail className="w-4 h-4" />
-                                <p>Email: info@mixivivu.com</p>
+                                <p>Email: info@GoViet.com</p>
                             </div>
                             {/* social */}
                             <div className="flex items-center gap-3 mt-6 cursor-pointer">
@@ -74,7 +74,7 @@ const Footer = () => {
             </div>
             <hr className='' />
             <div className="py-5 text-center text-white bg-[#101828]">
-                @copyright 2025 All rights reserved || Made with ❤️ by Mixivivu
+                @copyright 2025 All rights reserved || Made with ❤️ by GoViet
             </div>
         </>
     );

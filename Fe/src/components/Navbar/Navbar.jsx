@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Link, NavLink, useNavigate } from "react-router-dom";
-import LogoImg from "../../assets/Travel/Logo.png";
+import LogoImg from "../../assets/Travel/Logo1.png";
 import { FaCaretDown, FaPhoneAlt } from "react-icons/fa";
 import { FiSun, FiMoon } from "react-icons/fi";
 import { HiMenuAlt3, HiMenuAlt1 } from "react-icons/hi";
@@ -45,9 +45,13 @@ const Navbar = () => {
                 <div className="container py-3 sm:py-0">
                     <div className="flex items-center justify-between">
                         {/* Logo */}
-                        <div>
-                            <Link to="/" >
-                                <img src={LogoImg} alt="MixiTravel" className="h-16 mt-2 mb-2" />
+                        <div className="flex items-center h-[100px] overflow-hidden">
+                            <Link to="/">
+                                <img
+                                    src={LogoImg}
+                                    alt="GoVietTravel"
+                                    className="h-[150px] w-[80px] object-cover"
+                                />
                             </Link>
                         </div>
 
@@ -152,7 +156,7 @@ const Navbar = () => {
                                             <img
                                                 src={avatar}
                                                 alt="Avatar"
-                                                className="object-cover w-10 h-10 rounded-full"
+                                                className="object-cover w-12 h-12 rounded-full"
                                             />
                                         ) : (
                                             <FaUserAlt className="w-6 h-6" />

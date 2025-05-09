@@ -1,7 +1,5 @@
 import React from 'react';
 import { FaFacebookMessenger } from "react-icons/fa";
-import { Link } from 'react-router-dom';
-import UserTour from '../../assets/Travel/Khachtour.png'
 import { FaCheck } from "react-icons/fa";
 import { IoCloseSharp } from "react-icons/io5";
 import BlogSidebar from './BlogSidebar';

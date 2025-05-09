@@ -8,7 +8,7 @@ import AddButton from "../../Button/CreateButton";
 
 const { IoIosAdd } = icons;
 
-// Danh sách vùng miền cho tour
+// Dữ liệu vùng miền cố định để hiển thị trong form chọn
 const dataRegion = [
     { displayName: "Miền Bắc", value: "NORTH" },
     { displayName: "Miền Trung", value: "CENTRAL" },
@@ -30,32 +30,37 @@ function CreateTour({ onTourCreated }) {
         startDate: "",
         endDate: "",
     });
-    const [files, setFiles] = useState([]); // Lưu ảnh upload
-    const [itinerary, setItinerary] = useState([]); // Lưu lịch trình tour
-    const [existingTours, setExistingTours] = useState([]); // Dữ liệu tour hiện có để kiểm tra trùng lặp
+    const [files, setFiles] = useState([]);
+    const [itinerary, setItinerary] = useState([]);
+    const [existingTours, setExistingTours] = useState([]);
     const [isLoading, setIsLoading] = useState(false);
 
-    // Khi component mount, gọi API để lấy danh sách tour hiện có
+    // Khi component được mount, gọi API để lấy danh sách các tour hiện có
     useEffect(() => {
         const fetchData = async () => {
             try {
                 const response = await getDataTour();
                 const tours = response?.data?.tours || [];
-                if (!Array.isArray(tours)) {
-                    throw new Error("Dữ liệu tour không hợp lệ");
-                }
+                if (!Array.isArray(tours)) throw new Error("Dữ liệu tour không hợp lệ");
                 setExistingTours(tours);
             } catch (error) {
-                console.error("Lỗi khi lấy dữ liệu tour:", error);
                 setExistingTours([]);
             }
         };
         fetchData();
     }, []);
 
+    // Tự động gọi khi trang load xong (reload)
+    useEffect(() => {
+        window.onload = () => {
+            // Thực hiện hành động sau khi reload nếu cần
+        };
+    }, []);
+
+    // Mở modal tạo tour
     const openModal = () => setShowModal(true);
 
-    // Đóng modal và reset form
+    // Đóng modal và reset dữ liệu form
     const closeModal = () => {
         setShowModal(false);
         setData({
@@ -75,7 +80,7 @@ function CreateTour({ onTourCreated }) {
         setItinerary([]);
     };
 
-    // Xử lý xóa ảnh tại index cụ thể
+    // Xoá ảnh đã chọn
     const handleDeleteImage = (index) => {
         setFiles(files.filter((_, i) => i !== index));
     };
@@ -85,87 +90,83 @@ function CreateTour({ onTourCreated }) {
         e.preventDefault();
         setIsLoading(true);
 
-        // Kiểm tra dữ liệu hợp lệ
-        if (!Array.isArray(existingTours)) {
-            Swal.fire({
-                icon: "error",
-                title: "Lỗi dữ liệu",
-                text: "Dữ liệu tour không hợp lệ. Vui lòng thử lại.",
-                confirmButtonColor: "#d33",
-            });
-            setIsLoading(false);
-            return;
-        }
-
-        // Kiểm tra tên tour đã tồn tại chưa
-        const isDuplicate = existingTours.some((tour) => tour.title?.toLowerCase().trim() === data.title?.toLowerCase().trim());
-
-        if (isDuplicate) {
-            Swal.fire({
-                icon: "error",
-                title: "Tour đã tồn tại",
-                text: "Vui lòng chọn tên tour khác.",
-                confirmButtonColor: "#d33",
-            });
-            setIsLoading(false);
-            return;
-        }
-
-        // Chuẩn bị dữ liệu gửi đi, định dạng lịch trình
-        const apiData = {
-            ...data,
-            itinerary: itinerary.map((item, index) => ({
-                day: index + 1,
-                title: item.title,
-                content: Array.isArray(item.content) ? item.content : item.content.split("\n").filter(Boolean),
-            })),
-        };
-
         try {
-            // Gửi request tạo tour
-            const result = await createDataTour(apiData);
+            if (!Array.isArray(existingTours)) throw new Error("Dữ liệu tour không hợp lệ");
 
-            if (result.status === 201 || result.status === 200) {
-                const tourId = result.data.id;
-                let imageUploadSuccess = true;
+            // Kiểm tra trùng tiêu đề tour
+            const isDuplicate = existingTours.some((tour) => tour.title?.toLowerCase().trim() === data.title?.toLowerCase().trim());
+            if (isDuplicate) throw new Error("Tên tour đã tồn tại");
 
-                // Nếu có ảnh, thực hiện upload ảnh
-                if (files.length > 0) {
-                    const formData = new FormData();
-                    files.forEach((file) => formData.append("images", file));
-
-                    const uploadResult = await uploadImageTour(tourId, formData);
-                    console.log("Upload ảnh:", uploadResult.data);
-
-                    if (uploadResult.status !== 200) {
-                        imageUploadSuccess = false;
-                        console.warn("Upload ảnh thất bại:", uploadResult.data);
-                    }
-                }
-
-                // Hiển thị thông báo kết quả
-                setShowModal(false);
-                Swal.fire({
-                    position: "center",
-                    icon: imageUploadSuccess ? "success" : "warning",
-                    title: imageUploadSuccess ? "Tạo tour thành công!" : "Tạo tour thành công nhưng upload ảnh thất bại!",
-                    text: imageUploadSuccess ? "Tour đã được tạo và ảnh đã được upload." : "Vui lòng kiểm tra lại ảnh.",
-                    showConfirmButton: false,
-                    timer: 3000,
-                }).then(() => {
-                    // Gọi callback để cập nhật danh sách tour
-                    if (onTourCreated) onTourCreated();
-                    window.location.reload(); // Tải lại trang để cập nhật danh sách tour
-                });
-            } else {
-                throw new Error(result.data || "Tạo tour thất bại");
+            // Kiểm tra file ảnh
+            if (files.length > 0) {
+                const invalidFiles = files.filter((file) => file.size > 10 * 1024 * 1024 || !file.type.startsWith("image/"));
+                if (invalidFiles.length > 0) throw new Error("Ảnh phải có định dạng hợp lệ và nhỏ hơn 10MB");
             }
+
+            // Chuẩn bị dữ liệu để gửi lên API
+            const apiData = {
+                ...data,
+                itinerary: itinerary.map((item, index) => ({
+                    day: index + 1,
+                    title: item.title,
+                    content: Array.isArray(item.content) ? item.content : item.content.split("\n").filter(Boolean),
+                })),
+            };
+
+            const result = await createDataTour(apiData);
+            if (![200, 201].includes(result.status)) {
+                throw new Error(result.data?.message || "Tạo tour thất bại");
+            }
+
+            const tourId = result.data.id || result.data.tourId;
+            if (!tourId) throw new Error("Không tìm thấy tourId trong response");
+
+            let imageUploadSuccess = true;
+
+            // Nếu có ảnh, upload ảnh lên server
+            if (files.length > 0) {
+                try {
+                    const formData = new FormData();
+                    files.forEach((file) => formData.append("files", file));
+                    const uploadResult = await uploadImageTour(tourId, formData);
+
+                    if ([200, 201].includes(uploadResult.status)) {
+                        if (typeof uploadResult.data === "string" && uploadResult.data.includes("<!DOCTYPE html>")) {
+                            throw new Error("Vui lòng kiểm tra token hoặc cấu hình xác thực.");
+                        }
+
+                        if (!Array.isArray(uploadResult.data)) {
+                            throw new Error("Response không phải danh sách URL");
+                        }
+
+                        const baseUrl = "http://localhost:8088/api/v1";
+                        const imageUrls = uploadResult.data.map((url) => (url.startsWith("http") ? url : `${baseUrl}${url}`));
+                        setFiles(imageUrls);
+                    } else {
+                        imageUploadSuccess = false;
+                        throw new Error(uploadResult.data?.message || "Lỗi upload ảnh");
+                    }
+                } catch (uploadError) {
+                    imageUploadSuccess = false;
+                    throw new Error("Upload ảnh thất bại: " + uploadError.message);
+                }
+            }
+
+            setShowModal(false);
+            Swal.fire({
+                position: "center",
+                icon: imageUploadSuccess ? "success" : "warning",
+                title: imageUploadSuccess ? "Tạo tour thành công!" : "Tạo tour thành công nhưng upload ảnh thất bại!",
+                showConfirmButton: false,
+                timer: 3000,
+            });
+
+            if (onTourCreated) onTourCreated();
         } catch (error) {
-            console.error("Error creating tour:", error);
             Swal.fire({
                 icon: "error",
                 title: "Lỗi",
-                text: error.message || "Không thể tạo tour. Vui lòng thử lại.",
+                text: error.message || "Có lỗi xảy ra",
                 confirmButtonColor: "#d33",
             });
         } finally {
@@ -173,7 +174,7 @@ function CreateTour({ onTourCreated }) {
         }
     };
 
-    // Cập nhật dữ liệu nhập từ form
+    // Xử lý thay đổi dữ liệu form
     const handleChange = (e) => {
         const { name, value } = e.target;
         let updatedData = { ...data };
@@ -184,7 +185,6 @@ function CreateTour({ onTourCreated }) {
             updatedData[name] = value;
         }
 
-        // Nếu người dùng chọn ngày bắt đầu/kết thúc, tính duration + cập nhật lịch trình
         if (name === "startDate" || name === "endDate") {
             const start = new Date(updatedData.startDate);
             const end = new Date(updatedData.endDate);
@@ -192,8 +192,6 @@ function CreateTour({ onTourCreated }) {
                 const diffTime = Math.abs(end - start);
                 const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)) + 1;
                 updatedData.duration = `${diffDays} ngày ${diffDays - 1} đêm`;
-
-                // Khởi tạo lịch trình theo số ngày
                 setItinerary(
                     Array.from({ length: diffDays }, (_, index) => ({
                         day: index + 1,
@@ -210,7 +208,7 @@ function CreateTour({ onTourCreated }) {
         setData(updatedData);
     };
 
-    // Cập nhật ảnh từ input
+    // Xử lý khi người dùng chọn ảnh từ input
     const handleImageChange = (e) => {
         const uploadedFiles = e.target.files;
         if (uploadedFiles.length > 0) {
@@ -218,34 +216,34 @@ function CreateTour({ onTourCreated }) {
         }
     };
 
-    // Hiển thị ảnh đã chọn với nút xóa
+    // Render danh sách ảnh được chọn
     const renderAnh = () => (
         <div className="mt-2 flex flex-wrap gap-4">
-            {files.map((file, index) => (
+            {files.map((item, index) => (
                 <div
                     key={index}
                     className="relative h-24 w-24 overflow-hidden rounded shadow"
                 >
                     <img
-                        src={URL.createObjectURL(file)}
+                        src={typeof item === "string" ? item : URL.createObjectURL(item)}
                         alt={`Ảnh ${index + 1}`}
                         className="h-full w-full object-cover"
                     />
                     <button
                         type="button"
                         onClick={() => handleDeleteImage(index)}
-                        className="absolute top-0 right-0 rounded-full bg-red-500 p-2 text-xs text-white"
+                        className="absolute top-1 right-1 flex h-6 w-6 items-center justify-center rounded-full bg-red-500 text-xs text-white shadow-md hover:bg-red-600"
                         title="Xóa ảnh"
                         aria-label="Xóa ảnh"
                     >
-                        X
+                        &times;
                     </button>
                 </div>
             ))}
         </div>
     );
 
-    // Cập nhật dữ liệu trong lịch trình (itinerary)
+    // Xử lý khi người dùng nhập thông tin cho hành trình (itinerary)
     const handleItineraryChange = (index, field, value) => {
         const newItinerary = [...itinerary];
         if (field === "reverse") {
@@ -276,6 +274,7 @@ function CreateTour({ onTourCreated }) {
                 handleImageChange={handleImageChange}
                 files={files}
                 dataRegion={dataRegion}
+                isLoading={isLoading}
             />
         </>
     );

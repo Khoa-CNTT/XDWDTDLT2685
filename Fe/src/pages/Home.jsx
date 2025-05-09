@@ -2,7 +2,7 @@ import React from 'react';
 import MainVD from '../assets/Video/main.mp4';
 import Hero from '../components/Hero/Hero';
 import Places from '../components/Places/Places';
-import Banner1 from '../assets/Travel/Banner.png'
+import Banner1 from '../assets/Travel/BannerImg.png'
 import BannerImg from '../components/BannerImg/BannerImg';
 import Banner from '../components/Banner/Banner';
 import Evaluate from '../components/Evaluate/Evaluate';

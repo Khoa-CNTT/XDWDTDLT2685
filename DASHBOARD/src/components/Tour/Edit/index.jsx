@@ -20,8 +20,23 @@ function EditTour({ item }) {
     // Cập nhật lại data và itinerary mỗi khi item (props) thay đổi
     useEffect(() => {
         if (item) {
-            setData(item);
-            setItinerary(item.itinerary || []);
+            setData({
+                ...item,
+                startDate: item.startDate ? item.startDate.split("T")[0] : "",
+                endDate: item.endDate ? item.endDate.split("T")[0] : "",
+                price_adult: item.price_adult ? parseFloat(item.price_adult.replace(" VNĐ", "").replace(".", "")) : 0,
+                price_child: item.price_child ? parseFloat(item.price_child.replace(" VNĐ", "").replace(".", "")) : 0,
+                images: item.img ? [item.img] : [],
+            });
+            setItinerary(
+                item.itinerary?.length > 0
+                    ? item.itinerary.map((day, index) => ({
+                          day: index + 1,
+                          title: day.title || "",
+                          content: Array.isArray(day.content) ? day.content : day.content?.split("\n") || [],
+                      }))
+                    : [],
+            );
         }
     }, [item]);
 
@@ -30,7 +45,6 @@ function EditTour({ item }) {
         const today = new Date();
         const startDate = new Date(item.startDate + "T00:00:00");
 
-        // Ngăn không cho sửa nếu tour đã bắt đầu hoặc không còn trống
         if (!item.availability || startDate <= today) {
             Swal.fire({
                 position: "center",
@@ -62,6 +76,8 @@ function EditTour({ item }) {
 
         if (name === "availability") {
             updatedData[name] = value === "true";
+        } else if (name === "price_adult" || name === "price_child" || name === "quantity") {
+            updatedData[name] = parseFloat(value) || 0;
         } else {
             updatedData[name] = value;
         }
@@ -94,14 +110,11 @@ function EditTour({ item }) {
     const handleItineraryChange = (index, field, value) => {
         const newItinerary = [...itinerary];
         if (field === "add") {
-            // Thêm ngày mới
             newItinerary.push({ day: newItinerary.length + 1, title: "", content: [] });
         } else if (field === "remove") {
-            // Xóa ngày
             newItinerary.splice(index, 1);
             newItinerary.forEach((item, i) => (item.day = i + 1));
         } else {
-            // Cập nhật title hoặc content
             newItinerary[index] = {
                 ...newItinerary[index],
                 [field]: field === "content" ? value.split("\n").filter(Boolean) : value,
@@ -124,9 +137,10 @@ function EditTour({ item }) {
         });
 
         if (confirmResult.isConfirmed) {
-            // Chuẩn bị dữ liệu để gửi API
             const apiData = {
                 ...data,
+                price_adult: `${data.price_adult.toLocaleString()} VNĐ`,
+                price_child: `${data.price_child.toLocaleString()} VNĐ`,
                 itinerary: itinerary.map((item, index) => ({
                     day: index + 1,
                     title: item.title,
@@ -135,14 +149,12 @@ function EditTour({ item }) {
             };
 
             try {
-                // Gọi API cập nhật tour
-                const result = await updateTour(data.tourId, apiData);
+                const result = await updateTour(data.id, apiData);
                 if (result.status === 200 || result.status === 201) {
-                    // Nếu có ảnh → tải ảnh lên server
                     if (files.length > 0) {
                         const formData = new FormData();
                         files.forEach((file) => formData.append("images", file));
-                        const uploadResult = await uploadImageTour(data.tourId, formData);
+                        const uploadResult = await uploadImageTour(data.id, formData);
                         if (uploadResult.status !== 200) {
                             console.warn("Upload ảnh thất bại:", uploadResult.data);
                         }
@@ -191,6 +203,21 @@ function EditTour({ item }) {
                         <img
                             src={URL.createObjectURL(file)}
                             alt={`Ảnh ${index + 1}`}
+                            className="h-full w-full object-cover"
+                        />
+                    </div>
+                ))}
+            </div>
+        ) : data.images?.length > 0 ? (
+            <div className="mt-2 flex flex-wrap gap-4">
+                {data.images.map((image, index) => (
+                    <div
+                        key={index}
+                        className="h-24 w-24 overflow-hidden rounded shadow"
+                    >
+                        <img
+                            src={image}
+                            alt={`Ảnh hiện tại ${index + 1}`}
                             className="h-full w-full object-cover"
                         />
                     </div>

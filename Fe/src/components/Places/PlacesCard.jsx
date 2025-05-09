@@ -30,7 +30,7 @@ const PlacesCard = ({ item, booking = true, size = "default", left = false, star
             <div className='flex-grow p-2 mt-2 space-y-2'>
                 <div className='flex gap-2 opacity-70 '>
                     <IoLocationOutline className='w-6 h-6' />
-                    <p className='max-w-[700px]'>{item.location}</p>
+                    <p className='max-w-[700px]'>{item.destination}</p>
                 </div>
                 <Link
                     to={`/tours/${item.id}`}
@@ -41,7 +41,7 @@ const PlacesCard = ({ item, booking = true, size = "default", left = false, star
                 <div className='flex items-center justify-between text-sm'>
                     <div className='flex items-center gap-1'>
                         <FiClock className='w-4 h-4' />
-                        <p className='flex items-end flex-1'>{item.date} ngày</p>
+                        <p className='flex items-end flex-1'>{item.duration} ngày</p>
                     </div>
                     <div className='flex items-center'>
                         <FaRegUser />
@@ -53,7 +53,7 @@ const PlacesCard = ({ item, booking = true, size = "default", left = false, star
             {/* Phần giá và nút, luôn nằm ở dưới */}
             <div className='flex items-center justify-between py-3 mt-3 border-t-2 '>
                 <div className='opacity-70'>
-                    <p className='text-base font-bold'>{item.price}/người</p>
+                    <p className='text-base font-bold'>{item.price_adult}/người</p>
                 </div>
                 {booking && (
                     <div className='flex items-center gap-2'>

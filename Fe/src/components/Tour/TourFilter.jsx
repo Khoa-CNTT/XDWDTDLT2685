@@ -25,7 +25,9 @@ const TourFilter = () => {
         setSortValue,
         tours,
         resetFilters
-    } = useTourFilterSort(); 
+    } = useTourFilterSort();
+    // const [loading, setLoading] = useState(false)
+
 
     return (
         <div className='pt-10'>

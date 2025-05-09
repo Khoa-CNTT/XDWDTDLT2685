@@ -4,7 +4,7 @@ import SearchTour from '../components/Search/SearchTour';
 
 const Search = () => {
     return (
-        <div>
+        <div className='dark:bg-[#101828] dark:text-white'>
             <HeaderImg title="Tìm kiếm" currenPage="Tìm kiếm" />
             <SearchTour />
         </div>

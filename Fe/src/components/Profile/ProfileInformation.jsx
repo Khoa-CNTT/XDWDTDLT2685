@@ -1,12 +1,15 @@
 import React, { useEffect, useState } from 'react';
 import { toast } from 'react-toastify';
 import { putChangeInformation, putProfileImg } from '../../services/profile';
+import { FaSyncAlt } from 'react-icons/fa';
 
 const ProfileInformation = ({ profile, selectedFile }) => {
     const [user_name, setUserName] = useState('');
     const [phone_number, setPhoneNumber] = useState('');
     const [email, setEmail] = useState('');
     const [address, setAddress] = useState('');
+    const [loading, setLoading] = useState(false)
+
 
     // Gán dữ liệu profile vào state khi profile thay đổi
     useEffect(() => {
@@ -48,6 +51,7 @@ const ProfileInformation = ({ profile, selectedFile }) => {
         }
 
         try {
+            setLoading(true)
             const res = await putChangeInformation(userId, data);
             if (selectedFile) {
                 const formData = new FormData();
@@ -55,10 +59,14 @@ const ProfileInformation = ({ profile, selectedFile }) => {
                 await putProfileImg(userId, formData);
             }
             if (res.status === 200) {
-                toast.success('Cập nhật thông tin thành công!');
+                setTimeout(() => {
+                    toast.success('Cập nhật thông tin thành công!');
+                    setLoading(false)
+                }, 1000);
             }
         } catch (error) {
             toast.error('Cập nhật không thành công');
+
         }
     };
 
@@ -125,7 +133,15 @@ const ProfileInformation = ({ profile, selectedFile }) => {
                         </div>
 
                         <div className='p-2 cursor-pointer border text-center text-white border-gray-200 w-[200px] bg-primary rounded-lg'>
-                            <button type='submit' className='font-semibold'>Lưu thông tin</button>
+                            <button type='submit' className='font-semibold'>
+                                {loading ? (
+                                    <>
+                                        <FaSyncAlt className='w-5 h-5 text-white animate-spin' />
+                                    </>
+                                ) : (
+                                    "Lưu Thông Tin"
+                                )}
+                            </button>
                         </div>
                     </div>
                 </form>

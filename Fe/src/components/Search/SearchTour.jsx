@@ -6,7 +6,7 @@ const SearchTour = () => {
   const { tours } = useSearch();
 
   return (
-    <div className='dark:bg-[#101828] dark:text-white'>
+    <div>
       <div className=''>
         <h1 className='pl-3  my-8 text-2xl font-bold text-left border-l-8 ml-[200px] border-primary/50'>
           Tour tìm thấy
