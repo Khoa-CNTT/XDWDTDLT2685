@@ -57,7 +57,7 @@ const PaymentSidebar = ({ agreed, countAdult, countChildren, full_name, email, p
                     <div className='flex items-center gap-2'>
                         <BsTicketPerforated className='w-6 h-6 ' />
                         <p className='text-lg'>Mã tour:</p>
-                        <p className='font-semibold'>HNLCSP4N3D</p>
+                        <p className='font-semibold'>{item.code}</p>
                     </div>
                     <p className='text-xl font-bold'>{item.title}</p>
                     <div className="space-y-3">
