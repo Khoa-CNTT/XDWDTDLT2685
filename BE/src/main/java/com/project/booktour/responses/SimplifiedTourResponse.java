@@ -48,7 +48,6 @@ public class SimplifiedTourResponse  extends BaseResponse {
     private String  priceChild;
     private String duration;
     private String region;
-    private LocalDate endDate;
 
 
     public static SimplifiedTourResponse fromTour(Tour tour, ObjectMapper objectMapper) throws Exception {
@@ -69,8 +68,9 @@ public class SimplifiedTourResponse  extends BaseResponse {
         simplifiedTourResponse.setCreatedAt(tour.getCreatedAt());
         simplifiedTourResponse.setUpdatedAt(tour.getUpdatedAt());
         simplifiedTourResponse.setStartDate(tour.getStartDate());
-        simplifiedTourResponse.setEndDate(tour.getEndDate());
         simplifiedTourResponse.setRegion(tour.getRegion().toString());
         return simplifiedTourResponse;
     }
+
+
 }

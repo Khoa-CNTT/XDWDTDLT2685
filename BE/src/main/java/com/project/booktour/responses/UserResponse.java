@@ -41,10 +41,18 @@ public class UserResponse {
     private String avatar;
     public static UserResponse fromUser(com.project.booktour.models.User user) {
         String avatarFileName = user.getAvatar();
-        String baseUrl = "http://localhost:8088";
-        String avatarUrl = (avatarFileName != null && !avatarFileName.isEmpty())
-                ? baseUrl + "/avatars/" + avatarFileName
-                : baseUrl + "/avatars/default-avatar.jpg";
+        String baseUrl = "http://localhost:8088/api/v1/users";
+        String avatarUrl;
+
+        if (avatarFileName != null && !avatarFileName.isEmpty()) {
+            // Loại bỏ dấu / ở đầu nếu có
+            if (avatarFileName.startsWith("/")) {
+                avatarFileName = avatarFileName.substring(1);
+            }
+            avatarUrl = baseUrl + "/avatars/" + avatarFileName;
+        } else {
+            avatarUrl = baseUrl + "/avatars/default-avatar.jpg";
+        }
 
         return UserResponse.builder()
                 .id(user.getUserId())

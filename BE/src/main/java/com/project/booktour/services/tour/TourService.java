@@ -40,6 +40,10 @@ public class TourService implements ITourService {
 
     @Override
     public Tour createTour(TourDTO tourDTO) throws DataNotFoundException, JsonProcessingException, InvalidParamException {
+        if (tourRepository.existsByTitle(tourDTO.getTitle())) {
+            throw new InvalidParamException("Tour with title '" + tourDTO.getTitle() + "' already exists");
+        }
+
         Tour newTour = Tour.builder()
                 .title(tourDTO.getTitle())
                 .description(tourDTO.getDescription())
@@ -56,9 +60,7 @@ public class TourService implements ITourService {
                 .tourImages(new ArrayList<>())
                 .build();
 
-        Tour savedTour = tourRepository.save(newTour);
-        savedTour.setTourImages(createTourImagesFromDTO(savedTour, tourDTO.getImages()));
-        return tourRepository.save(savedTour);
+        return tourRepository.save(newTour);
     }
 
     @Override
@@ -72,7 +74,6 @@ public class TourService implements ITourService {
         Tour tour = tourRepository.findById(id)
                 .orElseThrow(() -> new DataNotFoundException("Tour not found with id: " + id));
 
-        // Truy vấn tourImages trực tiếp từ repository để tránh N+1 query
         List<String> imageUrls = tourImageRepository.findByTourTourId(id).stream()
                 .map(TourImage::getImageUrl)
                 .filter(Objects::nonNull)
@@ -89,7 +90,6 @@ public class TourService implements ITourService {
             throw new RuntimeException("Failed to parse tour details for tour with id: " + id, e);
         }
     }
-
 
     @Override
     public Page<SimplifiedTourResponse> getAllTours(PageRequest pageRequest, Double priceMin, Double priceMax, String region, Float starRating, String duration, String title) {
@@ -119,10 +119,15 @@ public class TourService implements ITourService {
                     }
                 });
     }
+
     @Override
     public Tour updateTour(Long id, TourDTO tourDTO) throws Exception {
         Tour existingTour = getTourById(id);
         if (existingTour != null) {
+            if (!existingTour.getTitle().equals(tourDTO.getTitle()) && tourRepository.existsByTitle(tourDTO.getTitle())) {
+                throw new InvalidParamException("Tour with title '" + tourDTO.getTitle() + "' already exists");
+            }
+
             existingTour.setTitle(tourDTO.getTitle());
             existingTour.setDescription(tourDTO.getDescription());
             existingTour.setQuantity(tourDTO.getQuantity());
@@ -134,28 +139,21 @@ public class TourService implements ITourService {
             existingTour.setItinerary(tourDTO.getItinerary() != null ? objectMapper.writeValueAsString(tourDTO.getItinerary()) : null);
             existingTour.setRegion(Region.valueOf(tourDTO.getRegion().toUpperCase()));
             existingTour.setStartDate(tourDTO.getStartDate());
-            existingTour.setRegion(Region.valueOf(tourDTO.getRegion().toUpperCase()));
+            existingTour.setEndDate(tourDTO.getEndDate());
 
-            tourImageRepository.deleteByTourTourId(id);
-            existingTour.setTourImages(createTourImagesFromDTO(existingTour, tourDTO.getImages()));
             return tourRepository.save(existingTour);
         }
         return null;
     }
 
-
+    @Override
     @Transactional
     public void deleteTour(Long id) {
         Tour tour = tourRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Tour not found with id: " + id));
 
-        // Xóa tất cả ảnh liên quan (cascade đã tự động xóa nếu dùng ALL)
         tourImageRepository.deleteAll(tour.getTourImages());
-
-        // Xóa tất cả review liên quan
         reviewRepository.deleteAll(tour.getReviews());
-
-        // Cuối cùng xóa tour
         tourRepository.delete(tour);
     }
 

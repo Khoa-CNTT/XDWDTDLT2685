@@ -1,7 +1,6 @@
 package com.project.booktour.controllers;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-
 import com.project.booktour.dtos.TourDTO;
 import com.project.booktour.dtos.TourImageDTO;
 import com.project.booktour.models.Region;
@@ -14,6 +13,7 @@ import com.project.booktour.services.tour.ITourService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.apache.tika.Tika;
+import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.core.io.UrlResource;
 import org.springframework.data.domain.Page;
@@ -37,7 +37,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
-import org.slf4j.Logger;
 
 @RestController
 @RequestMapping("${api.prefix}/tours")
@@ -122,7 +121,6 @@ public class TourController {
         }
     }
 
-
     @GetMapping("/{id}")
     public ResponseEntity<?> getTourResponseById(@PathVariable("id") Long tourId) {
         try {
@@ -133,6 +131,7 @@ public class TourController {
                     .body("Tour not found with id: " + tourId);
         }
     }
+
     @GetMapping("/images/{imageName}")
     public ResponseEntity<?> viewImage(@PathVariable String imageName) {
         try {
@@ -172,7 +171,7 @@ public class TourController {
         }
     }
 
-    @PostMapping(value = "uploads/{id}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    @PostMapping(value = "/uploads/{id}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<?> uploadImage(
             @PathVariable("id") Long tourId,
             @RequestParam("files") List<MultipartFile> files) {
@@ -182,7 +181,7 @@ public class TourController {
             }
 
             Tour existingTour = tourService.getTourById(tourId);
-            List<TourImage> tourImages = new ArrayList<>();
+            List<String> imageUrls = new ArrayList<>();
 
             for (MultipartFile file : files) {
                 if (file.getSize() == 0) {
@@ -203,9 +202,12 @@ public class TourController {
                         existingTour.getTourId(),
                         TourImageDTO.builder().imageUrl(fileName).build()
                 );
-                tourImages.add(tourImage);
+                // Thêm URL đầy đủ vào danh sách trả về
+                String imageUrl = "http://localhost:8088/api/v1/tours/images/" + fileName;
+                imageUrls.add(imageUrl);
             }
-            return ResponseEntity.ok("Upload successful");
+
+            return ResponseEntity.ok(imageUrls); // Trả về danh sách URL ảnh
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                     .body("Failed to upload images: " + e.getMessage());
@@ -251,7 +253,6 @@ public class TourController {
                 return ResponseEntity.status(HttpStatus.NOT_FOUND)
                         .body("Tour not found with id: " + id);
             }
-            // Sử dụng getTourDetails để lấy TourResponse đầy đủ (bao gồm imageUrls)
             TourResponse tourResponse = tourService.getTourDetails(updatedTour.getTourId());
             return ResponseEntity.ok(tourResponse);
         } catch (Exception e) {
@@ -274,7 +275,6 @@ public class TourController {
         Files.copy(file.getInputStream(), destination, StandardCopyOption.REPLACE_EXISTING);
         return uniqueFilename;
     }
-
     private boolean isImage(MultipartFile file) throws IOException {
         Tika tika = new Tika();
         String mimeType = tika.detect(file.getInputStream());

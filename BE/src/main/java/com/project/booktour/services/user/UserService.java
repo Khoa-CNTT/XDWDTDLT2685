@@ -206,6 +206,18 @@ public class UserService implements IUserService {
         existingUser.setIsActive(active);
         userRepository.save(existingUser);
     }
+    @Override
+    @Transactional
+    public void deleteUser(Long id) throws DataNotFoundException {
+        User user = userRepository.findById(id)
+                .orElseThrow(() -> new DataNotFoundException("Cannot find user with id: " + id));
+
+        // Xóa tất cả token liên quan trước
+        List<Token> tokens = tokenRepository.findByUser(user);
+        tokenRepository.deleteAll(tokens);
+
+        userRepository.delete(user);
+    }
 
     @Override
     public UserProfileResponse getUserProfile(Long userId) throws Exception {

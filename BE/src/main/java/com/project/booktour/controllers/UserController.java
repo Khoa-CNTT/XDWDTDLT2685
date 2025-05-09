@@ -156,4 +156,17 @@ public class UserController {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
+    // Thêm vào cuối class UserController
+    @DeleteMapping("/{id}")
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    public ResponseEntity<String> deleteUser(@PathVariable Long id) {
+        try {
+            userService.deleteUser(id);
+            return ResponseEntity.ok("User deleted successfully");
+        } catch (DataNotFoundException e) {
+            return ResponseEntity.badRequest().body("User not found.");
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body("Failed to delete user: " + e.getMessage());
+        }
+    }
 }

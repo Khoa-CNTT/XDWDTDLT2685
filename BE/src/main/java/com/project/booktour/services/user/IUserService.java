@@ -24,4 +24,5 @@ public interface IUserService {
     Page<User> getAllUser(String keyword, Pageable pageable) throws Exception;
 
     void blockOrEnable(Long userId, Boolean active) throws DataNotFoundException;
+    void deleteUser(Long id) throws DataNotFoundException;
 }

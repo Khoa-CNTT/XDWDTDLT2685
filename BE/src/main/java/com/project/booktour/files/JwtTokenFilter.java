@@ -80,7 +80,12 @@ public class JwtTokenFilter extends OncePerRequestFilter {
                 Pair.of(apiPrefix + "/reviews/**", "GET"),
                 Pair.of("/login/oauth2/code/*", "GET"), // OAuth2 callback
                 Pair.of(apiPrefix + "/auth/success", "GET"), // OAuth2 success
-                Pair.of(apiPrefix + "/auth/failure", "GET")
+                Pair.of(apiPrefix + "/auth/failure", "GET"),
+                // Thêm các endpoint chatbot
+                Pair.of(apiPrefix + "/chat", "POST"),
+                Pair.of(apiPrefix + "/events", "GET"),
+                Pair.of(apiPrefix + "/receive-message", "POST"),
+                Pair.of(apiPrefix + "/health/n8n", "GET")
 
         );
         String requestPath = request.getServletPath();

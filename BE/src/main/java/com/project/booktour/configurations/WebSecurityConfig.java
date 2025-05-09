@@ -38,13 +38,21 @@ public class WebSecurityConfig {
                 .addFilterBefore(jwtTokenFilter, UsernamePasswordAuthenticationFilter.class)
                 .authorizeHttpRequests(requests -> {
                     requests
+                            // Các endpoint công khai hiện có
                             .requestMatchers(
                                     String.format("%s/users/register", apiPrefix),
                                     String.format("%s/users/login", apiPrefix),
                                     String.format("%s/tours/**", apiPrefix),
-                                    "/login/oauth2/code/*", // Cho phép callback OAuth2
-                                    String.format("%s/auth/success", apiPrefix), // Endpoint trả về JWT
-                                    String.format("%s/auth/failure", apiPrefix) // Endpoint xử lý lỗi
+                                    "/login/oauth2/code/*",
+                                    String.format("%s/auth/success", apiPrefix),
+                                    String.format("%s/auth/failure", apiPrefix)
+                            ).permitAll()
+                            // Thêm các endpoint chatbot vào danh sách công khai
+                            .requestMatchers(
+                                    String.format("%s/chat", apiPrefix),
+                                    String.format("%s/events", apiPrefix),
+                                    String.format("%s/receive-message", apiPrefix),
+                                    String.format("%s/health/n8n", apiPrefix)
                             ).permitAll()
                             .requestMatchers(GET, String.format("%s/tours/**", apiPrefix)).permitAll()
                             .requestMatchers(POST, String.format("%s/tours/**", apiPrefix)).hasRole("ADMIN")
@@ -87,8 +95,8 @@ public class WebSecurityConfig {
                 })
                 .oauth2Login(oauth2 -> oauth2
                         .userInfoEndpoint(userInfo -> userInfo
-                                .oidcUserService(new OidcUserService()) // Hỗ trợ Google
-                                .userService(oAuth2UserService) // Dịch vụ tùy chỉnh cho Google/Facebook
+                                .oidcUserService(new OidcUserService())
+                                .userService(oAuth2UserService)
                         )
                         .successHandler((request, response, authentication) -> {
                             response.sendRedirect(String.format("%s/auth/success", apiPrefix));
@@ -96,7 +104,9 @@ public class WebSecurityConfig {
                         .failureHandler((request, response, exception) -> {
                             response.sendRedirect(String.format("%s/auth/failure", apiPrefix));
                         })
-                );
+                )
+                // Tắt form login mặc định để tránh redirect đến /login
+                .formLogin(form -> form.disable());
 
         return http.build();
     }
@@ -104,7 +114,8 @@ public class WebSecurityConfig {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOrigins(List.of("http://localhost:5173"));
+        // Thêm n8n Cloud vào danh sách allowed origins
+        configuration.setAllowedOrigins(List.of("http://localhost:5173", "https://phongnguyeeen.app.n8n.cloud"));
         configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
         configuration.setAllowedHeaders(List.of("*"));
         configuration.setAllowCredentials(true);

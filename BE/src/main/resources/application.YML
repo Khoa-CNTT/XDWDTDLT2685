@@ -1,5 +1,9 @@
 server:
   port: 8088
+n8n:
+  webhook:
+    url: https://phongnguyeeen.app.n8n.cloud/webhook/f54a91f5-1036-418c-9862-70c19b587efe
+    backup: ${N8N_BACKUP_WEBHOOK:${n8n.webhook.url}}
 spring:
   datasource:
     url: jdbc:mysql://localhost:3307/booktour?useSSL=false&serverTimezone=UTC
