@@ -21,4 +21,6 @@ public interface UserRepository extends JpaRepository<User, Long> {
     Page<User> findAll(@Param("keyword") String keyword, Pageable pageable);
 
     boolean existsByEmail(String email);
+    @Query("SELECT COUNT(u) FROM User u WHERE u.isActive = true")
+    Long countActiveUsers(); // Đếm số người dùng active
 }

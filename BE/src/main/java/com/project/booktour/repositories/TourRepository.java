@@ -11,6 +11,7 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface TourRepository extends JpaRepository<Tour, Long> {
     boolean existsByTitle(String title);
+    Long countByAvailabilityTrue();
 
     @Query("SELECT t, AVG(r.rating) as avgRating, " +
             "(SELECT ti.imageUrl FROM TourImage ti WHERE ti.tour = t ORDER BY ti.id ASC LIMIT 1) " +

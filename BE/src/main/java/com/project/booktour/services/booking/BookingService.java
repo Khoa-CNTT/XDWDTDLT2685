@@ -82,8 +82,8 @@ public class BookingService implements IBookingService {
     }
 
     @Override
-    public Page<BookingDTO> getAllBookings(PageRequest pageRequest) {
-        Page<Booking> bookingPage = bookingRepository.findAll(pageRequest);
+    public Page<BookingDTO> getAllBookings( String keyword,PageRequest pageRequest) {
+        Page<Booking> bookingPage = bookingRepository.findAll( keyword,pageRequest);
         return bookingPage.map(booking -> BookingDTO.builder()
                 .userId(booking.getUser().getUserId())
                 .tourId(booking.getTour().getTourId())
@@ -198,4 +198,6 @@ public class BookingService implements IBookingService {
     public boolean hasUserBookedTour(Long userId, Long tourId) {
         return bookingRepository.existsByUserUserIdAndTourTourId(userId, tourId);
     }
+
+
 }

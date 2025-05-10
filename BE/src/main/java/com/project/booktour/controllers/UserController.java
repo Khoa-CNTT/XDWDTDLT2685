@@ -111,7 +111,7 @@ public class UserController {
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody @Valid UserLoginDTO userLoginDTO) {
         try {
-                LoginResponse loginResponseDTO = userService.login(userLoginDTO.getUserName(), userLoginDTO.getPassword());
+            LoginResponse loginResponseDTO = userService.login(userLoginDTO.getUserName(), userLoginDTO.getPassword());
             return ResponseEntity.ok(loginResponseDTO);
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(e.getMessage());
@@ -156,17 +156,17 @@ public class UserController {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
-    // Thêm vào cuối class UserController
+
     @DeleteMapping("/{id}")
     @PreAuthorize("hasRole('ROLE_ADMIN')")
-    public ResponseEntity<String> deleteUser(@PathVariable Long id) {
+    public ResponseEntity<?> deleteUser(@PathVariable Long id) {
         try {
             userService.deleteUser(id);
             return ResponseEntity.ok("User deleted successfully");
         } catch (DataNotFoundException e) {
-            return ResponseEntity.badRequest().body("User not found.");
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
         } catch (Exception e) {
-            return ResponseEntity.badRequest().body("Failed to delete user: " + e.getMessage());
+            return ResponseEntity.badRequest().body("Error deleting user: " + e.getMessage());
         }
     }
 }

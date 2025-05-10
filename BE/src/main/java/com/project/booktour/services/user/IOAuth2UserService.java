@@ -2,7 +2,6 @@ package com.project.booktour.services.user;
 
 import com.project.booktour.components.JwtTokenUtil;
 import com.project.booktour.exceptions.InvalidParamException;
-import com.project.booktour.models.Role;
 import com.project.booktour.models.SocialAccount;
 import com.project.booktour.models.User;
 import com.project.booktour.models.CustomOAuth2User;
@@ -20,15 +19,15 @@ import java.util.List;
 import java.util.Optional;
 
 @Service
-public class OAuth2UserServiceImpl extends DefaultOAuth2UserService {
+public class IOAuth2UserService extends DefaultOAuth2UserService {
 
     private final UserRepository userRepository;
     private final SocialAccountRepository socialAccountRepository;
     private final RoleRepository roleRepository;
     private final JwtTokenUtil jwtTokenUtil;
 
-    public OAuth2UserServiceImpl(UserRepository userRepository, SocialAccountRepository socialAccountRepository,
-                                 RoleRepository roleRepository, JwtTokenUtil jwtTokenUtil) {
+    public IOAuth2UserService(UserRepository userRepository, SocialAccountRepository socialAccountRepository,
+                              RoleRepository roleRepository, JwtTokenUtil jwtTokenUtil) {
         this.userRepository = userRepository;
         this.socialAccountRepository = socialAccountRepository;
         this.roleRepository = roleRepository;

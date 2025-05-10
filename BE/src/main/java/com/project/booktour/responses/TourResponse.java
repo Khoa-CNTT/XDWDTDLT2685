@@ -17,6 +17,9 @@ import java.util.List;
 @AllArgsConstructor
 @Builder
 public class TourResponse extends BaseResponse {
+
+    private Long id;
+
     private String title;
 
     @JsonProperty("price_adult")
@@ -66,6 +69,7 @@ public class TourResponse extends BaseResponse {
         );
 
         TourResponse tourResponse = TourResponse.builder()
+                .id(tour.getTourId())
                 .title(tour.getTitle())
                 .priceAdult(tour.getPriceAdult())
                 .priceChild(tour.getPriceChild())

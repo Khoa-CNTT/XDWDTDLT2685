@@ -1,7 +1,7 @@
 package com.project.booktour.configurations;
 
 import com.project.booktour.files.JwtTokenFilter;
-import com.project.booktour.services.user.OAuth2UserServiceImpl;
+import com.project.booktour.services.user.IOAuth2UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
@@ -25,7 +25,7 @@ import static org.springframework.http.HttpMethod.*;
 @RequiredArgsConstructor
 public class WebSecurityConfig {
     private final JwtTokenFilter jwtTokenFilter;
-    private final OAuth2UserServiceImpl oAuth2UserService;
+    private final IOAuth2UserService oAuth2UserService;
 
     @Value("${api.prefix}")
     private String apiPrefix;
@@ -115,7 +115,7 @@ public class WebSecurityConfig {
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
         // Thêm n8n Cloud vào danh sách allowed origins
-        configuration.setAllowedOrigins(List.of("http://localhost:5173", "https://phongnguyeeen.app.n8n.cloud"));
+        configuration.setAllowedOrigins(List.of("http://localhost:5173", "https://phongnguyeeen.app.n8n.cloud", "http://localhost:3000"));
         configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
         configuration.setAllowedHeaders(List.of("*"));
         configuration.setAllowCredentials(true);

@@ -8,6 +8,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.BindingResult;
@@ -59,11 +60,12 @@ public class BookingController {
     @GetMapping("")
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<?> getAllBookings(
+            @RequestParam(defaultValue = "", required = false) String keyword, // Thêm keyword để tìm kiếm
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int limit) {
         try {
-            PageRequest pageRequest = PageRequest.of(page, limit);
-            Page<BookingDTO> bookings = bookingService.getAllBookings(pageRequest);
+            PageRequest pageRequest = PageRequest.of(page, limit, Sort.by("bookingId").ascending());
+            Page<BookingDTO> bookings = bookingService.getAllBookings(keyword, pageRequest);
             return ResponseEntity.ok(bookings);
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(e.getMessage());

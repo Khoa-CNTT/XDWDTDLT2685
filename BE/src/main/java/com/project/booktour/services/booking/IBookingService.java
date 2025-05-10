@@ -21,5 +21,5 @@ public interface IBookingService {
 
     List<Booking> findByUserId(Long userId);
     boolean hasUserBookedTour(Long userId, Long tourId);
-    Page<BookingDTO> getAllBookings(PageRequest pageRequest);
+    Page<BookingDTO> getAllBookings(String keyword ,PageRequest pageRequest);
 }
