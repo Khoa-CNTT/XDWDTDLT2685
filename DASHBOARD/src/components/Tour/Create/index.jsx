@@ -93,9 +93,9 @@ function CreateTour({ onTourCreated }) {
         try {
             if (!Array.isArray(existingTours)) throw new Error("Dữ liệu tour không hợp lệ");
 
-            // Kiểm tra trùng tiêu đề tour
-            const isDuplicate = existingTours.some((tour) => tour.title?.toLowerCase().trim() === data.title?.toLowerCase().trim());
-            if (isDuplicate) throw new Error("Tên tour đã tồn tại");
+            // // Kiểm tra trùng tiêu đề tour
+            // const isDuplicate = existingTours.some((tour) => tour.title?.toLowerCase().trim() === data.title?.toLowerCase().trim());
+            // if (isDuplicate) throw new Error("Tên tour đã tồn tại");
 
             // Kiểm tra file ảnh
             if (files.length > 0) {
@@ -162,6 +162,7 @@ function CreateTour({ onTourCreated }) {
             });
 
             if (onTourCreated) onTourCreated();
+            window.location.reload(); // Reload trang sau khi tạo tour thành công
         } catch (error) {
             Swal.fire({
                 icon: "error",
@@ -207,12 +208,22 @@ function CreateTour({ onTourCreated }) {
 
         setData(updatedData);
     };
-
     // Xử lý khi người dùng chọn ảnh từ input
     const handleImageChange = (e) => {
         const uploadedFiles = e.target.files;
         if (uploadedFiles.length > 0) {
-            setFiles(Array.from(uploadedFiles));
+            const newFiles = Array.from(uploadedFiles);
+            // Kiểm tra tổng số ảnh (hiện tại + mới chọn) không vượt quá 5
+            if (files.length + newFiles.length > 5) {
+                Swal.fire({
+                    icon: "error",
+                    title: "Lỗi",
+                    text: "Bạn chỉ được chọn tối đa 5 ảnh!",
+                    confirmButtonColor: "#d33",
+                });
+                return;
+            }
+            setFiles([...files, ...newFiles]);
         }
     };
 

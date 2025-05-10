@@ -74,7 +74,6 @@ function TourForm({ data, itinerary, handleChange, handleItineraryChange, handle
                     name="region"
                     value={data.region || ""}
                     onChange={(e) => {
-                        console.log("Region selected:", e.target.value); // Debug
                         handleChange(e);
                     }}
                     className="mt-1 w-full rounded-md border border-gray-300 p-3 focus:ring-2 focus:ring-[#00c0d1]"
@@ -191,28 +190,31 @@ function TourForm({ data, itinerary, handleChange, handleItineraryChange, handle
 
             {/* Ảnh tour */}
             <div>
-                <label className="block font-medium">
-                    Ảnh: <span className="font-medium text-[#00c0d1]">{files.length > 0 ? `${files.length} ảnh đã chọn` : "Chưa chọn ảnh"}</span>
-                </label>
-                <div className="mt-2 flex items-center gap-4">
-                    <label
-                        htmlFor="file"
-                        className="inline-block cursor-pointer rounded-md bg-[#00c0d1] px-4 py-2 text-sm font-semibold text-white transition hover:bg-[#009fb0]"
-                    >
-                        Chọn ảnh
+                <div>
+                    <label className="block font-medium">
+                        Ảnh: <span className="font-medium text-[#00c0d1]">{files.length > 0 ? `${files.length} ảnh đã chọn` : "Chưa chọn ảnh"}</span>
+                        <span className="ml-2 text-sm text-gray-500">(Tối đa 5 ảnh)</span>
                     </label>
+                    <div className="mt-2 flex items-center gap-4">
+                        <label
+                            htmlFor="file"
+                            className="inline-block cursor-pointer rounded-md bg-[#00c0d1] px-4 py-2 text-sm font-semibold text-white transition hover:bg-[#009fb0]"
+                        >
+                            Chọn ảnh
+                        </label>
+                    </div>
+                    <input
+                        type="file"
+                        id="file"
+                        name="images"
+                        accept="image/*"
+                        multiple
+                        onChange={handleImageChange}
+                        className="hidden"
+                    />
+                    {/* Hiển thị ảnh đã chọn */}
+                    {renderAnh()}
                 </div>
-                <input
-                    type="file"
-                    id="file"
-                    name="images"
-                    accept="image/*"
-                    multiple
-                    onChange={handleImageChange}
-                    className="hidden"
-                />
-                {/* Hiển thị ảnh đã chọn */}
-                {renderAnh()}
             </div>
 
             {/* Lịch trình tour */}

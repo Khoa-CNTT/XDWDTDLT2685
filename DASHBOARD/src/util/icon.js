@@ -13,7 +13,18 @@ import {
     MdPayment,
     MdCheckCircle,
 } from "react-icons/md";
-import { IoMdAnalytics, IoIosCreate, IoIosSettings, IoIosSunny, IoIosMoon, IoMdCreate, IoIosAdd, IoIosArrowDropdownCircle } from "react-icons/io";
+import {
+    IoMdAnalytics,
+    IoIosCreate,
+    IoIosSettings,
+    IoIosSunny,
+    IoIosMoon,
+    IoMdCreate,
+    IoIosAdd,
+    IoIosArrowDropdownCircle,
+    IoIosUnlock,
+    IoIosLock,
+} from "react-icons/io";
 import { HiDocumentReport } from "react-icons/hi";
 import { FiLogOut } from "react-icons/fi";
 import { GrUserAdmin } from "react-icons/gr";
@@ -93,5 +104,7 @@ const icons = {
     MdEmail,
     MdPayment,
     MdCheckCircle,
+    IoIosUnlock,
+    IoIosLock,
 };
 export default icons;

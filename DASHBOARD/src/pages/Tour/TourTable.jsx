@@ -27,35 +27,35 @@ function TourTable({ currentEntries }) {
                 <tbody>
                     {currentEntries.map((item, index) => (
                         <tr
-                            key={index}
+                            key={item.id || index}
                             className="transition hover:bg-gray-100 dark:hover:bg-slate-700"
                         >
-                            <td className="border px-4 py-2">{item.title}</td>
-                            <td className="border px-4 py-2">{item.duration}</td>
-                            <td className="border px-4 py-2">{item.description}</td>
-                            <td className="border px-4 py-2">{item.quantity}</td>
-                            <td className="border px-4 py-2">{item.price_adult}</td>
-                            <td className="border px-4 py-2">{item.price_child}</td>
-                            <td className="border px-4 py-2">{item.destination}</td>
+                            <td className="border px-4 py-2">{item.title || "N/A"}</td>
+                            <td className="border px-4 py-2">{item.duration || "N/A"}</td>
+                            <td className="border px-4 py-2">{item.description || "N/A"}</td>
+                            <td className="border px-4 py-2">{item.quantity || 0}</td>
+                            <td className="border px-4 py-2">{item.price_adult || "N/A"}</td>
+                            <td className="border px-4 py-2">{item.price_child || "N/A"}</td>
+                            <td className="border px-4 py-2">{item.destination || "N/A"}</td>
                             <td className="available-column border px-4 py-2 text-center">
-                                {item.availability === true ? (
+                                {item.availability ? (
                                     <span className="flex items-center justify-center text-green-500">
                                         <MdCheckCircle
                                             size={20}
                                             className="mr-1"
                                         />
                                     </span>
-                                ) : item.availability === false ? (
+                                ) : (
                                     <span className="flex items-center justify-center text-red-500">
                                         <MdBlock
                                             size={20}
                                             className="mr-1"
                                         />
                                     </span>
-                                ) : null}
+                                )}
                             </td>
-                            <td className="border px-4 py-2">{item.startDate}</td>
-                            <td className="border px-4 py-2">{item.endDate}</td>
+                            <td className="border px-4 py-2">{item.startDate || "N/A"}</td>
+                            <td className="border px-4 py-2">{item.endDate || "N/A"}</td>
                             <td className="edit-column border px-4 py-2 text-center">
                                 <EditTour item={item} />
                             </td>

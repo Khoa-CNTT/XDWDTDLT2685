@@ -1,28 +1,29 @@
 /* eslint-disable no-unused-vars */
 import { useState } from "react";
 import Swal from "sweetalert2";
-import "sweetalert2/src/sweetalert2.scss";
 import icons from "../../util/icon";
-const { IoIosLock } = icons;
-function BlockButton({ children, onBlock, disabled, confirmText = "Bạn có chắc muốn khóa không?", successText = "Đã khóa thành công!" }) {
+import "sweetalert2/src/sweetalert2.scss";
+const { IoIosUnlock } = icons;
+
+function EnableButton({ children, onEnable, disabled, confirmText = "Bạn có chắc muốn mở khóa không?", successText = "Đã mở khóa thành công!" }) {
     const [isLoading, setIsLoading] = useState(false);
 
-    const handleBlock = async () => {
+    const handleEnable = async () => {
         const result = await Swal.fire({
             title: confirmText,
-            text: "Hành động này có thể được hoàn tác sau!",
+            text: "Hành động này sẽ khôi phục quyền truy cập của người dùng!",
             icon: "warning",
             showCancelButton: true,
             confirmButtonColor: "#3085d6",
             cancelButtonColor: "#d33",
-            confirmButtonText: "Khóa",
+            confirmButtonText: "Mở khóa",
             cancelButtonText: "Hủy",
         });
 
         if (result.isConfirmed) {
             setIsLoading(true);
             try {
-                const success = await onBlock();
+                const success = await onEnable();
                 if (success) {
                     Swal.fire({
                         title: successText,
@@ -35,7 +36,7 @@ function BlockButton({ children, onBlock, disabled, confirmText = "Bạn có ch�
             } catch (error) {
                 Swal.fire({
                     title: "Lỗi",
-                    text: "Không thể khóa. Vui lòng thử lại!",
+                    text: "Không thể mở khóa. Vui lòng thử lại!",
                     icon: "error",
                 });
             } finally {
@@ -46,12 +47,12 @@ function BlockButton({ children, onBlock, disabled, confirmText = "Bạn có ch�
 
     return (
         <button
-            className={`flex h-9 items-center justify-center gap-1.5 rounded-md bg-gradient-to-r from-red-500 to-pink-500 px-3 py-1.5 text-xs font-medium text-white transition-all duration-200 hover:from-red-600 hover:to-pink-600 focus:ring-2 focus:ring-red-400 focus:outline-none ${
+            className={`flex h-9 items-center justify-center gap-1.5 rounded-md bg-gradient-to-r from-green-500 to-teal-500 px-3 py-1.5 text-xs font-medium text-white transition-all duration-200 hover:from-green-600 hover:to-teal-600 focus:ring-2 focus:ring-green-400 focus:outline-none ${
                 disabled || isLoading ? "cursor-not-allowed opacity-50" : ""
             }`}
-            onClick={handleBlock}
+            onClick={handleEnable}
             disabled={disabled || isLoading}
-            aria-label="Khóa người dùng"
+            aria-label="Mở khóa người dùng"
         >
             {isLoading ? (
                 <svg
@@ -73,11 +74,11 @@ function BlockButton({ children, onBlock, disabled, confirmText = "Bạn có ch�
                     />
                 </svg>
             ) : (
-                <IoIosLock className="text-base" />
+                <IoIosUnlock className="text-base" />
             )}
-            {children || "Khóa"}
+            {children || "Mở khóa"}
         </button>
     );
 }
 
-export default BlockButton;
+export default EnableButton;

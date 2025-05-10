@@ -23,23 +23,38 @@ function DeleteTour({ item, onReload }) {
 
         try {
             const result = await deleteTour(item.id);
-            console.log("Delete tour response:", result); // Debug
 
-            if (result.status === 200 || result.status === 204) {
+            if (result.status === 200) {
                 await Swal.fire({
                     position: "center",
                     icon: "success",
-                    title: "Tour đã được xóa thành công!",
+                    title: result.data.message || "Tour đã được xóa thành công!",
                     showConfirmButton: false,
                     timer: 2000,
                 });
                 onReload(); // Reload danh sách tour
                 return true;
+            } else if (result.status === 404) {
+                await Swal.fire({
+                    position: "center",
+                    icon: "error",
+                    title: result.data.error || "Lỗi",
+                    text: result.data.message || "Không tìm thấy tour",
+                    confirmButtonColor: "#d33",
+                });
+            } else if (result.status >= 500) {
+                await Swal.fire({
+                    position: "center",
+                    icon: "error",
+                    title: "Lỗi máy chủ",
+                    text: result.data.details || result.data.error || "Có lỗi xảy ra khi xóa tour do vấn đề cơ sở dữ liệu. Vui lòng kiểm tra lại.",
+                    confirmButtonColor: "#d33",
+                });
             } else {
-                throw new Error(result.data || "Lỗi khi xóa tour");
+                throw new Error(result.data.details || result.data.error || "Lỗi không xác định");
             }
         } catch (error) {
-            console.error("Error deleting tour:", error);
+            console.error("Error deleting tour with ID", item.id, ":", error);
             await Swal.fire({
                 position: "center",
                 icon: "error",

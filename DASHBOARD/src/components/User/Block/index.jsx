@@ -1,17 +1,17 @@
-import BlockButton from "../../Button/BlockButton";
 import { blockUser } from "../../../services/userSevice";
+import BlockButton from "../../Button/BlockButton";
 
 function BlockUser({ user, onReload }) {
     const handleBlockUser = async () => {
         try {
-            const success = await blockUser(user.id);
-            if (success && onReload) {
+            const response = await blockUser(user.id);
+            if (response.status === 200 && onReload) {
                 onReload();
             }
-            return success;
+            return response.status === 200;
         } catch (error) {
-            console.error("Block user error:", error);
-            throw error;
+            console.error("Lỗi khi khóa người dùng:", error);
+            return false;
         }
     };
 

@@ -1,18 +1,20 @@
-import DeleteButton from "../../Button/DeleteButton";
+import Swal from "sweetalert2";
 import { deleteUser } from "../../../services/userSevice";
+import DeleteButton from "../../Button/DeleteButton";
 
 function DeleteUser({ user, onReload }) {
     const handleDeleteUser = async () => {
-        try {
-            const success = await deleteUser(user.id);
-            if (success && onReload) {
-                onReload();
-            }
-            return success;
-        } catch (error) {
-            console.error("Delete user error:", error);
-            throw error;
+        const response = await deleteUser(user.id);
+        if (response.success) {
+            onReload?.(); // Gọi reload nếu có callback
+            return true; // Trả về true để hiển thị thông báo thành công
         }
+        Swal.fire({
+            title: "Lỗi!",
+            text: response.message,
+            icon: "error",
+        });
+        return false;
     };
 
     return (
@@ -25,5 +27,4 @@ function DeleteUser({ user, onReload }) {
         </DeleteButton>
     );
 }
-
 export default DeleteUser;

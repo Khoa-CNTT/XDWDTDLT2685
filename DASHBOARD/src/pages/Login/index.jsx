@@ -4,7 +4,6 @@ import { useNavigate } from "react-router-dom";
 import Swal from "sweetalert2/dist/sweetalert2.js";
 import "sweetalert2/src/sweetalert2.scss";
 import icons from "../../util/icon";
-
 import InputPassword from "../../components/InputPass";
 import { login } from "../../services/adminService";
 
@@ -17,85 +16,80 @@ function Login() {
     const [password, setPassword] = useState("");
     const navigate = useNavigate();
 
-    const Validation = (user_name, password) => {
+    const validate = (user_name, password) => {
         const newErrors = {};
-        if (!user_name) {
-            newErrors.user_name = "Vui lòng nhập tên của bạn";
-            Swal.fire({
-                icon: "warning",
-                title: "Thiếu thông tin",
-                text: "Vui lòng nhập tên của bạn",
-                timer: 2000,
-                timerProgressBar: true,
-                showConfirmButton: false,
-                position: "top-end",
-            });
+        if (!user_name) newErrors.user_name = "Vui lòng nhập tên của bạn";
+        // Optional: Add format validation (e.g., alphanumeric or email)
+        else if (!/^[a-zA-Z0-9_]+$/.test(user_name)) {
+            newErrors.user_name = "Tên đăng nhập chỉ chứa chữ, số hoặc dấu _";
         }
-        if (!password) {
-            newErrors.password = "Vui lòng nhập password";
-            Swal.fire({
-                icon: "warning",
-                title: "Thiếu thông tin",
-                text: "Vui lòng nhập password",
-                timer: 2000,
-                timerProgressBar: true,
-                showConfirmButton: false,
-                position: "top-end",
-            });
-        } else if (password.length < 6) {
-            newErrors.password = "Mật khẩu ít nhất có 6 ký tự";
-            Swal.fire({
-                icon: "warning",
-                title: "Lỗi mật khẩu",
-                text: "Mật khẩu ít nhất có 6 ký tự",
-                timer: 2000,
-                timerProgressBar: true,
-                showConfirmButton: false,
-                position: "top-end",
-            });
-        }
+        if (!password) newErrors.password = "Vui lòng nhập mật khẩu";
+        else if (password.length < 6) newErrors.password = "Mật khẩu phải có ít nhất 6 ký tự";
         return newErrors;
     };
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        const newErrors = Validation(user_name, password);
+        const newErrors = validate(user_name, password);
         setErrors(newErrors);
 
-        if (Object.keys(newErrors).length === 0) {
-            try {
-                setLoading(true);
-                const res = await login(user_name, password);
-                if (res.data?.token) {
-                    localStorage.setItem("token", res.data.token);
-                    localStorage.setItem("user_id", res.data.user_id);
+        if (Object.keys(newErrors).length > 0) {
+            Swal.fire({
+                icon: "warning",
+                title: "Thiếu thông tin",
+                text: Object.values(newErrors)[0],
+                timer: 2000,
+                timerProgressBar: true,
+                showConfirmButton: false,
+                position: "top-end",
+            });
+            return;
+        }
 
-                    Swal.fire({
-                        icon: "success",
-                        title: "Đăng nhập thành công!",
-                        showConfirmButton: false,
-                        timer: 1500,
-                        position: "top-end",
-                    });
-                    setTimeout(() => navigate("/"), 1600);
-                }
-            } catch (error) {
+        try {
+            setLoading(true);
+            const res = await login(user_name, password);
+            if (res.data?.token) {
+                localStorage.setItem("token", res.data.token);
+                localStorage.setItem("user_id", res.data.user_id);
                 Swal.fire({
-                    icon: "error",
-                    title: "Đăng nhập thất bại",
-                    text: "Tên đăng nhập hoặc mật khẩu không đúng",
-                    timer: 2000,
-                    timerProgressBar: true,
+                    icon: "success",
+                    title: "Đăng nhập thành công!",
                     showConfirmButton: false,
+                    timer: 1500,
                     position: "top-end",
                 });
-                setLoading(false);
+                setTimeout(() => navigate("/"), 1600);
+            } else {
+                throw new Error("No token received");
             }
+        } catch (error) {
+            setLoading(false);
+            let errorMessage = "Tên đăng nhập hoặc mật khẩu không đúng";
+            if (error.response?.status === 400) {
+                errorMessage = error.response?.data?.message || "Yêu cầu không hợp lệ. Vui lòng kiểm tra thông tin đăng nhập.";
+                // Check for lockout message (adjust based on actual server response)
+                if (error.response?.data?.message?.includes("lock")) {
+                    errorMessage = "Tài khoản của bạn đã bị khóa. Vui lòng liên hệ quản trị viên.";
+                }
+            } else if (error.response?.status === 403) {
+                errorMessage = "Tài khoản của bạn đã bị khóa. Vui lòng liên hệ quản trị viên.";
+            }
+            Swal.fire({
+                icon: "error",
+                title: "Đăng nhập thất bại",
+                text: errorMessage,
+                timer: 2000,
+                timerProgressBar: true,
+                showConfirmButton: false,
+                position: "top-end",
+            });
         }
     };
 
     useEffect(() => {
-        if (localStorage.getItem("token")) navigate("/");
+        const token = localStorage.getItem("token");
+        if (token) navigate("/");
     }, [navigate]);
 
     return (
@@ -118,6 +112,7 @@ function Login() {
                             } bg-transparent px-5 pr-12 text-lg text-white placeholder-[#019fb5] focus:outline-none`}
                         />
                         <FaUserAlt className="absolute top-1/2 right-4 -translate-y-1/2 text-xl text-[#019fb5]" />
+                        {errors.user_name && <p className="mt-1 text-sm text-red-500">{errors.user_name}</p>}
                     </div>
 
                     <InputPassword

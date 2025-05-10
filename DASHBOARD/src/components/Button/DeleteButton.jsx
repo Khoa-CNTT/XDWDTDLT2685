@@ -31,6 +31,7 @@ function DeleteButton({
                     icon: "success",
                     timer: 5000,
                 });
+                window.location.reload(); // Tải lại trang sau khi xóa thành công
             }
         }
     };

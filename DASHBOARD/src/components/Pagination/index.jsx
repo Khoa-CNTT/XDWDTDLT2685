@@ -1,77 +1,107 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 function EntriesFilter({ data, children }) {
-    // Khởi tạo state lưu trang hiện tại, mặc định là trang 1
+    const [entriesPerPage, setEntriesPerPage] = useState(5);
     const [currentPage, setCurrentPage] = useState(1);
+    const [currentEntries, setCurrentEntries] = useState([]);
 
-    // Khởi tạo state lưu số lượng bản ghi trên mỗi trang, mặc định là 5
-    const [entriesPerPage, setEntriesPerPage] = useState(50);
-
-    // Tính tổng số trang dựa trên độ dài của dữ liệu chia cho số lượng bản ghi mỗi trang
     const totalPages = Math.ceil(data.length / entriesPerPage);
 
-    // Tính chỉ số của phần tử cuối cùng trên trang hiện tại
-    const indexOfLastEntry = currentPage * entriesPerPage;
+    useEffect(() => {
+        const start = (currentPage - 1) * entriesPerPage;
+        const end = start + entriesPerPage;
+        setCurrentEntries(data.slice(start, end));
+    }, [currentPage, entriesPerPage, data]);
 
-    // Tính chỉ số của phần tử đầu tiên trên trang hiện tại
-    const indexOfFirstEntry = indexOfLastEntry - entriesPerPage;
-
-    // Cắt mảng dữ liệu để lấy ra các phần tử thuộc trang hiện tại
-    const currentEntries = data.slice(indexOfFirstEntry, indexOfLastEntry);
-
-    // Hàm xử lý khi người dùng chuyển sang một trang khác
-    const handlePageChange = (pageNumber) => {
-        setCurrentPage(pageNumber); // Cập nhật lại số trang hiện tại
+    const handleEntriesChange = (e) => {
+        setEntriesPerPage(Number(e.target.value));
+        setCurrentPage(1); // Reset to first page
     };
 
-    // Hàm xử lý khi người dùng thay đổi số lượng bản ghi/trang
-    const handleEntriesPerPageChange = (e) => {
-        setEntriesPerPage(Number(e.target.value)); // Cập nhật số bản ghi mới/trang
-        setCurrentPage(1); // Reset về trang đầu tiên để tránh lỗi hiển thị dữ liệu
+    const handlePageChange = (page) => {
+        if (page >= 1 && page <= totalPages) {
+            setCurrentPage(page);
+        }
+    };
+
+    // Show max 5 pages centered around currentPage
+    const getPageNumbers = () => {
+        const maxPagesToShow = 5;
+        let startPage = Math.max(currentPage - Math.floor(maxPagesToShow / 2), 1);
+        let endPage = startPage + maxPagesToShow - 1;
+
+        if (endPage > totalPages) {
+            endPage = totalPages;
+            startPage = Math.max(endPage - maxPagesToShow + 1, 1);
+        }
+
+        return Array.from({ length: endPage - startPage + 1 }, (_, i) => startPage + i);
     };
 
     return (
-        <div className="w-full">
-            <div className="mb-4 flex items-center gap-2">
-                <label
-                    htmlFor="entriesPerPage"
-                    className="text-sm text-gray-700 dark:text-white"
-                >
-                    Hiển thị:
-                </label>
-                <select
-                    id="entriesPerPage"
-                    value={entriesPerPage}
-                    onChange={handleEntriesPerPageChange}
-                    className="rounded border border-gray-300 p-1 text-sm dark:bg-slate-800 dark:text-white"
-                >
-                    <option value={50}>0</option>
-                    <option value={5}>5</option>
-                    <option value={15}>15</option>
-                    <option value={20}>20</option>
-                    <option value={25}>25</option>
-                </select>
-                <span className="text-sm text-gray-700 dark:text-white"> Tour</span>
+        <>
+            <div className="mb-4 flex flex-col items-center justify-between gap-4 sm:flex-row">
+                <div className="flex items-center space-x-2">
+                    <label
+                        htmlFor="entries"
+                        className="text-sm font-medium dark:text-white"
+                    >
+                        Hiển thị
+                    </label>
+                    <select
+                        id="entries"
+                        className="rounded-md border px-2 py-1 dark:bg-slate-800 dark:text-white"
+                        value={entriesPerPage}
+                        onChange={handleEntriesChange}
+                    >
+                        <option value={5}>5</option>
+                        <option value={15}>15</option>
+                        <option value={20}>20</option>
+                        <option value={25}>25</option>
+                        <option value={50}>50</option>
+                    </select>
+                    <span className="text-sm dark:text-white">mục</span>
+                </div>
             </div>
 
+            {/* Render the table with paginated data */}
             {children(currentEntries)}
 
-            <div className="mt-6 mb-6 flex justify-center gap-2">
-                {Array.from({ length: totalPages }, (_, i) => i + 1).map((number) => (
+            {/* Pagination controls below the table */}
+            {totalPages > 1 && (
+                <div className="mt-4 flex flex-wrap items-center justify-center gap-2">
                     <button
-                        key={number}
-                        onClick={() => handlePageChange(number)}
-                        className={`h-9 w-9 rounded-full text-sm font-medium transition duration-200 ${
-                            currentPage === number
-                                ? "bg-gradient-to-tr from-[#019fb5] to-[#00c0d1] text-white shadow-md dark:from-[#019fb5] dark:to-[#00c0d1]"
-                                : "bg-gray-200 text-gray-700 hover:bg-gray-300 dark:bg-slate-700 dark:text-white dark:hover:bg-slate-600"
-                        }`}
+                        className="flex h-8 w-8 items-center justify-center rounded-full bg-gradient-to-r from-[#019fb5] to-[#00c0d1] text-sm text-white disabled:cursor-not-allowed disabled:opacity-50"
+                        onClick={() => handlePageChange(currentPage - 1)}
+                        disabled={currentPage === 1}
                     >
-                        {number}
+                        «
                     </button>
-                ))}
-            </div>
-        </div>
+
+                    {getPageNumbers().map((number) => (
+                        <button
+                            key={number}
+                            className={`flex h-8 w-8 items-center justify-center rounded-full text-sm ${
+                                currentPage === number
+                                    ? "bg-gradient-to-r from-[#019fb5] to-[#00c0d1] text-white"
+                                    : "bg-gradient-to-r from-[#019fb5]/80 to-[#00c0d1]/80 text-white hover:from-[#019fb5] hover:to-[#00c0d1]"
+                            }`}
+                            onClick={() => handlePageChange(number)}
+                        >
+                            {number}
+                        </button>
+                    ))}
+
+                    <button
+                        className="flex h-8 w-8 items-center justify-center rounded-full bg-gradient-to-r from-[#019fb5] to-[#00c0d1] text-sm text-white disabled:cursor-not-allowed disabled:opacity-50"
+                        onClick={() => handlePageChange(currentPage + 1)}
+                        disabled={currentPage === totalPages}
+                    >
+                        »
+                    </button>
+                </div>
+            )}
+        </>
     );
 }
 

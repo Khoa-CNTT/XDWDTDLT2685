@@ -1,4 +1,4 @@
-import { del, get } from "../util/requestserver";
+import { del, get, put } from "../util/requestserver"; // Import put thay vì patch
 
 // Lấy danh sách khách hàng
 export const getDataUser = async () => {
@@ -39,14 +39,14 @@ export const deleteUser = async (id) => {
     try {
         const res = await del(`users/${id}`);
         return {
-            status: res.status,
-            data: res.data,
+            success: true,
+            message: res.data || "Xóa thành công",
         };
     } catch (error) {
-        console.error(`Lỗi khi xóa khách hàng với ID ${id}:`, error);
+        console.error(`Lỗi khi xóa user ${id}:`, error);
         return {
-            status: error.response?.status || 500,
-            data: error.response?.data || "Lỗi khi xóa người dùng",
+            success: false,
+            message: error.response?.data?.message || "Lỗi không xác định",
         };
     }
 };
@@ -54,7 +54,7 @@ export const deleteUser = async (id) => {
 // Khóa khách hàng theo ID
 export const blockUser = async (id) => {
     try {
-        const res = await del(`users/${id}/block`);
+        const res = await put(`users/block/${id}/0`);
         return {
             status: res.status,
             data: res.data,
@@ -64,9 +64,28 @@ export const blockUser = async (id) => {
         return {
             status: error.response?.status || 500,
             data: error.response?.data || "Lỗi khi khóa người dùng",
+            message: error.response?.data === "User not found." ? "Không tìm thấy người dùng" : "Lỗi khi khóa người dùng",
         };
     }
 };
+
+// Mở khóa khách hàng theo ID (tùy chọn, nếu cần mở khóa)
+export const enableUser = async (id) => {
+    try {
+        const res = await put(`users/block/${id}/1`);
+        return {
+            status: res.status,
+            data: res.data,
+        };
+    } catch (error) {
+        console.error(`Lỗi khi mở khóa khách hàng với ID ${id}:`, error);
+        return {
+            status: error.response?.status || 500,
+            data: error.response?.data || "Lỗi khi mở khóa người dùng",
+        };
+    }
+};
+
 export const getAvatar = async (id) => {
     try {
         const res = await get(`users/${id}/avatar`);

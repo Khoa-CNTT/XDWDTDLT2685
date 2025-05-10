@@ -1,5 +1,5 @@
 import React from "react";
-import photo from "../../assets/Img/touricons.png";
+import photo from "../../assets/Img/logo.png";
 import ToolReport from "../../components/ToolReport";
 import GoBack from "../../components/GoBack/Goback";
 function Invoice({ item }) {
@@ -29,7 +29,7 @@ function Invoice({ item }) {
                             className="h-20 w-20 transform rounded-full bg-gray-50 object-cover dark:bg-slate-950"
                         />
 
-                        <h2 className="text-xl font-semibold text-gray-800 dark:text-gray-200">{item.tourName}</h2>
+                        <h2 className="text-xl font-semibold text-gray-800 dark:text-gray-200">{item.title}</h2>
                     </div>
                     <p className="text-xl text-gray-600 dark:text-gray-400">Thời gian lập hóa đơn: {currentDateTime}</p>
                 </div>

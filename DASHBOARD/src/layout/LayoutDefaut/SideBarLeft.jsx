@@ -1,8 +1,8 @@
 import React, { useState, forwardRef } from "react";
 import { Link, NavLink, useLocation } from "react-router-dom";
 import { cn } from "../../util/cn";
-import logoDark from "../../assets/Img/dashboard_Dark.svg";
-import logoLight from "../../assets/Img/dashboard_Light.svg";
+import logoDark from "../../assets/Img/Logo1.png";
+import logoLight from "../../assets/Img/Logo1.png";
 import PropTypes from "prop-types";
 import { menu } from "../../util/menu";
 
