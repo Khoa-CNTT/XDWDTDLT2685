@@ -1,9 +1,11 @@
+// com.project.booktour.services.booking.BookingService.java
 package com.project.booktour.services.booking;
 
 import com.project.booktour.dtos.BookingDTO;
 import com.project.booktour.exceptions.DataNotFoundException;
 import com.project.booktour.models.*;
 import com.project.booktour.repositories.BookingRepository;
+import com.project.booktour.repositories.CheckoutRepository;
 import com.project.booktour.repositories.PromotionRepository;
 import com.project.booktour.repositories.TourRepository;
 import com.project.booktour.repositories.UserRepository;
@@ -13,9 +15,9 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
 @RequiredArgsConstructor
 @Service
@@ -24,6 +26,7 @@ public class BookingService implements IBookingService {
     private final TourRepository tourRepository;
     private final PromotionRepository promotionRepository;
     private final BookingRepository bookingRepository;
+    private final CheckoutRepository checkoutRepository;
     private final ModelMapper modelMapper;
 
     @Override
@@ -59,22 +62,12 @@ public class BookingService implements IBookingService {
                     .orElseThrow(() -> new DataNotFoundException("Cannot find promotion with id: " + bookingDTO.getPromotionId()));
         }
 
-        // Kiểm tra bookingDate
-        if (bookingDTO.getBookingDate() == null) {
-            throw new IllegalArgumentException("Booking date cannot be null");
-        }
-        LocalDate bookingDate = bookingDTO.getBookingDate();
-        if (bookingDate.isBefore(LocalDate.now())) {
-            throw new DataNotFoundException("Booking date must be at least today!");
-        }
-
         Booking booking = new Booking();
         booking.setNumAdults(bookingDTO.getNumAdults());
         booking.setNumChildren(bookingDTO.getNumChildren());
         booking.setTotalPrice(bookingDTO.getTotalPrice());
-        booking.setBookingStatus(BookingStatus.PENDING); // Luôn đặt là PENDING
+        booking.setBookingStatus(bookingDTO.getBookingStatus());
         booking.setSpecialRequests(bookingDTO.getSpecialRequests());
-        booking.setBookingDate(bookingDate);
         booking.setUser(user);
         booking.setTour(tour);
         booking.setPromotion(promotion);
@@ -82,23 +75,33 @@ public class BookingService implements IBookingService {
     }
 
     @Override
-    public Page<BookingDTO> getAllBookings( String keyword,PageRequest pageRequest) {
-        Page<Booking> bookingPage = bookingRepository.findAll( keyword,pageRequest);
-        return bookingPage.map(booking -> BookingDTO.builder()
-                .userId(booking.getUser().getUserId())
-                .tourId(booking.getTour().getTourId())
-                .bookingDate(booking.getBookingDate())
-                .numAdults(booking.getNumAdults())
-                .numChildren(booking.getNumChildren())
-                .totalPrice(booking.getTotalPrice())
-                .bookingStatus(booking.getBookingStatus())
-                .specialRequests(booking.getSpecialRequests())
-                .promotionId(booking.getPromotion() != null ? booking.getPromotion().getPromotionId() : null)
-                .fullName(booking.getUser().getFullName())
-                .email(booking.getUser().getEmail())
-                .address(booking.getUser().getAddress())
-                .phoneNumber(booking.getUser().getPhoneNumber())
-                .build());
+    public Page<BookingDTO> getAllBookings(String keyword, PageRequest pageRequest) {
+        Page<Booking> bookingPage = bookingRepository.findAll(keyword, pageRequest);
+        return bookingPage.map(booking -> {
+            // Lấy thông tin checkout (nếu có)
+            Optional<Checkout> checkoutOpt = checkoutRepository.findByBookingBookingId(booking.getBookingId());
+            String paymentMethod = checkoutOpt.map(Checkout::getPaymentMethod).orElse(null);
+            String paymentStatus = checkoutOpt.map(Checkout::getPaymentStatus).orElse(null);
+
+            return BookingDTO.builder()
+                    .userId(booking.getUser().getUserId())
+                    .tourId(booking.getTour().getTourId())
+                    .numAdults(booking.getNumAdults())
+                    .numChildren(booking.getNumChildren())
+                    .totalPrice(booking.getTotalPrice())
+                    .bookingStatus(booking.getBookingStatus())
+                    .specialRequests(booking.getSpecialRequests())
+                    .promotionId(booking.getPromotion() != null ? booking.getPromotion().getPromotionId() : null)
+                    .fullName(booking.getUser().getFullName())
+                    .email(booking.getUser().getEmail())
+                    .address(booking.getUser().getAddress())
+                    .phoneNumber(booking.getUser().getPhoneNumber())
+                    .createdAt(booking.getCreatedAt())
+                    .updatedAt(booking.getUpdatedAt())
+                    .paymentMethod(paymentMethod)
+                    .paymentStatus(paymentStatus)
+                    .build();
+        });
     }
 
     @Override
@@ -106,10 +109,14 @@ public class BookingService implements IBookingService {
         Booking booking = bookingRepository.findById(id)
                 .orElseThrow(() -> new DataNotFoundException("Cannot find booking with id: " + id));
 
+        // Lấy thông tin checkout (nếu có)
+        Optional<Checkout> checkoutOpt = checkoutRepository.findByBookingBookingId(booking.getBookingId());
+        String paymentMethod = checkoutOpt.map(Checkout::getPaymentMethod).orElse(null);
+        String paymentStatus = checkoutOpt.map(Checkout::getPaymentStatus).orElse(null);
+
         return BookingDTO.builder()
                 .userId(booking.getUser().getUserId())
                 .tourId(booking.getTour().getTourId())
-                .bookingDate(booking.getBookingDate())
                 .numAdults(booking.getNumAdults())
                 .numChildren(booking.getNumChildren())
                 .totalPrice(booking.getTotalPrice())
@@ -120,6 +127,10 @@ public class BookingService implements IBookingService {
                 .email(booking.getUser().getEmail())
                 .address(booking.getUser().getAddress())
                 .phoneNumber(booking.getUser().getPhoneNumber())
+                .createdAt(booking.getCreatedAt())
+                .updatedAt(booking.getUpdatedAt())
+                .paymentMethod(paymentMethod)
+                .paymentStatus(paymentStatus)
                 .build();
     }
 
@@ -160,21 +171,11 @@ public class BookingService implements IBookingService {
                     .orElseThrow(() -> new DataNotFoundException("Cannot find promotion with id: " + bookingDTO.getPromotionId()));
         }
 
-        // Kiểm tra bookingDate
-        if (bookingDTO.getBookingDate() == null) {
-            throw new IllegalArgumentException("Booking date cannot be null");
-        }
-        LocalDate bookingDate = bookingDTO.getBookingDate();
-        if (bookingDate.isBefore(LocalDate.now())) {
-            throw new DataNotFoundException("Booking date must be at least today!");
-        }
-
         booking.setNumAdults(bookingDTO.getNumAdults());
         booking.setNumChildren(bookingDTO.getNumChildren());
         booking.setTotalPrice(bookingDTO.getTotalPrice());
         booking.setBookingStatus(bookingDTO.getBookingStatus());
         booking.setSpecialRequests(bookingDTO.getSpecialRequests());
-        booking.setBookingDate(bookingDate);
         booking.setUser(user);
         booking.setTour(tour);
         booking.setPromotion(promotion);
@@ -198,6 +199,4 @@ public class BookingService implements IBookingService {
     public boolean hasUserBookedTour(Long userId, Long tourId) {
         return bookingRepository.existsByUserUserIdAndTourTourId(userId, tourId);
     }
-
-
 }

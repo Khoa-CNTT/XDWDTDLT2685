@@ -12,7 +12,7 @@ import java.time.LocalDate;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class Booking {
+public class Booking extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "booking_id")
@@ -21,9 +21,6 @@ public class Booking {
     @ManyToOne
     @JoinColumn(name = "user_id")
     private User user;
-
-    @Column(name = "booking_date", nullable = false)
-    private LocalDate bookingDate;
 
     @Column(name = "num_adults", nullable = false)
     private Integer numAdults;

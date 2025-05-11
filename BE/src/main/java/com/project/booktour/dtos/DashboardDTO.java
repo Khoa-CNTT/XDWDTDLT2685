@@ -5,6 +5,8 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.List;
+
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
@@ -13,4 +15,5 @@ public class DashboardDTO {
     private Long totalBookings;       // Tổng số lượt booking
     private Long totalUsers;          // Tổng số người dùng ký (active)
     private Double totalRevenue;      // Tổng doanh thu
+    private List<RegionBookingDTO> regionBookings; // Số lượt đặt theo miền
 }

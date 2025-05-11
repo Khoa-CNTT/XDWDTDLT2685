@@ -1,3 +1,4 @@
+// com.project.booktour.models.Checkout.java
 package com.project.booktour.models;
 
 import jakarta.persistence.*;
@@ -18,25 +19,25 @@ public class Checkout {
     @Column(name = "checkout_id")
     private Long checkoutId;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "booking_id")
     private Booking booking;
 
-    @Column(name = "payment_method", length = 255, nullable = false)
+    @Column(name = "payment_method", nullable = false)
     private String paymentMethod;
 
-    @Column(name = "payment_details", length = 255, nullable = false)
+    @Column(name = "payment_details", nullable = false)
     private String paymentDetails;
 
-    @Column(name = "payment_date", nullable = false)
+    @Column(name = "payment_date", nullable = false, columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP")
     private LocalDateTime paymentDate;
 
     @Column(name = "amount", nullable = false)
     private Double amount;
 
-    @Column(name = "payment_status", length = 255, nullable = false)
+    @Column(name = "payment_status", nullable = false)
     private String paymentStatus;
 
-    @Column(name = "transaction_id", length = 255, nullable = false)
+    @Column(name = "transaction_id", nullable = false)
     private String transactionId;
 }

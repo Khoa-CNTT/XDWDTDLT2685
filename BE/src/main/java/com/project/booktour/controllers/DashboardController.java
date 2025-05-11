@@ -1,4 +1,4 @@
-
+// com.project.booktour.controllers.DashboardController.java
 package com.project.booktour.controllers;
 
 import com.project.booktour.dtos.DashboardDTO;
@@ -18,13 +18,13 @@ public class DashboardController {
     private final DashboardService dashboardService;
 
     @GetMapping
-    @PreAuthorize("hasRole('ROLE_ADMIN')") // Chỉ admin mới truy cập được
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     public ResponseEntity<DashboardDTO> getDashboardStats() {
         try {
             DashboardDTO stats = dashboardService.getDashboardStats();
             return ResponseEntity.ok(stats);
         } catch (Exception e) {
-            return ResponseEntity.badRequest().body(new DashboardDTO(0L, 0L, 0L, 0.0));
+            return ResponseEntity.badRequest().body(new DashboardDTO(0L, 0L, 0L, 0.0, null));
         }
     }
 }
