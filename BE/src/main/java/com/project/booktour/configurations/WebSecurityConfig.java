@@ -45,14 +45,12 @@ public class WebSecurityConfig {
                                     String.format("%s/tours/**", apiPrefix),
                                     "/login/oauth2/code/*",
                                     String.format("%s/auth/success", apiPrefix),
-                                    String.format("%s/auth/failure", apiPrefix)
-                            ).permitAll()
-                            // Thêm các endpoint chatbot vào danh sách công khai
-                            .requestMatchers(
+                                    String.format("%s/auth/failure", apiPrefix),
                                     String.format("%s/chat", apiPrefix),
                                     String.format("%s/events", apiPrefix),
                                     String.format("%s/receive-message", apiPrefix),
-                                    String.format("%s/health/n8n", apiPrefix)
+                                    String.format("%s/health/n8n", apiPrefix),
+                                    String.format("%s/payment/vnpay-payment-callback", apiPrefix)
                             ).permitAll()
                             .requestMatchers(GET, String.format("%s/tours/**", apiPrefix)).permitAll()
                             .requestMatchers(POST, String.format("%s/tours/**", apiPrefix)).hasRole("ADMIN")

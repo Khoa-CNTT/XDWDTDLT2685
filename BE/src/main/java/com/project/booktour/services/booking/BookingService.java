@@ -1,4 +1,3 @@
-// com.project.booktour.services.booking.BookingService.java
 package com.project.booktour.services.booking;
 
 import com.project.booktour.dtos.BookingDTO;
@@ -18,6 +17,7 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
 @Service
@@ -31,31 +31,19 @@ public class BookingService implements IBookingService {
 
     @Override
     public Booking createBooking(BookingDTO bookingDTO) throws Exception {
-        // Tìm user
         User user = userRepository.findById(bookingDTO.getUserId())
                 .orElseThrow(() -> new DataNotFoundException("Cannot find user with id: " + bookingDTO.getUserId()));
 
-        // Cập nhật thông tin user từ bookingDTO
-        if (bookingDTO.getFullName() != null) {
-            user.setFullName(bookingDTO.getFullName());
-        }
-        if (bookingDTO.getEmail() != null) {
-            user.setEmail(bookingDTO.getEmail());
-        }
-        if (bookingDTO.getAddress() != null) {
-            user.setAddress(bookingDTO.getAddress());
-        }
-        if (bookingDTO.getPhoneNumber() != null) {
-            user.setPhoneNumber(bookingDTO.getPhoneNumber());
-        }
+        if (bookingDTO.getFullName() != null) user.setFullName(bookingDTO.getFullName());
+        if (bookingDTO.getEmail() != null) user.setEmail(bookingDTO.getEmail());
+        if (bookingDTO.getAddress() != null) user.setAddress(bookingDTO.getAddress());
+        if (bookingDTO.getPhoneNumber() != null) user.setPhoneNumber(bookingDTO.getPhoneNumber());
         user.setUpdatedAt(LocalDateTime.now());
         userRepository.save(user);
 
-        // Tìm tour
         Tour tour = tourRepository.findById(bookingDTO.getTourId())
                 .orElseThrow(() -> new DataNotFoundException("Cannot find tour with id: " + bookingDTO.getTourId()));
 
-        // Tìm promotion (nếu có)
         Promotion promotion = null;
         if (bookingDTO.getPromotionId() != null) {
             promotion = promotionRepository.findById(bookingDTO.getPromotionId())
@@ -78,10 +66,9 @@ public class BookingService implements IBookingService {
     public Page<BookingDTO> getAllBookings(String keyword, PageRequest pageRequest) {
         Page<Booking> bookingPage = bookingRepository.findAll(keyword, pageRequest);
         return bookingPage.map(booking -> {
-            // Lấy thông tin checkout (nếu có)
             Optional<Checkout> checkoutOpt = checkoutRepository.findByBookingBookingId(booking.getBookingId());
             String paymentMethod = checkoutOpt.map(Checkout::getPaymentMethod).orElse(null);
-            String paymentStatus = checkoutOpt.map(Checkout::getPaymentStatus).orElse(null);
+            PaymentStatus paymentStatus = checkoutOpt.map(Checkout::getPaymentStatus).orElse(null);
 
             return BookingDTO.builder()
                     .userId(booking.getUser().getUserId())
@@ -99,7 +86,7 @@ public class BookingService implements IBookingService {
                     .createdAt(booking.getCreatedAt())
                     .updatedAt(booking.getUpdatedAt())
                     .paymentMethod(paymentMethod)
-                    .paymentStatus(paymentStatus)
+                    .paymentStatus(paymentStatus != null ? paymentStatus.name() : null)
                     .build();
         });
     }
@@ -109,10 +96,9 @@ public class BookingService implements IBookingService {
         Booking booking = bookingRepository.findById(id)
                 .orElseThrow(() -> new DataNotFoundException("Cannot find booking with id: " + id));
 
-        // Lấy thông tin checkout (nếu có)
         Optional<Checkout> checkoutOpt = checkoutRepository.findByBookingBookingId(booking.getBookingId());
         String paymentMethod = checkoutOpt.map(Checkout::getPaymentMethod).orElse(null);
-        String paymentStatus = checkoutOpt.map(Checkout::getPaymentStatus).orElse(null);
+        PaymentStatus paymentStatus = checkoutOpt.map(Checkout::getPaymentStatus).orElse(null);
 
         return BookingDTO.builder()
                 .userId(booking.getUser().getUserId())
@@ -130,55 +116,43 @@ public class BookingService implements IBookingService {
                 .createdAt(booking.getCreatedAt())
                 .updatedAt(booking.getUpdatedAt())
                 .paymentMethod(paymentMethod)
-                .paymentStatus(paymentStatus)
+                .paymentStatus(paymentStatus != null ? paymentStatus.name() : null)
                 .build();
     }
 
     @Override
     public Booking updateBooking(Long id, BookingDTO bookingDTO) throws DataNotFoundException {
-        // Tìm booking
         Booking booking = bookingRepository.findById(id)
                 .orElseThrow(() -> new DataNotFoundException("Cannot find booking with id: " + id));
-
-        // Tìm user
         User user = userRepository.findById(bookingDTO.getUserId())
                 .orElseThrow(() -> new DataNotFoundException("Cannot find user with id: " + bookingDTO.getUserId()));
 
-        // Cập nhật thông tin user từ bookingDTO
-        if (bookingDTO.getFullName() != null) {
-            user.setFullName(bookingDTO.getFullName());
-        }
-        if (bookingDTO.getEmail() != null) {
-            user.setEmail(bookingDTO.getEmail());
-        }
-        if (bookingDTO.getAddress() != null) {
-            user.setAddress(bookingDTO.getAddress());
-        }
-        if (bookingDTO.getPhoneNumber() != null) {
-            user.setPhoneNumber(bookingDTO.getPhoneNumber());
-        }
+        if (bookingDTO.getFullName() != null) user.setFullName(bookingDTO.getFullName());
+        if (bookingDTO.getEmail() != null) user.setEmail(bookingDTO.getEmail());
+        if (bookingDTO.getAddress() != null) user.setAddress(bookingDTO.getAddress());
+        if (bookingDTO.getPhoneNumber() != null) user.setPhoneNumber(bookingDTO.getPhoneNumber());
         user.setUpdatedAt(LocalDateTime.now());
         userRepository.save(user);
 
-        // Tìm tour
         Tour tour = tourRepository.findById(bookingDTO.getTourId())
                 .orElseThrow(() -> new DataNotFoundException("Cannot find tour with id: " + bookingDTO.getTourId()));
-
-        // Tìm promotion (nếu có)
-        Promotion promotion = null;
-        if (bookingDTO.getPromotionId() != null) {
-            promotion = promotionRepository.findById(bookingDTO.getPromotionId())
-                    .orElseThrow(() -> new DataNotFoundException("Cannot find promotion with id: " + bookingDTO.getPromotionId()));
-        }
+        Promotion promotion = bookingDTO.getPromotionId() != null ? promotionRepository.findById(bookingDTO.getPromotionId())
+                .orElseThrow(() -> new DataNotFoundException("Cannot find promotion with id: " + bookingDTO.getPromotionId())) : null;
 
         booking.setNumAdults(bookingDTO.getNumAdults());
         booking.setNumChildren(bookingDTO.getNumChildren());
         booking.setTotalPrice(bookingDTO.getTotalPrice());
-        booking.setBookingStatus(bookingDTO.getBookingStatus());
         booking.setSpecialRequests(bookingDTO.getSpecialRequests());
         booking.setUser(user);
         booking.setTour(tour);
         booking.setPromotion(promotion);
+
+        // Admin có quyền sửa booking_status từ PENDING thành CONFIRMED
+        if (bookingDTO.getBookingStatus() != null && booking.getBookingStatus() == BookingStatus.PENDING
+                && bookingDTO.getBookingStatus() == BookingStatus.CONFIRMED) {
+            booking.setBookingStatus(BookingStatus.CONFIRMED);
+        }
+
         return bookingRepository.save(booking);
     }
 
@@ -186,17 +160,49 @@ public class BookingService implements IBookingService {
     public void deleteBooking(Long id) throws DataNotFoundException {
         Booking booking = bookingRepository.findById(id)
                 .orElseThrow(() -> new DataNotFoundException("Cannot find booking with id: " + id));
-        booking.setBookingStatus(BookingStatus.CANCELLED);
+        // Logic hủy booking (nếu cần, có thể thêm kiểm tra)
         bookingRepository.save(booking);
     }
 
     @Override
-    public List<Booking> findByUserId(Long userId) {
-        return bookingRepository.findByUserUserId(userId);
+    public List<BookingDTO> findByUserId(Long userId) throws DataNotFoundException {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new DataNotFoundException("Cannot find user with id: " + userId));
+
+        List<Booking> bookings = bookingRepository.findByUserUserId(userId);
+        return bookings.stream().map(booking -> {
+            Optional<Checkout> checkoutOpt = checkoutRepository.findByBookingBookingId(booking.getBookingId());
+            String paymentMethod = checkoutOpt.map(Checkout::getPaymentMethod).orElse(null);
+            PaymentStatus paymentStatus = checkoutOpt.map(Checkout::getPaymentStatus).orElse(null);
+
+            return BookingDTO.builder()
+                    .userId(booking.getUser().getUserId())
+                    .tourId(booking.getTour().getTourId())
+                    .numAdults(booking.getNumAdults())
+                    .numChildren(booking.getNumChildren())
+                    .totalPrice(booking.getTotalPrice())
+                    .bookingStatus(booking.getBookingStatus())
+                    .specialRequests(booking.getSpecialRequests())
+                    .promotionId(booking.getPromotion() != null ? booking.getPromotion().getPromotionId() : null)
+                    .fullName(booking.getUser().getFullName())
+                    .email(booking.getUser().getEmail())
+                    .address(booking.getUser().getAddress())
+                    .phoneNumber(booking.getUser().getPhoneNumber())
+                    .createdAt(booking.getCreatedAt())
+                    .updatedAt(booking.getUpdatedAt())
+                    .paymentMethod(paymentMethod)
+                    .paymentStatus(paymentStatus != null ? paymentStatus.name() : null)
+                    .build();
+        }).collect(Collectors.toList());
     }
 
     @Override
     public boolean hasUserBookedTour(Long userId, Long tourId) {
         return bookingRepository.existsByUserUserIdAndTourTourId(userId, tourId);
+    }
+    @Override
+    public Optional<Booking> findById(Long id) throws DataNotFoundException {
+        return Optional.of(bookingRepository.findById(id)
+                .orElseThrow(() -> new DataNotFoundException("Cannot find booking with id: " + id)));
     }
 }

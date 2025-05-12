@@ -1,4 +1,3 @@
-// com.project.booktour.models.Checkout.java
 package com.project.booktour.models;
 
 import jakarta.persistence.*;
@@ -35,9 +34,12 @@ public class Checkout {
     @Column(name = "amount", nullable = false)
     private Double amount;
 
+    @Enumerated(EnumType.STRING)
     @Column(name = "payment_status", nullable = false)
-    private String paymentStatus;
+    private PaymentStatus paymentStatus;
 
     @Column(name = "transaction_id", nullable = false)
     private String transactionId;
+
+
 }

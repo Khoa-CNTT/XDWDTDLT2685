@@ -5,6 +5,7 @@ import com.project.booktour.configurations.VNPayConfig;
 import com.project.booktour.models.Booking;
 import com.project.booktour.models.BookingStatus;
 import com.project.booktour.models.Checkout;
+import com.project.booktour.models.PaymentStatus;
 import com.project.booktour.repositories.BookingRepository;
 import com.project.booktour.repositories.CheckoutRepository;
 import lombok.RequiredArgsConstructor;
@@ -30,6 +31,18 @@ public class PaymentService {
         if (!booking.getBookingStatus().equals(BookingStatus.PENDING)) {
             throw new RuntimeException("Booking is not in PENDING status");
         }
+
+        // Tạo Checkout khi tạo URL thanh toán
+        Checkout checkout = Checkout.builder()
+                .booking(booking)
+                .paymentMethod("VNPAY")
+                .paymentDetails("Initiated VNPAY payment")
+                .amount(booking.getTotalPrice())
+                .paymentStatus(PaymentStatus.PENDING)
+                .transactionId("BOOK-" + bookingId)
+                .paymentDate(LocalDateTime.now())
+                .build();
+        checkoutRepository.save(checkout);
 
         String orderId = "BOOK-" + bookingId;
         double amount = booking.getTotalPrice();
@@ -58,24 +71,27 @@ public class PaymentService {
 
         Booking booking = bookingRepository.findById(bookingId)
                 .orElseThrow(() -> new RuntimeException("Booking not found"));
+        Checkout checkout = checkoutRepository.findByBookingBookingId(bookingId)
+                .orElseThrow(() -> new RuntimeException("Checkout not found"));
 
-        // Update booking and create checkout record
+        // Cập nhật trạng thái dựa trên kết quả thanh toán
         if ("00".equals(vnp_TransactionStatus)) {
-            booking.setBookingStatus(BookingStatus.CONFIRMED);
-            Checkout checkout = Checkout.builder()
-                    .booking(booking)
-                    .paymentMethod("VNPAY")
-                    .paymentDetails("Transaction No: " + params.get("vnp_TransactionNo"))
-                    .amount(Double.parseDouble(params.get("vnp_Amount")) / 100)
-                    .paymentStatus("SUCCESS")
-                    .transactionId(params.get("vnp_TransactionNo"))
-                    .paymentDate(LocalDateTime.now())
-                    .build();
-            checkoutRepository.save(checkout);
+            checkout.setPaymentStatus(PaymentStatus.COMPLETED);
+            checkout.setPaymentDetails("Transaction No: " + params.get("vnp_TransactionNo"));
+            checkout.setAmount(Double.parseDouble(params.get("vnp_Amount")) / 100);
+            checkout.setTransactionId(params.get("vnp_TransactionNo"));
+            checkout.setPaymentDate(LocalDateTime.now());
+
+            // Đồng bộ booking_status nếu đang PENDING
+            if (booking.getBookingStatus() == BookingStatus.PENDING) {
+                booking.setBookingStatus(BookingStatus.CONFIRMED);
+            }
         } else {
-            booking.setBookingStatus(BookingStatus.CANCELLED);
+            // Không thay đổi booking_status nếu thanh toán thất bại (giữ PENDING)
+            // Có thể thêm log hoặc thông báo cho admin
         }
 
         bookingRepository.save(booking);
+        checkoutRepository.save(checkout);
     }
 }

@@ -1,6 +1,7 @@
 // com.project.booktour.repositories.BookingRepository.java
 package com.project.booktour.repositories;
 
+import com.project.booktour.exceptions.DataNotFoundException;
 import com.project.booktour.models.Booking;
 import com.project.booktour.models.User;
 import org.springframework.data.domain.Page;
@@ -10,6 +11,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface BookingRepository extends JpaRepository<Booking, Long> {
@@ -34,4 +36,5 @@ public interface BookingRepository extends JpaRepository<Booking, Long> {
             "FROM Booking b JOIN b.tour t " +
             "GROUP BY t.region")
     List<Object[]> countBookingsByRegion();
+
 }

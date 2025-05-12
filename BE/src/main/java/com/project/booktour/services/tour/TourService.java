@@ -252,4 +252,33 @@ public class TourService implements ITourService {
                 })
                 .collect(Collectors.toList());
     }
+    @Override
+    @Transactional
+    public List<TourImage> updateTourImages(Long tourId, List<TourImageDTO> tourImageDTOs) throws Exception {
+        Tour existingTour = tourRepository.findById(tourId)
+                .orElseThrow(() -> new DataNotFoundException("Cannot find tour with id: " + tourId));
+
+        // Check image count
+        if (tourImageDTOs != null && tourImageDTOs.size() > 5) {
+            throw new InvalidParamException("Number of images must be <= 5");
+        }
+
+        // Clear existing images (orphanRemoval will handle deletion)
+        existingTour.getTourImages().clear();
+
+        // Add new images to the existing collection
+        if (tourImageDTOs != null && !tourImageDTOs.isEmpty()) {
+            for (TourImageDTO dto : tourImageDTOs) {
+                TourImage newTourImage = new TourImage();
+                newTourImage.setTour(existingTour);
+                newTourImage.setImageUrl(dto.getImageUrl());
+                existingTour.getTourImages().add(newTourImage);
+            }
+        }
+
+        // Save the tour (cascade will persist new images)
+        Tour savedTour = tourRepository.save(existingTour);
+
+        return savedTour.getTourImages();
+    }
 }

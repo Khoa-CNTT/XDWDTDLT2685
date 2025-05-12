@@ -44,4 +44,5 @@ public interface ITourService {
     List<Review> getReviewsByUserAndTour(Long userId, Long tourId);
 
     void updateReview(Long reviewId, ReviewDTO reviewDTO) throws Exception;
+    List<TourImage> updateTourImages(Long tourId, List<TourImageDTO> tourImageDTOs) throws Exception;
 }

@@ -8,6 +8,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public interface IBookingService {
@@ -19,7 +20,8 @@ public interface IBookingService {
 
     void deleteBooking(Long id) throws DataNotFoundException;
 
-    List<Booking> findByUserId(Long userId);
+    List<BookingDTO> findByUserId(Long userId) throws DataNotFoundException;
     boolean hasUserBookedTour(Long userId, Long tourId);
     Page<BookingDTO> getAllBookings(String keyword ,PageRequest pageRequest);
+    Optional<Booking> findById(Long id) throws DataNotFoundException;
 }
