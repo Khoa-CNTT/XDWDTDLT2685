@@ -7,18 +7,18 @@ import { postBooking } from '../../services/booking';
 
 const PaymentSidebar = ({
     agreed,
-     countAdult, 
-     countChildren,
-     full_name, 
-     email, 
-     phone_number, 
-     address,
-     paymentMethod
+    countAdult,
+    countChildren,
+    full_name,
+    email,
+    phone_number,
+    address,
+    paymentMethod
 }) => {
     const location = useLocation();
     const { item, startDate, endDate } = location.state || {};
     // console.log("1111", item)
-    const navigate =useNavigate();
+    const navigate = useNavigate();
     const priceAdult = item.price_adult;
     const priceChild = item.price_child;
 
@@ -31,7 +31,7 @@ const PaymentSidebar = ({
             return;
         }
         try {
-            const tour_id = localStorage.getItem('tour_id');    
+            const tour_id = localStorage.getItem('tour_id');
             const user_id = localStorage.getItem('user_id');
             const data = {
                 tour_id: tour_id,
@@ -51,13 +51,17 @@ const PaymentSidebar = ({
             const res = await postBooking(data);
             console.log("res", res)
 
-            
+
             if (res.status === 200) {
                 const { paymentUrl } = res.data;
                 if (paymentMethod === "VNPAY" && paymentUrl) {
                     window.location.href = paymentUrl;
                     return;
                 }
+                // Lưu tour_id vào localStorage (nếu chưa có) tạm thời
+                const booked = new Set(JSON.parse(localStorage.getItem('booked_tours') || '[]'));
+                booked.add(tour_id);
+                localStorage.setItem('booked_tours', JSON.stringify([...booked]))
                 toast.success('Đặt tour thành công!');
                 navigate("/tourbooking")
             } else {
