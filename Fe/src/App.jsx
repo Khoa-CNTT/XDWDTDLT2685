@@ -1,5 +1,4 @@
-import reactLogo from './assets/react.svg'
-import viteLogo from '/favicon.jpg'
+
 // import './App.css'
 import React from "react";
 import AOS from "aos";
