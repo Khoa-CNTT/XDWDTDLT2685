@@ -13,32 +13,42 @@ const { FaSearch } = icons;
 function ShowTour() {
     const [data, setData] = useState([]);
     const [originalData, setOriginalData] = useState([]);
+    const [currentPage, setCurrentPage] = useState(0);
+    const [totalPages, setTotalPages] = useState(0);
+    const limit = 10; // số tour mỗi trang
+
     const { register, handleSubmit } = useForm();
 
+    const fetchApi = async (page = 0) => {
+        try {
+            const res = await getDataTour(page, limit);
+            if (res.status !== 200) throw new Error(res.data?.error || "Lỗi không xác định");
+
+            const dataArray = res.data?.tours && Array.isArray(res.data.tours) ? res.data.tours : [];
+
+            const updatedData = dataArray.map((tour) => {
+                const startDate = tour.startDate ? new Date(tour.startDate) : null;
+                const today = new Date();
+                const isAvailable = startDate && startDate >= today ? tour.availability : false;
+                return { ...tour, availability: isAvailable };
+            });
+
+            setData(updatedData);
+            setOriginalData(updatedData);
+
+            setTotalPages(res.data.totalPages || Math.ceil((res.data.totalItems || 0) / limit));
+            setCurrentPage(res.data.currentPage || page);
+        } catch (error) {
+            console.error("Lỗi khi tải dữ liệu:", error);
+            setData([]);
+            setOriginalData([]);
+            setTotalPages(0);
+        }
+    };
+
     useEffect(() => {
-        const fetchApi = async () => {
-            try {
-                const res = await getDataTour();
-                if (res.status !== 200) {
-                    throw new Error(res.data.error || "Lỗi không xác định");
-                }
-                console.log("res", res);
-
-                const dataArray = res.data?.tours && Array.isArray(res.data.tours) ? res.data.tours : [];
-
-                // Đảo ngược để tour mới hiển thị trước
-                const reversedData = [...dataArray].reverse();
-
-                setData(reversedData);
-                setOriginalData(reversedData);
-            } catch (error) {
-                console.error("Lỗi khi tải dữ liệu:", error);
-                setData([]);
-                setOriginalData([]);
-            }
-        };
-        fetchApi();
-    }, []);
+        fetchApi(currentPage);
+    }, [currentPage]);
 
     const removeDiacritics = (str) => {
         if (!str || typeof str !== "string") return "";
@@ -83,8 +93,8 @@ function ShowTour() {
                 <div className="mb-4 flex w-full items-center space-x-2 sm:mb-0 sm:w-auto">
                     <CreateTour />
                     <form
-                        className="inline"
                         onSubmit={handleSubmit(onSearch)}
+                        className="inline"
                     >
                         <div className="input flex items-center">
                             <button
@@ -107,7 +117,13 @@ function ShowTour() {
                 </div>
             </div>
 
-            <EntriesFilter data={data}>{(currentEntries) => <TourTable currentEntries={currentEntries} />}</EntriesFilter>
+            <TourTable currentEntries={data} />
+
+            <EntriesFilter
+                currentPage={currentPage}
+                totalPages={totalPages}
+                onPageChange={(page) => setCurrentPage(page)}
+            />
 
             <div className="mb-4">
                 <GoBack />

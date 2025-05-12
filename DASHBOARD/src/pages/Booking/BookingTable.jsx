@@ -1,161 +1,216 @@
 import { useEffect, useState } from "react";
 import icons from "../../util/icon";
-import { edit } from "../../util/request";
+import { confirmPaymentAndBooking } from "../../services/bookingApi"; // Thêm import hàm mới
 import { Link } from "react-router-dom";
+import VNPAY from "../../assets/Img/images.png";
+import PayOffice from "../../assets/Img/companypay.png";
 const { IoIosArrowDropdownCircle } = icons;
 
 function BookingTourTable({ currentEntries }) {
     const [dropdownOpen, setDropdownOpen] = useState(null);
-    const [bookingData, setBookingData] = useState([]); // State để lưu thông tin booking
+    const [bookingData, setBookingData] = useState([]);
+    const [isLoading, setIsLoading] = useState(false);
+
     useEffect(() => {
-        setBookingData(currentEntries);
+        console.log("Current entries in BookingTourTable:", currentEntries);
+        if (currentEntries && Array.isArray(currentEntries)) {
+            setBookingData(currentEntries);
+        } else {
+            console.warn("Current entries không phải là mảng:", currentEntries);
+            setBookingData([]);
+        }
     }, [currentEntries]);
 
     const handleConfirmBooking = async (bookingId) => {
+        setIsLoading(true);
         try {
-            // Tìm đúng booking theo bookingId để lấy ra id thật
-            const booking = bookingData.find((b) => b.bookingId === bookingId);
+            const booking = bookingData.find((b) => b.booking_id === bookingId);
+            if (!booking) throw new Error("Không tìm thấy booking");
 
-            // Gửi request cập nhật trạng thái bằng id thật
-            await edit(`bookingManagement/${booking.id}`, {
-                ...booking,
-                bookingStatus: "Đã xác nhận",
-                paymentStatus: "Đã thanh toán",
-            });
+            // Gọi API confirm-payment-and-booking
+            const response = await confirmPaymentAndBooking(bookingId);
 
-            // Cập nhật lại state
-            const updateBookingdata = bookingData.map((b) =>
-                b.bookingId === bookingId ? { ...b, bookingStatus: "Đã xác nhận", paymentStatus: "Đã thanh toán" } : b,
+            if (response.status !== 200) {
+                throw new Error(response.data || "Lỗi khi xác nhận thanh toán và booking");
+            }
+
+            // Cập nhật trạng thái trong giao diện
+            const updatedBookingData = bookingData.map((b) =>
+                b.booking_id === bookingId ? { ...b, booking_status: "CONFIRMED", payment_status: "COMPLETED" } : b,
             );
 
-            setBookingData(updateBookingdata);
+            setBookingData(updatedBookingData);
             setDropdownOpen(null);
+            alert("Xác nhận booking thành công!");
         } catch (error) {
             console.error("Error confirming booking:", error);
+            alert("Lỗi khi xác nhận booking: " + error.message);
+        } finally {
+            setIsLoading(false);
         }
     };
 
-    return currentEntries?.length > 0 ? (
-        <div className="overflow-x-auto">
-            <table className="mb-5 min-w-full border text-sm text-black dark:text-white">
-                <thead className="bg-gray-100 text-left dark:bg-slate-800">
-                    <tr>
-                        <th className="border px-4 py-2">Tên</th>
-                        <th className="border px-4 py-2">Khách hàng</th>
-                        <th className="border px-4 py-2">Email</th>
-                        <th className="border px-4 py-2">Số điện thoại</th>
-                        <th className="border px-4 py-2">Địa chỉ</th>
-                        <th className="border px-4 py-2">Ngày đặt</th>
-                        <th className="border px-4 py-2">Người lớn</th>
-                        <th className="border px-4 py-2">Trẻ em</th>
-                        <th className="border px-4 py-2">Tổng tiền</th>
-                        <th className="border px-4 py-2">Trạng thái booking</th>
-                        <th className="payment-column border px-4 py-2">Thanh toán</th>
-                        <th className="border px-4 py-2">Trạng thái</th>
-                        <th className="action-column border px-4 py-2 text-center">Chi tiết</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {bookingData.map((item, index) => {
-                        const badgeClass = "inline-block min-w-[120px] text-center px-2 py-1 text-xs text-white rounded font-semibold";
+    const translateStatus = (status, type) => {
+        if (type === "booking") {
+            switch (status) {
+                case "PENDING":
+                    return "Chưa xác nhận";
+                case "CONFIRMED":
+                    return "Đã xác nhận";
+                case "CANCELLED":
+                    return "Đã hủy";
+                default:
+                    return status || "Không xác định";
+            }
+        } else if (type === "payment") {
+            switch (status) {
+                case "PENDING":
+                    return "Chưa thanh toán";
+                case "PAID":
+                    return "Đã thanh toán";
+                case "COMPLETED":
+                    return "Đã thanh toán";
+                default:
+                    return status || "Không xác định";
+            }
+        }
+        return status;
+    };
 
-                        return (
-                            <tr
-                                key={index}
-                                className="transition hover:bg-gray-100 dark:hover:bg-slate-700"
-                            >
-                                <td className="border px-4 py-2">{item.tourName}</td>
-                                <td className="border px-4 py-2">{item.customerName}</td>
-                                <td className="border px-4 py-2">{item.email}</td>
-                                <td className="border px-4 py-2">{item.phone}</td>
-                                <td className="border px-4 py-2">{item.address}</td>
-                                <td className="border px-4 py-2">{item.bookingDate}</td>
-                                <td className="border px-4 py-2">{item.adults}</td>
-                                <td className="border px-4 py-2">{item.children}</td>
-                                <td className="border px-4 py-2">{item.totalPrice.toLocaleString("vi-VN")} VNĐ</td>
-
-                                {/* Trạng thái booking */}
-                                <td className="border px-4 py-2 text-center">
-                                    <span
-                                        className={`${badgeClass} ${
-                                            item.bookingStatus === "Đã hoàn thành"
-                                                ? "bg-green-500"
-                                                : item.bookingStatus === "Chưa xác nhận"
-                                                  ? "bg-yellow-500"
-                                                  : "bg-gray-500"
-                                        }`}
-                                    >
-                                        {item.bookingStatus}
-                                    </span>
-                                </td>
-
-                                {/* Thanh toán */}
-                                <td className="payment-column border px-4 py-2 text-center">
-                                    {item.paymentMethod ? (
-                                        <img
-                                            src={item.paymentMethod}
-                                            alt={item.paymentMethod}
-                                            className="mx-auto h-12 w-12 rounded-full"
-                                        />
-                                    ) : (
-                                        item.paymentMethod
-                                    )}
-                                </td>
-
-                                {/* Trạng thái thanh toán */}
-                                <td className="border px-4 py-2 text-center">
-                                    <span
-                                        className={`${badgeClass} ${
-                                            item.paymentStatus === "Đã thanh toán"
-                                                ? "bg-green-500"
-                                                : item.paymentStatus === "Chưa thanh toán"
-                                                  ? "bg-red-500"
-                                                  : "bg-gray-500"
-                                        }`}
-                                    >
-                                        {item.paymentStatus}
-                                    </span>
-                                </td>
-
-                                <td className="action-column border px-4 py-2 text-center">
-                                    <div className="relative flex items-center justify-center">
-                                        <button
-                                            className="text-blue-600 hover:text-blue-800"
-                                            onClick={() => setDropdownOpen(dropdownOpen === item.bookingId ? null : item.bookingId)}
-                                        >
-                                            <IoIosArrowDropdownCircle size={24} />
-                                        </button>
-
-                                        {dropdownOpen === item.bookingId && (
-                                            <div className="absolute top-full right-0 z-10 mt-2 min-w-[140px] rounded border bg-white text-left shadow-md">
-                                                {/* Nếu trạng thái là "Chưa xác nhận" thì hiển thị tùy chọn xác nhận */}
-                                                {item.bookingStatus === "Chưa xác nhận" && (
-                                                    <button
-                                                        className="w-full px-4 py-2 text-left text-sm text-green-600 hover:bg-green-50"
-                                                        onClick={() => handleConfirmBooking(item.bookingId)}
-                                                    >
-                                                        ✅ Xác nhận
-                                                    </button>
-                                                )}
-
-                                                {/* Xem chi tiết luôn có */}
-                                                <Link to={`/booking/${item.id}`}>
-                                                    <button className="w-full px-4 py-2 text-left text-sm text-blue-600 hover:bg-blue-50">
-                                                        📄 Xem chi tiết
-                                                    </button>
-                                                </Link>
-                                            </div>
-                                        )}
-                                    </div>
-                                </td>
+    return (
+        <div>
+            {bookingData.length > 0 ? (
+                <div className="overflow-x-auto">
+                    <table className="mb-5 min-w-full border text-sm text-black dark:text-white">
+                        <thead className="bg-gray-100 text-left dark:bg-slate-800">
+                            <tr>
+                                <th className="border px-4 py-2">Tên Tour</th>
+                                <th className="border px-4 py-2">Khách hàng</th>
+                                <th className="border px-4 py-2">Email</th>
+                                <th className="border px-4 py-2">Số điện thoại</th>
+                                <th className="border px-4 py-2">Địa chỉ</th>
+                                <th className="border px-4 py-2">Ngày đặt</th>
+                                <th className="border px-4 py-2">Người lớn</th>
+                                <th className="border px-4 py-2">Trẻ em</th>
+                                <th className="border px-4 py-2">Tổng tiền</th>
+                                <th className="border px-4 py-2">Trạng thái booking</th>
+                                <th className="border px-4 py-2">Phương thức thanh toán</th>
+                                <th className="border px-4 py-2">Trạng thái thanh toán</th>
+                                <th className="border px-4 py-2 text-center">Hành động</th>
                             </tr>
-                        );
-                    })}
-                </tbody>
-            </table>
+                        </thead>
+                        <tbody>
+                            {bookingData.map((item, index) => {
+                                const badgeClass =
+                                    "inline-block min-w-[120px] text-center px-2 fidefaut py-1 text-xs text-white rounded font-semibold";
+
+                                return (
+                                    <tr
+                                        key={item.booking_id || index} // Sử dụng booking_id làm key
+                                        className="transition hover:bg-gray-100 dark:hover:bg-slate-700"
+                                    >
+                                        <td className="border px-4 py-2">{item.title || "Chưa cập nhật"}</td>
+                                        <td className="border px-4 py-2">{item.full_name || "Không có tên"}</td>
+                                        <td className="border px-4 py-2">{item.email || "Không có email"}</td>
+                                        <td className="border px-4 py-2">{item.phone_number || "Không có số"}</td>
+                                        <td className="border px-4 py-2">{item.address || "Không có địa chỉ"}</td>
+                                        <td className="border px-4 py-2">
+                                            {item.created_at ? new Date(item.created_at).toLocaleDateString("vi-VN") : "Không có ngày"}
+                                        </td>
+                                        <td className="border px-4 py-2">{item.num_adults || 0}</td>
+                                        <td className="border px-4 py-2">{item.num_children || 0}</td>
+                                        <td className="border px-4 py-2">{(item.total_price || 0).toLocaleString("vi-VN")} VNĐ</td>
+                                        <td className="border px-4 py-2 text-center">
+                                            <span
+                                                className={`${badgeClass} ${
+                                                    item.booking_status === "CONFIRMED"
+                                                        ? "bg-green-500"
+                                                        : item.booking_status === "PENDING"
+                                                          ? "bg-yellow-500"
+                                                          : "bg-gray-500"
+                                                }`}
+                                            >
+                                                {translateStatus(item.booking_status, "booking")}
+                                            </span>
+                                        </td>
+                                        <td className="border px-4 py-2 text-center">
+                                            {item.payment_method ? (
+                                                item.payment_method === "VNPAY" ? (
+                                                    <img
+                                                        src={VNPAY}
+                                                        alt="VNPAY"
+                                                        className="mx-auto h-12 w-12 rounded-full"
+                                                    />
+                                                ) : item.payment_method === "Tại văn phòng" ? (
+                                                    <img
+                                                        src={PayOffice}
+                                                        alt="Tại văn phòng"
+                                                        className="mx-auto h-12 w-12 rounded-full"
+                                                    />
+                                                ) : (
+                                                    item.payment_method
+                                                )
+                                            ) : (
+                                                "Chưa xác định"
+                                            )}
+                                        </td>
+                                        <td className="border px-4 py-2 text-center">
+                                            <span
+                                                className={`${badgeClass} ${
+                                                    item.payment_status === "PAID" || item.payment_status === "COMPLETED"
+                                                        ? "bg-green-500"
+                                                        : item.payment_status === "PENDING" || !item.payment_status
+                                                          ? "bg-red-500"
+                                                          : "bg-gray-500"
+                                                }`}
+                                            >
+                                                {translateStatus(item.payment_status, "payment")}
+                                            </span>
+                                        </td>
+                                        <td className="border px-4 py-2 text-center">
+                                            <div className="relative flex items-center justify-center">
+                                                <button
+                                                    className="text-blue-600 hover:text-blue-800"
+                                                    onClick={() => setDropdownOpen(dropdownOpen === item.booking_id ? null : item.booking_id)}
+                                                    disabled={isLoading}
+                                                >
+                                                    <IoIosArrowDropdownCircle size={24} />
+                                                </button>
+                                                {dropdownOpen === item.booking_id && (
+                                                    <div className="absolute top-full right-0 z-10 mt-2 min-w-[140px] rounded border bg-white text-left shadow-md">
+                                                        {item.booking_status === "PENDING" && (
+                                                            <button
+                                                                className="w-full px-4 py-2 text-left text-sm text-green-600 hover:bg-green-50"
+                                                                onClick={() => handleConfirmBooking(item.booking_id)}
+                                                                disabled={isLoading}
+                                                            >
+                                                                ✅ Xác nhận
+                                                            </button>
+                                                        )}
+                                                        <Link to={`/booking/${item.booking_id}`}>
+                                                            <button className="w-full px-4 py-2 text-left text-sm text-blue-600 hover:bg-blue-50">
+                                                                📄 Xem chi tiết
+                                                            </button>
+                                                        </Link>
+                                                    </div>
+                                                )}
+                                            </div>
+                                        </td>
+                                    </tr>
+                                );
+                            })}
+                        </tbody>
+                    </table>
+                </div>
+            ) : (
+                <p className="text-center text-gray-700 dark:text-gray-300">Không có dữ liệu</p>
+            )}
+            {isLoading && (
+                <div className="bg-opacity-50 fixed inset-0 flex items-center justify-center bg-black">
+                    <div className="h-12 w-12 animate-spin rounded-full border-t-2 border-b-2 border-blue-500"></div>
+                </div>
+            )}
         </div>
-    ) : (
-        <p className="text-center text-gray-700 dark:text-gray-300">Không có dữ liệu</p>
     );
 }
 

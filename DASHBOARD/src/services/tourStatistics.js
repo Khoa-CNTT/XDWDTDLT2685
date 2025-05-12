@@ -12,10 +12,7 @@ export const getTopBooked = async () => {
     const result = await get("top_booked_tours");
     return result;
 };
-export const getDashboardData = async () => {
-    const result = await get("dashboard_summary");
-    return result;
-};
+
 export const getDataMonths = async () => {
     const result = await get("monthlyRevenue");
     return result;

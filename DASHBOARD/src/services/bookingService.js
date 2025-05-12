@@ -1,22 +1,23 @@
-import { get } from "../util/requestserver";
+import { get, post } from "../util/requestserver";
 
-// Lấy tất cả booking tour
-export const getDataBookingTour = async () => {
+export const getDataBookingTour = async (page, limit = 10, keyword = "") => {
     try {
-        const res = await get("bookings");
+        const res = await get("bookings", {
+            params: { page, limit, keyword },
+        });
+
         return {
             status: res.status,
             data: res.data,
         };
     } catch (error) {
-        console.error("Lỗi khi lấy danh sách booking:", error);
+        console.error("Error fetching bookings:", error);
         return {
             status: error.response?.status || 500,
-            data: error.response?.data || "Đã xảy ra lỗi khi lấy danh sách booking",
+            data: error.response?.data || "Lỗi khi lấy danh sách booking",
         };
     }
 };
-
 // Lấy thông tin booking theo ID
 export const getDataBookingTourById = async (id) => {
     try {
@@ -30,6 +31,22 @@ export const getDataBookingTourById = async (id) => {
         return {
             status: error.response?.status || 500,
             data: error.response?.data || "Đã xảy ra lỗi khi lấy thông tin booking",
+        };
+    }
+};
+// Xác nhận thanh toán và cập nhật trạng thái booking sang CONFIRMED
+export const confirmPaymentAndBooking = async (bookingId) => {
+    try {
+        const res = await post(`bookings/${bookingId}/confirm-payment-and-booking`);
+        return {
+            status: res.status,
+            data: res.data,
+        };
+    } catch (error) {
+        console.error(`Lỗi khi xác nhận thanh toán và booking với ID ${bookingId}:`, error);
+        return {
+            status: error.response?.status || 500,
+            data: error.response?.data || "Đã xảy ra lỗi khi xác nhận thanh toán và booking",
         };
     }
 };

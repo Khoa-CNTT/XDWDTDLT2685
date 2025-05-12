@@ -3,7 +3,7 @@ import Swal from "sweetalert2";
 import { deleteTour } from "../../../services/tourService";
 import DeleteButton from "../../Button/DeleteButton";
 
-function DeleteTour({ item, onReload }) {
+function DeleteTour({ item }) {
     const handleDeleteTour = async () => {
         // Hiển thị xác nhận trước khi xóa
         const confirmResult = await Swal.fire({
@@ -32,7 +32,7 @@ function DeleteTour({ item, onReload }) {
                     showConfirmButton: false,
                     timer: 2000,
                 });
-                onReload(); // Reload danh sách tour
+                // Reload danh sách tour
                 return true;
             } else if (result.status === 404) {
                 await Swal.fire({

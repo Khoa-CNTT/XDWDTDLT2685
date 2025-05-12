@@ -11,7 +11,7 @@ export const handleCopy = (data, type) => {
         content = data
             .map(
                 (item) =>
-                    `Tên:${item.title}\nThời gian:${item.duration}\nMô tả:${item.description}\nSố lượng người còn trống:${item.quantity}\nGiá người lớn:${item.price_adult || "N/A"}\nGiá trẻ em:${item.price_child || "N/A"}\nĐiểm đến:${item.destination || "N/A"}\nKhả dụng:${item.available ? "1" : "0"}\nNgày bắt đầu:${item.startDate}\nNgày kết thúc:${item.endDate}`,
+                    `Tên:${item.title}\nThời gian:${item.duration}\nMô tả:${item.description}\nSố lượng người còn trống:${item.quantity}\nGiá người lớn:${item.price_adult || "N/A"}\nGiá trẻ em:${item.price_child || "N/A"}\nĐiểm đến:${item.destination || "N/A"}\nKhả dụng:${item.availability ? "Có" : "Không"}\nNgày bắt đầu:${item.startDate}\nNgày kết thúc:${item.endDate}`,
             )
             .join("\n\n");
     } else if (type === "booking") {

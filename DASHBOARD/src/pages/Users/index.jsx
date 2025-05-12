@@ -1,34 +1,35 @@
-/* eslint-disable no-unused-vars */
 import { useEffect, useState } from "react";
 import { getDataUser } from "../../services/userSevice";
 import { useForm } from "react-hook-form";
 import UserPr from "./UserPr";
 import icons from "../../util/icon";
 import GoBack from "../../components/GoBack/Goback";
-import Swal from "sweetalert2"; // Thêm SweetAlert2 để hiển thị lỗi
+import Swal from "sweetalert2";
+import EntriesFilter from "../../components/Pagination";
+// Import the EntriesFilter component
 
 const { FaSearch } = icons;
 
-// Định nghĩa baseUrl tĩnh
 const BASE_URL = "http://localhost:8088";
 
 function User() {
     const [data, setData] = useState([]);
     const [originalData, setOriginalData] = useState([]);
+    const [currentPage, setCurrentPage] = useState(0); // Track current page
+    const [limit] = useState(10); // Set the limit per page
     const { register, handleSubmit } = useForm();
 
     useEffect(() => {
         const fetchApi = async () => {
             try {
                 const res = await getDataUser();
-                console.log("API Response:", res); // Log toàn bộ phản hồi để debug
+
                 if (res.status === 200) {
-                    const users = Array.isArray(res.data.users) ? res.data.users : res.data; // Xử lý nếu data là mảng trực tiếp
+                    const users = Array.isArray(res.data.users) ? res.data.users : res.data;
                     const dataArray = users.reverse().map((user) => ({
                         ...user,
-                        avatar: user.avatar || `${BASE_URL}/api/v1/users/avatars/default-avatar.jpg`, // Sử dụng avatar từ backend hoặc mặc định
+                        avatar: user.avatar || `${BASE_URL}/api/v1/users/avatars/default-avatar.jpg`,
                     }));
-                    console.log("Processed Data with Avatars:", dataArray); // Log dữ liệu đã xử lý
                     setData(dataArray);
                     setOriginalData(dataArray);
                 } else {
@@ -72,6 +73,20 @@ function User() {
         setData(filteredData);
     };
 
+    // Handle page change
+    const handlePageChange = (page) => {
+        setCurrentPage(page);
+    };
+
+    // Paginate the data
+    const paginateData = () => {
+        const startIndex = currentPage * limit;
+        const endIndex = startIndex + limit;
+        return data.slice(startIndex, endIndex);
+    };
+
+    const totalPages = Math.ceil(data.length / limit);
+
     return (
         <div className="min-h-screen bg-white px-4 font-sans dark:bg-slate-900 dark:text-white">
             <div className="flex items-center justify-center rounded-2xl bg-gray-200 p-2 shadow-md dark:bg-slate-700">
@@ -104,8 +119,8 @@ function User() {
                 </div>
             </div>
             <div className="mt-0 grid grid-cols-1 gap-4 p-4 sm:grid-cols-1 md:grid-cols-1 lg:grid-cols-3">
-                {data.length > 0 ? (
-                    data.map((user, index) => (
+                {paginateData().length > 0 ? (
+                    paginateData().map((user, index) => (
                         <UserPr
                             key={index}
                             user={user}
@@ -115,6 +130,12 @@ function User() {
                     <p className="text-center text-gray-700 dark:text-gray-300">Không có dữ liệu</p>
                 )}
             </div>
+            {/* Pagination component */}
+            <EntriesFilter
+                currentPage={currentPage}
+                totalPages={totalPages}
+                onPageChange={handlePageChange}
+            />
             <div className="mt-20 mb-20">
                 <GoBack />
             </div>

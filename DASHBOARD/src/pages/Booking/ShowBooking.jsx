@@ -11,60 +11,41 @@ const { FaSearch } = icons;
 
 function ShowBookingTour() {
     const [data, setData] = useState([]);
-    const [originalData, setOriginalData] = useState([]);
+    const [currentPage, setCurrentPage] = useState(0);
+    const [limit] = useState(10);
+    const [totalPages, setTotalPages] = useState(1);
+    const [keyword, setKeyword] = useState("");
     const { register, handleSubmit } = useForm();
 
-    useEffect(() => {
-        const fetchApi = async () => {
-            try {
-                const res = await getDataBookingTour();
-
-                const dataArray = res.reverse() || [];
-                setData(dataArray);
-                setOriginalData(dataArray);
-            } catch (error) {
-                console.error("Lỗi khi tải dữ liệu:", error);
-                setData([]);
-                setOriginalData([]);
-            }
-        };
-        fetchApi();
-    }, []);
-
-    const removeDiacritics = (str) => {
-        if (!str || typeof str !== "string") return "";
-        return str
-            .normalize("NFD")
-            .replace(/[\u0300-\u036f]/g, "")
-            .replace(/đ/g, "d")
-            .replace(/Đ/g, "D");
+    const fetchApi = async (page = 0, keyword = "") => {
+        try {
+            const res = await getDataBookingTour(page, limit, keyword);
+            console.log("API Response:", res); // Debug dữ liệu trả về
+            // Truy cập vào res.data.content vì API trả về data lồng
+            setData(res.data.content || []);
+            setTotalPages(res.data.totalPages || 1);
+        } catch (error) {
+            console.error("Lỗi khi tải dữ liệu:", error);
+            setData([]);
+            setTotalPages(1);
+        }
     };
+
+    useEffect(() => {
+        fetchApi(currentPage, keyword);
+    }, [currentPage, keyword]);
 
     const onSearch = (formData) => {
         const searchTerm = formData.name?.toLowerCase().trim() || "";
-        if (!searchTerm) {
-            setData(originalData);
-            return;
-        }
-
-        const searchTermNoDiacritics = removeDiacritics(searchTerm);
-        const filteredData = originalData.filter((booking) => {
-            const tourName = booking.tourName?.toLowerCase() || "";
-            const userName = booking.customerName?.toLowerCase() || "";
-
-            const tourNameNoDiacritics = removeDiacritics(tourName);
-            const userNameNoDiacritics = removeDiacritics(userName);
-
-            return (
-                tourName.includes(searchTerm) ||
-                tourNameNoDiacritics.includes(searchTermNoDiacritics) ||
-                userName.includes(searchTerm) ||
-                userNameNoDiacritics.includes(searchTermNoDiacritics)
-            );
-        });
-
-        setData(filteredData);
+        setKeyword(searchTerm);
+        setCurrentPage(0); // Reset về trang đầu khi tìm kiếm
     };
+
+    const handlePageChange = (page) => {
+        setCurrentPage(page);
+    };
+
+    console.log("Booking data:", data); // Debug dữ liệu trước khi truyền vào BookingTourTable
 
     return (
         <div className="min-h-screen bg-white px-4 font-sans lg:col-span-8 dark:bg-slate-900 dark:text-white">
@@ -84,7 +65,7 @@ function ShowBookingTour() {
                     className="inline"
                     onSubmit={handleSubmit(onSearch)}
                 >
-                    <div className="input flex items-center">
+                    <div className="input flex items-center rounded-md border px-2 py-1">
                         <button
                             type="submit"
                             className="cursor-pointer"
@@ -97,14 +78,20 @@ function ShowBookingTour() {
                         <input
                             {...register("name")}
                             type="text"
-                            placeholder="Tìm kiếm theo tên tour hoặc tên người dùng"
-                            className="*dark:placeholder:text-slate-400 w-full bg-transparent text-slate-900 outline-0 placeholder:text-slate-300 dark:text-slate-50"
+                            placeholder="Tìm kiếm theo tên tour hoặc người dùng"
+                            className="w-full bg-transparent text-slate-900 outline-none placeholder:text-slate-300 dark:text-slate-50 dark:placeholder:text-slate-400"
                         />
                     </div>
                 </form>
             </div>
 
-            <EntriesFilter data={data}>{(currentEntries) => <BookingTourTable currentEntries={currentEntries} />}</EntriesFilter>
+            {data.length === 0 ? <p className="text-center text-gray-500">Không có dữ liệu booking</p> : <BookingTourTable currentEntries={data} />}
+
+            <EntriesFilter
+                currentPage={currentPage}
+                totalPages={totalPages}
+                onPageChange={handlePageChange}
+            />
 
             <div className="mb-4">
                 <GoBack />

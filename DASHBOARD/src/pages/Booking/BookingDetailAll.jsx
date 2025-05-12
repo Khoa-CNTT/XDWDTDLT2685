@@ -2,6 +2,7 @@ import React from "react";
 import photo from "../../assets/Img/logo.png";
 import ToolReport from "../../components/ToolReport";
 import GoBack from "../../components/GoBack/Goback";
+
 function Invoice({ item }) {
     const totalAdult = item.adults * item.unitPriceAdult;
     const totalChild = item.children * item.unitPriceChild;
@@ -13,6 +14,15 @@ function Invoice({ item }) {
     const finalPrice = originalPrice + tax - discount;
     // Lấy thời gian hiện tại
     const currentDateTime = new Date().toLocaleString("vi-VN");
+
+    // Định nghĩa provider fix cứng
+    const provider = {
+        companyName: "Công ty Du lịch GoViet",
+        address: "123 Đường Quang Trung, Quận Thanh Khê, TP. Đà Nẵng",
+        phone: "0901234567",
+        email: "support@goviet.com",
+    };
+
     return (
         <div className="min-h-screen bg-white px-4 font-sans dark:bg-slate-900 dark:text-white">
             {/* Header */}
@@ -28,7 +38,6 @@ function Invoice({ item }) {
                             src={photo}
                             className="h-20 w-20 transform rounded-full bg-gray-50 object-cover dark:bg-slate-950"
                         />
-
                         <h2 className="text-xl font-semibold text-gray-800 dark:text-gray-200">{item.title}</h2>
                     </div>
                     <p className="text-xl text-gray-600 dark:text-gray-400">Thời gian lập hóa đơn: {currentDateTime}</p>
@@ -47,12 +56,12 @@ function Invoice({ item }) {
                     </div>
                     <div>
                         <p className="text-base font-medium text-blue-500 dark:text-blue-300">
-                            Đơn vị cung cấp: <span className="font-normal text-gray-700 dark:text-gray-300">{item.provider.companyName}</span>
+                            Đơn vị cung cấp: <span className="font-normal text-gray-700 dark:text-gray-300">{provider.companyName}</span>
                         </p>
                         <ul className="mt-2 list-none text-sm text-gray-600 dark:text-gray-400">
-                            <li>Địa chỉ: {item.provider.address}</li>
-                            <li>SĐT: {item.provider.phone}</li>
-                            <li>Email: {item.provider.email}</li>
+                            <li>Địa chỉ: {provider.address}</li>
+                            <li>SĐT: {provider.phone}</li>
+                            <li>Email: {provider.email}</li>
                         </ul>
                     </div>
                 </div>
@@ -102,7 +111,6 @@ function Invoice({ item }) {
                             <th className="p-3 text-center text-sm font-semibold">Số lượng</th>
                             <th className="p-3 text-center text-sm font-semibold">Điểm đến</th>
                             <th className="p-3 text-center text-sm font-semibold">Đơn giá</th>
-
                             <th className="rounded-tr-md p-3 text-right text-sm font-semibold">Thành tiền</th>
                         </tr>
                     </thead>
@@ -157,18 +165,19 @@ function Invoice({ item }) {
                     <strong className="text-blue-700 dark:text-blue-300">Ghi chú:</strong> Vui lòng kiểm tra thông tin kỹ lưỡng. Nếu có sai sót, hãy
                     liên hệ bộ phận hỗ trợ qua email{" "}
                     <a
-                        href={`mailto:${item.provider.email}`}
+                        href={`mailto:${provider.email}`}
                         className="text-blue-600 hover:underline dark:text-blue-400"
                     >
-                        {item.provider.email}
+                        {provider.email}
                     </a>{" "}
                     hoặc số điện thoại{" "}
                     <a
-                        href={`tel:${item.provider.phone}`}
+                        href={`tel:${provider.phone}`}
                         className="text-blue-600 hover:underline dark:text-blue-400"
                     >
-                        {item.provider.phone} .
+                        {provider.phone}
                     </a>
+                    .
                 </p>
                 <hr className="mb-6 border-gray-300 dark:border-gray-600" />
                 <div className="mb-4 flex flex-col items-center justify-between gap-4 sm:flex-row">

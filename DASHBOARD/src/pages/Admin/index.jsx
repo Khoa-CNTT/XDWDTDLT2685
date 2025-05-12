@@ -7,7 +7,6 @@ import { getInfoAdmin, putChangeInfoAdmin, putProfileImg } from "../../services/
 import Swal from "sweetalert2";
 
 function Admin() {
-    // States quản lý các giá trị liên quan đến thông tin admin và hình ảnh
     const [tempImage, setTempImage] = useState(null);
     const [selectedImageFile, setSelectedImageFile] = useState(null);
     const [formData, setFormData] = useState({
@@ -18,16 +17,14 @@ function Admin() {
         address: "",
         avatar_path: "",
     });
-    const [isLoading, setIsLoading] = useState(false); // Trạng thái loading khi đang xử lý
+    const [isLoading, setIsLoading] = useState(false);
 
-    // useEffect sẽ được chạy một lần khi component được render lần đầu
     useEffect(() => {
         const userIdToCheck = localStorage.getItem("user_id");
         const fetchApi = async () => {
             try {
                 const res = await getInfoAdmin(userIdToCheck);
                 if (res.status === 200 && res.data) {
-                    // Nếu API trả về thành công và có dữ liệu, gán dữ liệu vào formData
                     setFormData({
                         id: res.data.id || "",
                         user_name: res.data.user_name || "",
@@ -36,21 +33,19 @@ function Admin() {
                         address: res.data.address || "",
                         avatar_path: res.data.avatar_path || "",
                     });
-                    // Nếu avatar_path bắt đầu bằng "http", thì đây là một URL, gán vào tempImage để hiển thị avatar
                     if (res.data.avatar_path?.startsWith("http")) {
                         setTempImage(res.data.avatar_path);
                     }
                 } else {
-                    Swal.fire("Lỗi", "Người dùng không tồn tại", "error"); // Hiển thị thông báo lỗi nếu không tìm thấy user
+                    Swal.fire("Lỗi", "Người dùng không tồn tại", "error");
                 }
             } catch (error) {
-                Swal.fire("Lỗi", "Có lỗi xảy ra khi lấy thông tin admin", "error"); // Thông báo lỗi nếu gọi API thất bại
+                Swal.fire("Lỗi", "Có lỗi xảy ra khi lấy thông tin admin", "error");
             }
         };
         fetchApi();
     }, []);
 
-    // Hàm xử lý khi người dùng thay đổi hình ảnh avatar
     const handleImageChange = (e) => {
         if (e.target.files && e.target.files[0]) {
             const file = e.target.files[0];
@@ -59,54 +54,66 @@ function Admin() {
         }
     };
 
-    // Hàm xử lý khi người dùng thay đổi thông tin trong form
     const handleInputChange = (e) => {
-        setFormData({ ...formData, [e.target.name]: e.target.value }); // Cập nhật giá trị trong formData khi input thay đổi
+        setFormData({ ...formData, [e.target.name]: e.target.value });
     };
 
-    // Hàm xử lý khi người dùng submit form
+    // ✅ Hàm kiểm tra định dạng số điện thoại Việt Nam
+    const isValidPhoneNumber = (phone) => {
+        const regex = /^(0[2|3|5|7|8|9])+([0-9]{8})$/;
+        return regex.test(phone);
+    };
+
     const handleSubmit = async (e) => {
-        e.preventDefault(); // Ngăn chặn hành vi mặc định của form khi submit
-        setIsLoading(true); // Bật trạng thái loading
+        e.preventDefault();
+        setIsLoading(true);
 
         const userId = localStorage.getItem("user_id");
 
         try {
-            // Cập nhật avatar nếu có ảnh mới
+            // Upload ảnh avatar nếu có ảnh mới
             if (selectedImageFile) {
                 const formDataImage = new FormData();
-                formDataImage.append("avatar", selectedImageFile); // Đưa ảnh vào FormData
+                formDataImage.append("avatar", selectedImageFile);
 
-                const avatarResponse = await putProfileImg(userId, formDataImage); // Gọi API để cập nhật ảnh avatar
+                const avatarResponse = await putProfileImg(userId, formDataImage);
 
                 if (avatarResponse.status === 200 && avatarResponse.data.avatar_path) {
                     setFormData((prev) => ({
                         ...prev,
-                        avatar_path: avatarResponse.data.avatar_path, // Cập nhật avatar path mới vào formData
+                        avatar_path: avatarResponse.data.avatar_path,
                     }));
-                    setTempImage(avatarResponse.data.avatar_path); // Cập nhật tempImage để hiển thị avatar mới
+                    setTempImage(avatarResponse.data.avatar_path);
                     Swal.fire({
                         title: "Thành công",
                         text: "Cập nhật ảnh đại diện thành công",
                         icon: "success",
                         confirmButtonText: "OK",
                     }).then(() => {
-                        window.location.reload(); // Tải lại trang khi thành công
+                        window.location.reload();
                     });
                 } else {
-                    Swal.fire("Lỗi", "Cập nhật ảnh đại diện thất bại", "error"); // Thông báo lỗi nếu cập nhật avatar thất bại
+                    Swal.fire("Lỗi", "Cập nhật ảnh đại diện thất bại", "error");
                 }
             }
 
-            // Cập nhật thông tin khác (tên, email, số điện thoại, địa chỉ)
+            // ✅ Kiểm tra số điện thoại hợp lệ trước khi gửi
+            if (!isValidPhoneNumber(formData.phone_number)) {
+                Swal.fire("Lỗi", "Số điện thoại không hợp lệ. Vui lòng nhập đúng định dạng!", "error");
+                setIsLoading(false);
+                return;
+            }
+
+            // Cập nhật thông tin khác
             const adminData = {
-                user_name: formData.full_name,
+                user_name: formData.user_name,
                 email: formData.email,
                 phone_number: formData.phone_number,
                 address: formData.address,
             };
 
-            const infoResponse = await putChangeInfoAdmin(userId, adminData); // Gọi API cập nhật thông tin admin
+            const infoResponse = await putChangeInfoAdmin(userId, adminData);
+
             if (infoResponse.status === 200) {
                 Swal.fire({
                     title: "Thành công",
@@ -114,15 +121,15 @@ function Admin() {
                     icon: "success",
                     confirmButtonText: "OK",
                 }).then(() => {
-                    window.location.reload(); // Tải lại trang khi thành công
+                    window.location.reload();
                 });
             } else {
-                Swal.fire("Lỗi", "Cập nhật thông tin thất bại", "error"); // Thông báo lỗi nếu cập nhật thông tin thất bại
+                Swal.fire("Lỗi", "Cập nhật thông tin thất bại", "error");
             }
         } catch (error) {
-            Swal.fire("Lỗi", "Có lỗi xảy ra khi cập nhật thông tin", "error"); // Thông báo lỗi nếu có lỗi xảy ra trong quá trình xử lý
+            Swal.fire("Lỗi", "Có lỗi xảy ra khi cập nhật thông tin", "error");
         } finally {
-            setIsLoading(false); // Tắt trạng thái loading
+            setIsLoading(false);
         }
     };
 
@@ -132,14 +139,11 @@ function Admin() {
                 <h1 className="text-2xl font-bold tracking-wide text-gray-800 dark:text-white">Thông tin ADMIN</h1>
             </div>
             <div className="flex flex-col items-center md:flex-row md:items-start">
-                {/* Hiển thị avatar admin */}
                 <AdminAvatar
                     tempImage={tempImage}
                     name={formData.user_name}
-                    handleImageChange={handleImageChange} // Hàm để thay đổi avatar
+                    handleImageChange={handleImageChange}
                 />
-
-                {/* Hiển thị form để chỉnh sửa thông tin admin */}
                 <AdminForm
                     formData={formData}
                     onChange={handleInputChange}
