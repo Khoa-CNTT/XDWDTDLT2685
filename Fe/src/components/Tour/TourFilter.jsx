@@ -3,6 +3,7 @@ import StarDisplay from '../Star/StarDisplay';
 import Sort from '../Sort/Sort';
 import Places from '../Places/Places';
 import useTourFilterSort from '../../hooks/useTourFilterSort';
+import NoPage from '../../pages/NoPage';
 
 const region = ["Miền Bắc", "Miền Trung", "Miền Nam"];
 const prices = [
@@ -118,15 +119,19 @@ const TourFilter = () => {
                 </div>
                 <div className=''>
                     <Sort sortValue={sortValue} setSortValue={setSortValue} />
-                    <Places
-                        hideTitle={false}
-                        booking={false}
-                        size="small"
-                        left={true}
-                        container={false}
-                        star={true}
-                        tours={tours}
-                    />
+                    {tours.length === 0 ? (
+                        <NoPage onReset={resetFilters} />
+                    ) : (
+                        <Places
+                            hideTitle={false}
+                            booking={false}
+                            size="small"
+                            left={true}
+                            container={false}
+                            star={true}
+                            tours={tours}
+                        />
+                    )}
                 </div>
             </div>
         </div>

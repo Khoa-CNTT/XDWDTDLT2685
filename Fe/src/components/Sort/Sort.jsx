@@ -3,7 +3,7 @@ import React from 'react';
 const Sort = ({ sortValue, setSortValue }) => {
     return (
         <div className=''>
-            <div className='ml-[20px]'>
+            <div className='ml-[20px] min-w-[1000px]'>
                 <div className='flex items-center justify-between'>
                     <h1 className='text-lg font-semibold'>Tours tìm thấy</h1>
                     <div className="flex items-center gap-3">
