@@ -15,4 +15,6 @@ public interface ReviewRepository extends JpaRepository<Review, Long> {
     Optional<Float> findAverageRatingByTourId(Long tourId);
 
     Integer countByTourTourId(Long tourId);
+
+    boolean existsByUserUserIdAndTourTourId(Long userId, Long tourId);
 }

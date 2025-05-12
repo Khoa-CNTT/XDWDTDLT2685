@@ -41,27 +41,45 @@ public class JwtTokenFilter extends OncePerRequestFilter {
                                     @NonNull HttpServletResponse response,
                                     @NonNull FilterChain filterChain)
             throws ServletException, IOException {
+        logger.info("Processing request: {} {}", request.getMethod(), request.getServletPath());
+        if (isBypassToken(request)) {
+            logger.info("Bypassing token check for: {}", request.getServletPath());
+            filterChain.doFilter(request, response);
+            return;
+        }
+
+        final String authHeader = request.getHeader("Authorization");
+        logger.info("Authorization header: {}", authHeader);
+
+        // Kiểm tra header Authorization
+        if (authHeader == null || !authHeader.startsWith("Bearer ") || authHeader.length() <= 7) {
+            logger.warn("Missing or invalid Authorization header");
+            response.setContentType("application/json");
+            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+            response.getWriter().write("{\"error\": \"Unauthorized\", \"message\": \"Thiếu hoặc không hợp lệ token\"}");
+            return;
+        }
+
+        final String token = authHeader.substring(7);
+        logger.info("JWT Token: {}", token);
+
+        // Kiểm tra định dạng token
+        if (token.isEmpty() || !isValidJwtFormat(token)) {
+            logger.warn("Invalid JWT token format");
+            response.setContentType("application/json");
+            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+            response.getWriter().write("{\"error\": \"Unauthorized\", \"message\": \"Token không hợp lệ\"}");
+            return;
+        }
+
         try {
-            logger.info("Processing request: {} {}", request.getMethod(), request.getServletPath());
-            if (isBypassToken(request)) {
-                logger.info("Bypassing token check for: {}", request.getServletPath());
-                filterChain.doFilter(request, response);
-                return;
-            }
-            final String authHeader = request.getHeader("Authorization");
-            logger.info("Authorization header: {}", authHeader);
-            if (authHeader == null || !authHeader.startsWith("Bearer ")) {
-                logger.warn("Missing or invalid Authorization header");
-                response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Unauthorized");
-                return;
-            }
-            final String token = authHeader.substring(7);
-            logger.info("JWT Token: {}", token);
             final String userName = jwtTokenUtil.extractUserName(token);
             logger.info("Extracted username: {}", userName);
+
             if (userName != null && SecurityContextHolder.getContext().getAuthentication() == null) {
                 User userDetails = (User) userDetailsService.loadUserByUsername(userName);
                 logger.info("Loaded user details: {}, authorities: {}", userDetails.getUsername(), userDetails.getAuthorities());
+
                 if (jwtTokenUtil.validateToken(token, userDetails)) {
                     logger.info("Token validated successfully for user: {}", userName);
                     List<String> authorities = jwtTokenUtil.extractAuthorities(token);
@@ -75,15 +93,26 @@ public class JwtTokenFilter extends OncePerRequestFilter {
                     SecurityContextHolder.getContext().setAuthentication(authenticationToken);
                 } else {
                     logger.warn("Token validation failed for user: {}", userName);
-                    response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Unauthorized");
+                    response.setContentType("application/json");
+                    response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+                    response.getWriter().write("{\"error\": \"Unauthorized\", \"message\": \"Token không hợp lệ\"}");
                     return;
                 }
             }
-            filterChain.doFilter(request, response);
         } catch (Exception e) {
             logger.error("Error processing JWT token: {}", e.getMessage(), e);
-            response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Unauthorized");
+            response.setContentType("application/json");
+            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+            response.getWriter().write("{\"error\": \"Unauthorized\", \"message\": \"Lỗi xác thực token: " + e.getMessage() + "\"}");
+            return;
         }
+
+        filterChain.doFilter(request, response);
+    }
+
+    private boolean isValidJwtFormat(String token) {
+        // JWT phải chứa đúng 2 dấu chấm (header.payload.signature)
+        return token != null && token.split("\\.").length == 3;
     }
 
     private boolean isBypassToken(@NonNull HttpServletRequest request) {

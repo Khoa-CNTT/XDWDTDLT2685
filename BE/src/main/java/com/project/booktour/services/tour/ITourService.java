@@ -35,15 +35,10 @@ public interface ITourService {
 
     TourImage createTourImage(Long tourId, TourImageDTO tourImageDTO) throws Exception;
 
-    Review createReview(ReviewDTO reviewDTO) throws Exception;
-
     List<Review> getReviewsByTour(Long tourId);
 
     List<Review> getReviewsByUserAndTour(Long userId, Long tourId);
 
-    void updateReview(Long reviewId, ReviewDTO reviewDTO) throws Exception;
-
     List<TourImage> updateTourImages(Long tourId, List<TourImageDTO> tourImageDTOs) throws Exception;
 
-    List<ReviewResponse> getReviewListByTour(Long tourId) throws DataNotFoundException;
 }

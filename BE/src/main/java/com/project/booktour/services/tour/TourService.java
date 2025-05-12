@@ -17,6 +17,7 @@ import com.project.booktour.responses.ReviewResponse;
 import com.project.booktour.responses.SimplifiedTourResponse;
 import com.project.booktour.responses.TourResponse;
 import com.project.booktour.services.booking.BookingService;
+import com.project.booktour.services.review.ReviewService;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
@@ -36,8 +37,7 @@ public class TourService implements ITourService {
     private final TourImageRepository tourImageRepository;
     private final ObjectMapper objectMapper;
     private final ReviewRepository reviewRepository;
-    private final UserRepository userRepository;
-    private final BookingService bookingService;
+    private final ReviewService reviewService;
 
     @Override
     public Tour createTour(TourDTO tourDTO) throws DataNotFoundException, JsonProcessingException, InvalidParamException {
@@ -73,7 +73,7 @@ public class TourService implements ITourService {
     @Override
     public TourResponse getTourDetails(Long id) throws DataNotFoundException {
         Tour tour = tourRepository.findById(id)
-                .orElseThrow(() -> new DataNotFoundException("Tour not found with id: " + id));
+                .orElseThrow(() -> new DataNotFoundException("Không tìm thấy tour với id: " + id));
 
         List<String> imageUrls = tourImageRepository.findByTourTourId(id).stream()
                 .map(TourImage::getImageUrl)
@@ -85,8 +85,8 @@ public class TourService implements ITourService {
             imageUrls = Collections.singletonList("http://localhost:8088/api/v1/tours/images/notfound.jpeg");
         }
 
-        // Lấy danh sách đánh giá
-        List<ReviewResponse> reviews = getReviewListByTour(id);
+        // Sử dụng ReviewService để lấy danh sách đánh giá
+        List<ReviewResponse> reviews = reviewService.getReviewListByTour(id);
 
         // Tính số sao trung bình và tổng số đánh giá
         Float averageRating = reviewRepository.findAverageRatingByTourId(id).orElse(0.0f);
@@ -95,7 +95,7 @@ public class TourService implements ITourService {
         try {
             return TourResponse.fromTour(tour, objectMapper, imageUrls, reviews, averageRating, totalReviews);
         } catch (Exception e) {
-            throw new RuntimeException("Failed to parse tour details for tour with id: " + id, e);
+            throw new RuntimeException("Không thể phân tích chi tiết tour với id: " + id, e);
         }
     }
 
@@ -188,26 +188,7 @@ public class TourService implements ITourService {
         return tourImageRepository.save(newTourImage);
     }
 
-    @Override
-    public Review createReview(ReviewDTO reviewDTO) throws Exception {
-        if (!bookingService.hasUserBookedTour(reviewDTO.getUserId(), reviewDTO.getTourId())) {
-            throw new UnauthorizedException("User has not booked this tour and cannot leave a review");
-        }
-        Tour tour = tourRepository.findById(reviewDTO.getTourId())
-                .orElseThrow(() -> new DataNotFoundException("Cannot find tour with id: " + reviewDTO.getTourId()));
 
-        User user = userRepository.findById(reviewDTO.getUserId())
-                .orElseThrow(() -> new DataNotFoundException("Cannot find user with id: " + reviewDTO.getUserId()));
-
-        Review review = Review.builder()
-                .tour(tour)
-                .user(user)
-                .comment(reviewDTO.getComment())
-                .rating(reviewDTO.getRating())
-                .build();
-
-        return reviewRepository.save(review);
-    }
 
     @Override
     public List<Review> getReviewsByTour(Long tourId) {
@@ -217,41 +198,6 @@ public class TourService implements ITourService {
     @Override
     public List<Review> getReviewsByUserAndTour(Long userId, Long tourId) {
         return reviewRepository.findByTourTourIdAndUserUserId(tourId, userId);
-    }
-
-    @Override
-    public List<ReviewResponse> getReviewListByTour(Long tourId) throws DataNotFoundException {
-        if (!tourRepository.existsById(tourId)) {
-            throw new DataNotFoundException("Không tìm thấy tour với id: " + tourId);
-        }
-
-        List<Review> reviews = reviewRepository.findByTourTourId(tourId);
-
-        return reviews.stream()
-                .map(ReviewResponse::fromReview)
-                .collect(Collectors.toList());
-    }
-
-    @Override
-    public void updateReview(Long reviewId, ReviewDTO reviewDTO) throws Exception {
-        if (!bookingService.hasUserBookedTour(reviewDTO.getUserId(), reviewDTO.getTourId())) {
-            throw new UnauthorizedException("User has not booked this tour and cannot update a review");
-        }
-        Review existingReview = reviewRepository.findById(reviewId)
-                .orElseThrow(() -> new DataNotFoundException("Cannot find review with id: " + reviewId));
-
-        Tour tour = tourRepository.findById(reviewDTO.getTourId())
-                .orElseThrow(() -> new DataNotFoundException("Cannot find tour with id: " + reviewDTO.getTourId()));
-
-        User user = userRepository.findById(reviewDTO.getUserId())
-                .orElseThrow(() -> new DataNotFoundException("Cannot find user with id: " + reviewDTO.getUserId()));
-
-        existingReview.setTour(tour);
-        existingReview.setUser(user);
-        existingReview.setComment(reviewDTO.getComment());
-        existingReview.setRating(reviewDTO.getRating());
-
-        reviewRepository.save(existingReview);
     }
 
     private List<TourImage> createTourImagesFromDTO(Tour tour, List<String> imageUrls) throws InvalidParamException {

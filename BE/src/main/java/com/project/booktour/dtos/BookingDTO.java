@@ -1,5 +1,4 @@
-// com.project.booktour.dtos.BookingDTO.java
-package com.project.booktour.dtos;
+ package com.project.booktour.dtos;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.project.booktour.models.BookingStatus;
@@ -15,13 +14,26 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @Builder
 public class BookingDTO {
+    @JsonProperty("booking_id")
+    private Long bookingId; // Thêm bookingId
+
     @Min(value = 1, message = "User ID must be greater than 0")
     @JsonProperty("user_id")
     private Long userId;
 
-    @Min(value = 1, message = "Tour ID must be greater than 0")
+
+
+
     @JsonProperty("tour_id")
-    private Long tourId;
+    private Long tourId; // Thay đổi thành String để lưu dạng "Tour001"
+
+
+
+    @JsonProperty("formatted_tour_id")
+    private String formattedTourId;
+
+    @JsonProperty("title")
+    private String title; // Thêm title
 
     @Min(value = 0, message = "Number of adults must be at least 0")
     @JsonProperty("num_adults")
@@ -66,8 +78,8 @@ public class BookingDTO {
     @NotNull(message = "Payment method is required")
     @Pattern(regexp = "^(VNPAY|OFFICE)$", message = "Payment method must be 'VNPAY' or 'OFFICE'")
     @JsonProperty("payment_method")
-    private String paymentMethod;// Lấy từ checkout
+    private String paymentMethod;
 
     @JsonProperty("payment_status")
-    private String paymentStatus; // Lấy từ checkout
+    private String paymentStatus;
 }

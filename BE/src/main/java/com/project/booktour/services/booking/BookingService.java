@@ -33,7 +33,9 @@ public class BookingService implements IBookingService {
     public Booking createBooking(BookingDTO bookingDTO) throws Exception {
         User user = userRepository.findById(bookingDTO.getUserId())
                 .orElseThrow(() -> new DataNotFoundException("Cannot find user with id: " + bookingDTO.getUserId()));
-
+        if (bookingRepository.existsByUserUserIdAndTourTourId(bookingDTO.getUserId(), bookingDTO.getTourId())) {
+            throw new IllegalArgumentException("User has already booked this tour");
+        }
         if (bookingDTO.getFullName() != null) user.setFullName(bookingDTO.getFullName());
         if (bookingDTO.getEmail() != null) user.setEmail(bookingDTO.getEmail());
         if (bookingDTO.getAddress() != null) user.setAddress(bookingDTO.getAddress());
@@ -70,9 +72,15 @@ public class BookingService implements IBookingService {
             String paymentMethod = checkoutOpt.map(Checkout::getPaymentMethod).orElse(null);
             PaymentStatus paymentStatus = checkoutOpt.map(Checkout::getPaymentStatus).orElse(null);
 
+            // Định dạng tourId thành dạng "Tour" + số thứ tự (3 chữ số)
+            String formattedTourId = String.format("Tour%03d", booking.getTour().getTourId());
+
             return BookingDTO.builder()
+                    .bookingId(booking.getBookingId())
                     .userId(booking.getUser().getUserId())
-                    .tourId(booking.getTour().getTourId())
+                    .tourId(booking.getTour().getTourId()) // Giữ là Long
+                    .formattedTourId(formattedTourId) // Thêm định dạng String
+                    .title(booking.getTour().getTitle())
                     .numAdults(booking.getNumAdults())
                     .numChildren(booking.getNumChildren())
                     .totalPrice(booking.getTotalPrice())
@@ -198,7 +206,11 @@ public class BookingService implements IBookingService {
 
     @Override
     public boolean hasUserBookedTour(Long userId, Long tourId) {
-        return bookingRepository.existsByUserUserIdAndTourTourId(userId, tourId);
+        try {
+            return bookingRepository.existsByUserUserIdAndTourTourId(userId, tourId);
+        } catch (Exception e) {
+            return false; // Hoặc ném ngoại lệ tùy thuộc vào yêu cầu
+        }
     }
     @Override
     public Optional<Booking> findById(Long id) throws DataNotFoundException {

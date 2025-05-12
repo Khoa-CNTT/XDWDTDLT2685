@@ -2,6 +2,7 @@ package com.project.booktour.configurations;
 
 import com.project.booktour.files.JwtTokenFilter;
 import com.project.booktour.services.user.IOAuth2UserService;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
@@ -9,6 +10,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
+import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.oauth2.client.oidc.userinfo.OidcUserService;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
@@ -35,10 +37,11 @@ public class WebSecurityConfig {
         http
                 .csrf(AbstractHttpConfigurer::disable)
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
+                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)) // Không dùng session
                 .addFilterBefore(jwtTokenFilter, UsernamePasswordAuthenticationFilter.class)
                 .authorizeHttpRequests(requests -> {
                     requests
-                            // Các endpoint công khai hiện có
+                            // Các endpoint công khai
                             .requestMatchers(
                                     String.format("%s/users/register", apiPrefix),
                                     String.format("%s/users/login", apiPrefix),
@@ -50,7 +53,8 @@ public class WebSecurityConfig {
                                     String.format("%s/events", apiPrefix),
                                     String.format("%s/receive-message", apiPrefix),
                                     String.format("%s/health/n8n", apiPrefix),
-                                    String.format("%s/payment/vnpay-payment-callback", apiPrefix)
+                                    String.format("%s/payment/vnpay-payment-callback", apiPrefix),
+                                    String.format("%s/users/avatars/**", apiPrefix)
                             ).permitAll()
                             .requestMatchers(GET, String.format("%s/tours/**", apiPrefix)).permitAll()
                             .requestMatchers(POST, String.format("%s/tours/**", apiPrefix)).hasRole("ADMIN")
@@ -64,10 +68,10 @@ public class WebSecurityConfig {
                             .requestMatchers(POST, String.format("%s/promotion/**", apiPrefix)).hasRole("ADMIN")
                             .requestMatchers(PUT, String.format("%s/promotion/**", apiPrefix)).hasRole("ADMIN")
                             .requestMatchers(DELETE, String.format("%s/promotion/**", apiPrefix)).hasRole("ADMIN")
-                            .requestMatchers(POST, String.format("%s/reviews/**", apiPrefix)).hasRole("USER")
                             .requestMatchers(GET, String.format("%s/reviews/**", apiPrefix)).permitAll()
-                            .requestMatchers(PUT, String.format("%s/reviews/**", apiPrefix)).hasRole("ADMIN")
-                            .requestMatchers(DELETE, String.format("%s/reviews/**", apiPrefix)).hasRole("ADMIN")
+                            .requestMatchers(POST, String.format("%s/reviews/**", apiPrefix)).hasRole("USER")
+                            .requestMatchers(PUT, String.format("%s/reviews/**", apiPrefix)).hasRole("USER") // Cho phép USER sửa review
+                            .requestMatchers(DELETE, String.format("%s/reviews/**", apiPrefix)).hasRole("USER") // Cho phép USER xóa review
                             .requestMatchers(GET, String.format("%s/history/**", apiPrefix)).hasAnyRole("USER", "ADMIN")
                             .requestMatchers(POST, String.format("%s/history/**", apiPrefix)).hasRole("ADMIN")
                             .requestMatchers(PUT, String.format("%s/history/**", apiPrefix)).hasRole("ADMIN")
@@ -88,9 +92,15 @@ public class WebSecurityConfig {
                             .requestMatchers(POST, String.format("%s/social_accounts/**", apiPrefix)).hasRole("ADMIN")
                             .requestMatchers(PUT, String.format("%s/social_accounts/**", apiPrefix)).hasRole("ADMIN")
                             .requestMatchers(DELETE, String.format("%s/social_accounts/**", apiPrefix)).hasRole("ADMIN")
-                            .requestMatchers(String.format("%s/users/avatars/**", apiPrefix)).permitAll()
                             .anyRequest().authenticated();
                 })
+                .exceptionHandling(ex -> ex
+                        .authenticationEntryPoint((request, response, authException) -> {
+                            response.setContentType("application/json");
+                            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+                            response.getWriter().write("{\"error\": \"Unauthorized\", \"message\": \"Token không hợp lệ hoặc thiếu\"}");
+                        })
+                )
                 .oauth2Login(oauth2 -> oauth2
                         .userInfoEndpoint(userInfo -> userInfo
                                 .oidcUserService(new OidcUserService())
@@ -103,8 +113,7 @@ public class WebSecurityConfig {
                             response.sendRedirect(String.format("%s/auth/failure", apiPrefix));
                         })
                 )
-                // Tắt form login mặc định để tránh redirect đến /login
-                .formLogin(form -> form.disable());
+                .formLogin(form -> form.disable()); // Tắt form login mặc định
 
         return http.build();
     }
@@ -112,7 +121,6 @@ public class WebSecurityConfig {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        // Thêm n8n Cloud vào danh sách allowed origins
         configuration.setAllowedOrigins(List.of("http://localhost:5173", "https://phongnguyeeen.app.n8n.cloud", "http://localhost:3000"));
         configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
         configuration.setAllowedHeaders(List.of("*"));

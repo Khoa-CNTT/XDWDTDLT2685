@@ -1,11 +1,13 @@
 package com.project.booktour.controllers;
 
 import com.project.booktour.dtos.ReviewDTO;
+import com.project.booktour.exceptions.DataNotFoundException;
+import com.project.booktour.exceptions.InvalidParamException;
 import com.project.booktour.exceptions.UnauthorizedException;
 import com.project.booktour.models.Review;
 import com.project.booktour.models.User;
 import com.project.booktour.responses.ReviewResponse;
-import com.project.booktour.services.tour.ITourService;
+import com.project.booktour.services.review.ReviewService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -15,53 +17,47 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Objects;
 import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("${api.prefix}/reviews")
 @RequiredArgsConstructor
 public class ReviewController {
-    private final ITourService tourService;
+
+    private final ReviewService reviewService;
 
     @GetMapping("")
-    public ResponseEntity<List<ReviewResponse>> getAllReviews(
-            @RequestParam(value = "user_id", required = false) Long userId,
-            @RequestParam("tour_id") Long tourId
-    ) {
-        List<ReviewResponse> reviewResponses;
-        if (userId == null) {
-            reviewResponses = tourService.getReviewsByTour(tourId).stream()
-                    .map(ReviewResponse::fromReview)
-                    .collect(Collectors.toList());
-        } else {
-            reviewResponses = tourService.getReviewsByUserAndTour(userId, tourId).stream()
-                    .map(ReviewResponse::fromReview)
-                    .collect(Collectors.toList());
-        }
+    public ResponseEntity<List<ReviewResponse>> getAllReviews() {
+        List<ReviewResponse> reviewResponses = reviewService.getAllReviews().stream()
+                .map(ReviewResponse::fromReview)
+                .collect(Collectors.toList());
         return ResponseEntity.ok(reviewResponses);
     }
 
     @PostMapping("")
     @PreAuthorize("hasRole('ROLE_USER')")
-    public ResponseEntity<?> insertReview(
-            @Valid @RequestBody ReviewDTO reviewDTO
-    ) {
+    public ResponseEntity<?> insertReview(@Valid @RequestBody ReviewDTO reviewDTO) {
         try {
             User loginUser = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-            if (!Objects.equals(loginUser.getUserId(), reviewDTO.getUserId())) {
+            if (!loginUser.getUserId().equals(reviewDTO.getUserId())) {
                 return ResponseEntity.status(HttpStatus.FORBIDDEN)
-                        .body("You cannot review as another user");
+                        .body("Bạn không thể đánh giá thay cho người dùng khác");
             }
-            Review review = tourService.createReview(reviewDTO);
+            Review review = reviewService.createReview(reviewDTO);
             return ResponseEntity.status(HttpStatus.CREATED)
-                    .body("Review created successfully for tour ID: " + review.getTour().getTourId());
+                    .body("Đánh giá đã được tạo thành công cho tour ID: " + review.getTour().getTourId());
         } catch (UnauthorizedException e) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN)
                     .body(e.getMessage());
-        } catch (Exception e) {
+        } catch (InvalidParamException e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                    .body("An error occurred during review creation: " + e.getMessage());
+                    .body(e.getMessage());
+        } catch (DataNotFoundException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body(e.getMessage());
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("Đã xảy ra lỗi khi tạo đánh giá: " + e.getMessage());
         }
     }
 
@@ -73,18 +69,40 @@ public class ReviewController {
     ) {
         try {
             User loginUser = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-            if (!Objects.equals(loginUser.getUserId(), reviewDTO.getUserId())) {
+            if (!loginUser.getUserId().equals(reviewDTO.getUserId())) {
                 return ResponseEntity.status(HttpStatus.FORBIDDEN)
-                        .body("You cannot update another user's review");
+                        .body("Bạn không thể cập nhật đánh giá của người dùng khác");
             }
-            tourService.updateReview(reviewId, reviewDTO);
-            return ResponseEntity.ok("Review updated successfully");
+            reviewService.updateReview(reviewId, reviewDTO);
+            return ResponseEntity.ok("Đánh giá đã được cập nhật thành công");
         } catch (UnauthorizedException e) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN)
                     .body(e.getMessage());
+        } catch (DataNotFoundException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body(e.getMessage());
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                    .body("An error occurred during review update: " + e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("Đã xảy ra lỗi khi cập nhật đánh giá: " + e.getMessage());
+        }
+    }
+
+    @DeleteMapping("/{id}")
+    @PreAuthorize("hasRole('ROLE_USER')")
+    public ResponseEntity<?> deleteReview(@PathVariable("id") Long reviewId) {
+        try {
+            User loginUser = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+            reviewService.deleteReview(reviewId, loginUser.getUserId());
+            return ResponseEntity.ok("Đánh giá đã được xóa thành công");
+        } catch (UnauthorizedException e) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                    .body(e.getMessage());
+        } catch (DataNotFoundException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body(e.getMessage());
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("Đã xảy ra lỗi khi xóa đánh giá: " + e.getMessage());
         }
     }
 }
