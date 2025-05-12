@@ -15,6 +15,9 @@ const PaymentTour = () => {
     const [email, setEmail] = useState('');
     const [phone_number, setPhoneNumber] = useState('');
     const [address, setAddress] = useState('');
+    // phương thức thanh toán
+    const [paymentMethod, setPaymentMethod] = useState('');
+
     return (
         <div className='container flex gap-10 '>
             {/* bên phải */}
@@ -31,7 +34,7 @@ const PaymentTour = () => {
                     countChildren={countChildren}
                     setCountChildren={setCountChildren} />
                 <PaymentCheckbox agreed={agreed} onAgreeChange={setAgreed} />
-                <PaymentMethod />
+                <PaymentMethod setPaymentMethod={setPaymentMethod} />
             </div>
             {/* bên trái */}
             <div className='w-2/5'>
@@ -44,6 +47,7 @@ const PaymentTour = () => {
                         email={email}
                         phone_number={phone_number}
                         address={address}
+                        paymentMethod={paymentMethod}
                     />
                 </div>
             </div>

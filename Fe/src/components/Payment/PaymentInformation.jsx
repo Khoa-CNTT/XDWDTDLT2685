@@ -1,33 +1,7 @@
 import React from 'react';
 
 const PaymentInformation = ({ full_name, setFullName, email, setEmail, phone_number, setPhoneNumber, address, setAddress }) => {
-    // const Validation = (full_name, email, aaddress,phone_number) => {
-    //         const newErrors = {};
-    //         if (!full_name) {
-    //             toast.warning('Vui lòng nhập tên của bạn');
-    //             newErrors.full_name = "Vui lòng nhập tên của bạn";
-    //         }
-    //         if (!email) {
-    //             toast.warning('Vui lòng nhập email');
-    //             newErrors.email = "Vui lòng nhập email";
-    //         } else if (!/^([a-zA-Z0-9_\.\-])+\@(([a-zA-Z0-9\-])+\.)+([a-zA-Z0-9]{2,4})+$/.test(email)) {
-    //             toast.warning('Email không hợp lệ!');
-    //             newErrors.email = "Email không hợp lệ";
-    //         }
     
-    //         if (!phone_number) {
-    //             toast.warning('Vui lòng nhập số điện thoại');
-    //             newErrors.phone_number = "Vui lòng nhập số điện thoại";
-    //         } else if (phone_number.length !== 10) {
-    //             toast.warning('Số điện thoại phải đủ 10 số');
-    //             newErrors.phone_number = "Số điện thoại phải đủ 10 số";
-    //         }
-    //         if (!address) {
-    //             toast.warning('Vui lòng nhập địa chỉ');
-    //             newErrors.address = "Vui lòng nhập địa chỉ";
-    //         }
-    //         return newErrors;
-    //     };
     return (
         <div className='pt-10 '>
             <div className=''>

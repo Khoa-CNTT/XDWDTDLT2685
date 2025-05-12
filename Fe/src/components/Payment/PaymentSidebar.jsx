@@ -1,33 +1,47 @@
 import React, { useEffect, useState } from 'react';
 import { BsTicketPerforated } from "react-icons/bs";
-import { useLocation } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import { postBooking } from '../../services/booking';
 
 
-const PaymentSidebar = ({ agreed, countAdult, countChildren, full_name, email, phone_number, address }) => {
+const PaymentSidebar = ({
+    agreed,
+    countAdult,
+    countChildren,
+    full_name,
+    email,
+    phone_number,
+    address,
+    paymentMethod
+}) => {
     const location = useLocation();
     const { item, startDate, endDate } = location.state || {};
     // console.log("1111", item)
-
+    const navigate = useNavigate();
     const priceAdult = item.price_adult;
     const priceChild = item.price_child;
 
     const total = countAdult * priceAdult + countChildren * priceChild;
     const total_quality = countAdult + countChildren;
-    const handleSubmit = async () => {
+    const handleSubmit = async (e) => {
+        e.preventDefault();
+        if (!paymentMethod) {
+            toast.warning("Vui lòng chọn phương thức thanh toán");
+            return;
+        }
         try {
             const tour_id = localStorage.getItem('tour_id');
             const user_id = localStorage.getItem('user_id');
             const data = {
                 tour_id: tour_id,
                 user_id: user_id,
-                booking_date: startDate,
                 num_adults: countAdult,
                 num_children: countChildren,
-                total_quality : total_quality,
+                total_quality: total_quality,
                 total_price: total,
                 booking_status: "PENDING",
+                payment_method: paymentMethod,
                 full_name: full_name,
                 email: email,
                 address: address,
@@ -36,10 +50,20 @@ const PaymentSidebar = ({ agreed, countAdult, countChildren, full_name, email, p
             console.log("Sending data:", data);
             const res = await postBooking(data);
             console.log("res", res)
-            
+
+
             if (res.status === 200) {
+                const { paymentUrl } = res.data;
+                if (paymentMethod === "VNPAY" && paymentUrl) {
+                    window.location.href = paymentUrl;
+                    return;
+                }
+                // Lưu tour_id vào localStorage (nếu chưa có) tạm thời
+                const booked = new Set(JSON.parse(localStorage.getItem('booked_tours') || '[]'));
+                booked.add(tour_id);
+                localStorage.setItem('booked_tours', JSON.stringify([...booked]))
                 toast.success('Đặt tour thành công!');
-                console.log('Đặt tour thành công', res.data);
+                navigate("/tourbooking")
             } else {
                 toast.warning('Đặt tour không thành công!');
             }
