@@ -13,6 +13,7 @@ import com.project.booktour.repositories.ReviewRepository;
 import com.project.booktour.repositories.TourImageRepository;
 import com.project.booktour.repositories.TourRepository;
 import com.project.booktour.repositories.UserRepository;
+import com.project.booktour.responses.ReviewResponse;
 import com.project.booktour.responses.SimplifiedTourResponse;
 import com.project.booktour.responses.TourResponse;
 import com.project.booktour.services.booking.BookingService;
@@ -84,8 +85,15 @@ public class TourService implements ITourService {
             imageUrls = Collections.singletonList("http://localhost:8088/api/v1/tours/images/notfound.jpeg");
         }
 
+        // Lấy danh sách đánh giá
+        List<ReviewResponse> reviews = getReviewListByTour(id);
+
+        // Tính số sao trung bình và tổng số đánh giá
+        Float averageRating = reviewRepository.findAverageRatingByTourId(id).orElse(0.0f);
+        Integer totalReviews = reviewRepository.countByTourTourId(id);
+
         try {
-            return TourResponse.fromTour(tour, objectMapper, imageUrls);
+            return TourResponse.fromTour(tour, objectMapper, imageUrls, reviews, averageRating, totalReviews);
         } catch (Exception e) {
             throw new RuntimeException("Failed to parse tour details for tour with id: " + id, e);
         }
@@ -208,8 +216,19 @@ public class TourService implements ITourService {
 
     @Override
     public List<Review> getReviewsByUserAndTour(Long userId, Long tourId) {
-        return reviewRepository.findByTourTourId(tourId).stream()
-                .filter(review -> review.getUser().getUserId().equals(userId))
+        return reviewRepository.findByTourTourIdAndUserUserId(tourId, userId);
+    }
+
+    @Override
+    public List<ReviewResponse> getReviewListByTour(Long tourId) throws DataNotFoundException {
+        if (!tourRepository.existsById(tourId)) {
+            throw new DataNotFoundException("Không tìm thấy tour với id: " + tourId);
+        }
+
+        List<Review> reviews = reviewRepository.findByTourTourId(tourId);
+
+        return reviews.stream()
+                .map(ReviewResponse::fromReview)
                 .collect(Collectors.toList());
     }
 
@@ -252,21 +271,19 @@ public class TourService implements ITourService {
                 })
                 .collect(Collectors.toList());
     }
+
     @Override
     @Transactional
     public List<TourImage> updateTourImages(Long tourId, List<TourImageDTO> tourImageDTOs) throws Exception {
         Tour existingTour = tourRepository.findById(tourId)
                 .orElseThrow(() -> new DataNotFoundException("Cannot find tour with id: " + tourId));
 
-        // Check image count
         if (tourImageDTOs != null && tourImageDTOs.size() > 5) {
             throw new InvalidParamException("Number of images must be <= 5");
         }
 
-        // Clear existing images (orphanRemoval will handle deletion)
         existingTour.getTourImages().clear();
 
-        // Add new images to the existing collection
         if (tourImageDTOs != null && !tourImageDTOs.isEmpty()) {
             for (TourImageDTO dto : tourImageDTOs) {
                 TourImage newTourImage = new TourImage();
@@ -276,7 +293,6 @@ public class TourService implements ITourService {
             }
         }
 
-        // Save the tour (cascade will persist new images)
         Tour savedTour = tourRepository.save(existingTour);
 
         return savedTour.getTourImages();

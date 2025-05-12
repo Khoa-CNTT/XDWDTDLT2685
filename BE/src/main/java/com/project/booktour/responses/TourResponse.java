@@ -44,8 +44,16 @@ public class TourResponse extends BaseResponse {
     private LocalDate startDate;
     private LocalDate endDate;
 
+    @JsonProperty("reviews")
+    private List<ReviewResponse> reviews;
 
-    public static TourResponse fromTour(Tour tour, ObjectMapper objectMapper, List<String> imageUrls) throws Exception {
+    @JsonProperty("average_rating")
+    private Float averageRating; // Số sao trung bình
+
+    @JsonProperty("total_reviews")
+    private Integer totalReviews; // Tổng số đánh giá
+
+    public static TourResponse fromTour(Tour tour, ObjectMapper objectMapper, List<String> imageUrls, List<ReviewResponse> reviews, Float averageRating, Integer totalReviews) throws Exception {
         List<ScheduleDTO> itinerary = tour.getItinerary() != null
                 ? objectMapper.readValue(tour.getItinerary(), new TypeReference<List<ScheduleDTO>>() {})
                 : null;
@@ -67,7 +75,6 @@ public class TourResponse extends BaseResponse {
                 "Dịch vụ bổ sung",
                 "Bảo hiểm"
         );
-
         TourResponse tourResponse = TourResponse.builder()
                 .id(tour.getTourId())
                 .title(tour.getTitle())
@@ -84,6 +91,9 @@ public class TourResponse extends BaseResponse {
                 .itinerary(itinerary)
                 .startDate(tour.getStartDate())
                 .endDate(tour.getEndDate())
+                .reviews(reviews)
+                .averageRating(averageRating)
+                .totalReviews(totalReviews)
                 .build();
         tourResponse.setCreatedAt(tour.getCreatedAt());
         tourResponse.setUpdatedAt(tour.getUpdatedAt());
@@ -91,32 +101,24 @@ public class TourResponse extends BaseResponse {
         tourResponse.setCode(code);
         return tourResponse;
     }
+
     private static String generateCodeFromTitle(String destination) {
         if (destination == null || destination.isBlank()) {
             return "UNKNOWN";
         }
+        String cleaned = destination.replace("-", " ");
+        String[] words = cleaned.trim().toUpperCase().split("\\s+");
 
-        // Tách các điểm đến theo dấu '-'
-        String[] parts = destination.split("-");
         StringBuilder codeBuilder = new StringBuilder();
-
-        for (String part : parts) {
-            // Xóa khoảng trắng đầu/cuối và chuyển thành chữ in hoa
-            part = part.trim().toUpperCase();
-
-            // Tách theo khoảng trắng để lấy chữ cái đầu tiên của mỗi từ (VD: "Hà Nội" → HN)
-            String[] words = part.split("\\s+");
-            for (String word : words) {
-                if (!word.isEmpty()) {
-                    codeBuilder.append(removeVietnameseAccent(word.charAt(0)));
-                }
+        for (String word : words) {
+            if (!word.isEmpty()) {
+                codeBuilder.append(removeVietnameseAccent(word.charAt(0)));
             }
         }
 
         return codeBuilder.toString();
     }
 
-    // Hàm hỗ trợ để loại bỏ dấu tiếng Việt
     private static char removeVietnameseAccent(char c) {
         String original = "ÀÁÂÃÈÉÊÌÍÒÓÔÕÙÚĂĐĨŨƠƯàáâãèéêìíòóôõùúăđĩũơư";
         String replacement = "AAAAEEEIIOOOOUUAĐIUOUaaaaeeeiioooouuadiuou";
@@ -127,5 +129,4 @@ public class TourResponse extends BaseResponse {
         }
         return c;
     }
-
 }

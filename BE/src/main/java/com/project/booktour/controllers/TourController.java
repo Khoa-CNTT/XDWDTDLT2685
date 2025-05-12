@@ -3,6 +3,7 @@ package com.project.booktour.controllers;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.project.booktour.dtos.TourDTO;
 import com.project.booktour.dtos.TourImageDTO;
+import com.project.booktour.exceptions.DataNotFoundException;
 import com.project.booktour.models.Region;
 import com.project.booktour.models.Tour;
 import com.project.booktour.models.TourImage;
@@ -127,9 +128,12 @@ public class TourController {
         try {
             TourResponse tourResponse = tourService.getTourDetails(tourId);
             return ResponseEntity.ok(tourResponse);
-        } catch (Exception e) {
+        } catch (DataNotFoundException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND)
                     .body("Tour not found with id: " + tourId);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("An error occurred while fetching tour with id: " + tourId);
         }
     }
 

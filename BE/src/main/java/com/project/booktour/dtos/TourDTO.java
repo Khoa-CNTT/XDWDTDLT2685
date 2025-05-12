@@ -52,7 +52,6 @@ public class TourDTO {
     @NotNull(message = "End date cannot be null")
     private LocalDate endDate;
 
-    // Optional: Validate endDate >= startDate
     @AssertTrue(message = "End date must be after or equal to start date")
     public boolean isEndDateValid() {
         return endDate == null || startDate == null || !endDate.isBefore(startDate);

@@ -9,15 +9,14 @@ import com.project.booktour.exceptions.InvalidParamException;
 import com.project.booktour.models.Review;
 import com.project.booktour.models.Tour;
 import com.project.booktour.models.TourImage;
+import com.project.booktour.responses.ReviewResponse;
 import com.project.booktour.responses.SimplifiedTourResponse;
 import com.project.booktour.responses.TourResponse;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.stereotype.Service;
 
 import java.util.List;
 
-@Service
 public interface ITourService {
 
     Tour createTour(TourDTO tourDTO) throws DataNotFoundException, JsonProcessingException, InvalidParamException;
@@ -26,7 +25,7 @@ public interface ITourService {
 
     TourResponse getTourDetails(Long id) throws DataNotFoundException;
 
-    Page<SimplifiedTourResponse> getAllTours(PageRequest pageRequest, Double priceMin, Double priceMax, String region, Float starRating, String duration, String search);
+    Page<SimplifiedTourResponse> getAllTours(PageRequest pageRequest, Double priceMin, Double priceMax, String region, Float starRating, String duration, String title);
 
     Tour updateTour(Long id, TourDTO tourDTO) throws Exception;
 
@@ -38,11 +37,13 @@ public interface ITourService {
 
     Review createReview(ReviewDTO reviewDTO) throws Exception;
 
-    // Thêm các phương thức mới cho reviews
     List<Review> getReviewsByTour(Long tourId);
 
     List<Review> getReviewsByUserAndTour(Long userId, Long tourId);
 
     void updateReview(Long reviewId, ReviewDTO reviewDTO) throws Exception;
+
     List<TourImage> updateTourImages(Long tourId, List<TourImageDTO> tourImageDTOs) throws Exception;
+
+    List<ReviewResponse> getReviewListByTour(Long tourId) throws DataNotFoundException;
 }
