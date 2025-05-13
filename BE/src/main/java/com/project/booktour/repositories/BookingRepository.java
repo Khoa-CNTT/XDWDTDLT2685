@@ -15,8 +15,7 @@ import java.util.Optional;
 
 @Repository
 public interface BookingRepository extends JpaRepository<Booking, Long> {
-    // Đổi tên để tránh nhầm lẫn với existsBy
-    List<Booking> findBookingsByUserUserIdAndTourTourId(Long userId, Long tourId);
+//    List<Booking> findBookingsByUserUserIdAndTourTourId(Long userId, Long tourId);
 
     boolean existsByUserUserIdAndTourTourId(Long userId, Long tourId);
     List<Booking> findByUserUserId(Long userId);

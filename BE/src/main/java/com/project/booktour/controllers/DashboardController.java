@@ -24,7 +24,7 @@ public class DashboardController {
             DashboardDTO stats = dashboardService.getDashboardStats();
             return ResponseEntity.ok(stats);
         } catch (Exception e) {
-            return ResponseEntity.badRequest().body(new DashboardDTO(0L, 0L, 0L, 0.0, null));
+            return ResponseEntity.badRequest().body(new DashboardDTO(0L, 0L, 0L, 0.0, null, null));
         }
     }
 }

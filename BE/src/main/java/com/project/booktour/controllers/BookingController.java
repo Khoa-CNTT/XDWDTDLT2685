@@ -54,17 +54,8 @@ public class BookingController {
                 return ResponseEntity.badRequest().body("Invalid payment method. Must be 'VNPAY' or 'OFFICE'");
             }
 
-            Checkout checkout = Checkout.builder()
-                    .booking(booking)
-                    .paymentMethod(paymentMethod.toUpperCase())
-                    .paymentDetails(paymentMethod.equalsIgnoreCase("VNPAY") ? "Initiated VNPAY payment" : "Payment to be processed at office")
-                    .amount(booking.getTotalPrice())
-                    .paymentStatus(PaymentStatus.PENDING)
-                    .transactionId(String.valueOf(booking.getBookingId()))
-                    .paymentDate(LocalDateTime.now())
-                    .build();
-            checkoutRepository.save(checkout);
-
+            // Xóa phần tạo Checkout vì đã được xử lý trong BookingService
+            // Nếu là VNPAY, gọi PaymentService để tạo URL thanh toán
             if ("VNPAY".equalsIgnoreCase(paymentMethod)) {
                 String ipAddress = request.getRemoteAddr();
                 String paymentUrl = paymentService.createPaymentUrl(booking.getBookingId(), ipAddress);

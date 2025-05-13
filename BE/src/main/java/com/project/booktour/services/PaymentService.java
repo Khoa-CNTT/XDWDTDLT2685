@@ -14,6 +14,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.Map;
+import java.util.Optional;
 
 @RequiredArgsConstructor
 @Service
@@ -32,16 +33,20 @@ public class PaymentService {
             throw new RuntimeException("Booking is not in PENDING status");
         }
 
-        // Tạo Checkout khi tạo URL thanh toán
-        Checkout checkout = Checkout.builder()
-                .booking(booking)
-                .paymentMethod("VNPAY")
-                .paymentDetails("Initiated VNPAY payment")
-                .amount(booking.getTotalPrice())
-                .paymentStatus(PaymentStatus.PENDING)
-                .transactionId("BOOK-" + bookingId)
-                .paymentDate(LocalDateTime.now())
-                .build();
+        // Kiểm tra xem đã tồn tại Checkout cho booking này chưa
+        Optional<Checkout> existingCheckout = checkoutRepository.findByBookingBookingId(bookingId);
+        if (!existingCheckout.isPresent()) {
+            throw new RuntimeException("Checkout record not found for bookingId: " + bookingId);
+        }
+
+        Checkout checkout = existingCheckout.get();
+        // Cập nhật thông tin Checkout nếu cần
+        checkout.setPaymentMethod("VNPAY");
+        checkout.setPaymentDetails("Initiated VNPAY payment");
+        checkout.setAmount(booking.getTotalPrice());
+        checkout.setPaymentStatus(PaymentStatus.PENDING);
+        checkout.setTransactionId("BOOK-" + bookingId);
+        checkout.setPaymentDate(LocalDateTime.now());
         checkoutRepository.save(checkout);
 
         String orderId = "BOOK-" + bookingId;
@@ -79,7 +84,7 @@ public class PaymentService {
             checkout.setPaymentStatus(PaymentStatus.COMPLETED);
             checkout.setPaymentDetails("Transaction No: " + params.get("vnp_TransactionNo"));
             checkout.setAmount(Double.parseDouble(params.get("vnp_Amount")) / 100);
-            checkout.setTransactionId(params.get("vnp_TransactionNo"));
+            checkout.setTransactionId("BOOK-" + params.get("vnp_TransactionNo"));
             checkout.setPaymentDate(LocalDateTime.now());
 
             // Đồng bộ booking_status nếu đang PENDING
@@ -88,7 +93,6 @@ public class PaymentService {
             }
         } else {
             // Không thay đổi booking_status nếu thanh toán thất bại (giữ PENDING)
-            // Có thể thêm log hoặc thông báo cho admin
         }
 
         bookingRepository.save(booking);

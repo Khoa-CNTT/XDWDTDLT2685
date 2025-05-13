@@ -16,4 +16,5 @@ public class DashboardDTO {
     private Long totalUsers;          // Tổng số người dùng ký (active)
     private Double totalRevenue;      // Tổng doanh thu
     private List<RegionBookingDTO> regionBookings; // Số lượt đặt theo miền
+    private List<PaymentMethodDTO> paymentMethods;
 }

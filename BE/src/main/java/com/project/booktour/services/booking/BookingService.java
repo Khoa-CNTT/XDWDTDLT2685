@@ -33,9 +33,6 @@ public class BookingService implements IBookingService {
     public Booking createBooking(BookingDTO bookingDTO) throws Exception {
         User user = userRepository.findById(bookingDTO.getUserId())
                 .orElseThrow(() -> new DataNotFoundException("Cannot find user with id: " + bookingDTO.getUserId()));
-        if (bookingRepository.existsByUserUserIdAndTourTourId(bookingDTO.getUserId(), bookingDTO.getTourId())) {
-            throw new IllegalArgumentException("User has already booked this tour");
-        }
         if (bookingDTO.getFullName() != null) user.setFullName(bookingDTO.getFullName());
         if (bookingDTO.getEmail() != null) user.setEmail(bookingDTO.getEmail());
         if (bookingDTO.getAddress() != null) user.setAddress(bookingDTO.getAddress());
@@ -61,7 +58,21 @@ public class BookingService implements IBookingService {
         booking.setUser(user);
         booking.setTour(tour);
         booking.setPromotion(promotion);
-        return bookingRepository.save(booking);
+        Booking savedBooking = bookingRepository.save(booking); // Lưu booking để lấy bookingId
+
+        // Tạo bản ghi Checkout ngay sau khi lưu booking
+        Checkout checkout = Checkout.builder()
+                .booking(savedBooking)
+                .paymentMethod(bookingDTO.getPaymentMethod() != null ? bookingDTO.getPaymentMethod() : "OFFICE")
+                .paymentDetails(bookingDTO.getPaymentMethod() != null && bookingDTO.getPaymentMethod().equalsIgnoreCase("VNPAY") ? "Initiated VNPAY payment" : "Payment to be processed at office")
+                .amount(bookingDTO.getTotalPrice())
+                .paymentStatus(PaymentStatus.PENDING)
+                .transactionId("BOOK-" + savedBooking.getBookingId()) // Đảm bảo định dạng BOOK-<bookingId>
+                .paymentDate(LocalDateTime.now())
+                .build();
+        checkoutRepository.save(checkout);
+
+        return savedBooking;
     }
 
     @Override
