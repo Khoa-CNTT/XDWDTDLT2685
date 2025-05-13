@@ -166,7 +166,7 @@ const ChatBox = () => {
                         />
                     </div>
                     <div className="max-w-xs p-3 text-sm bg-white rounded-lg shadow-xl">
-                        <p className="font-medium text-primary">Mixivivu Tours sẵn sàng hỗ trợ!</p>
+                        <p className="font-medium text-primary">GoViet Tours sẵn sàng hỗ trợ!</p>
                         <p>Quý khách đang cần thông tin gì ạ?</p>
                     </div>
                 </div>
@@ -195,7 +195,7 @@ const ChatBox = () => {
                                 alt="chat"
                                 className="object-cover w-10 h-10 rounded-full"
                             />
-                            <span className="ml-2">Mixivivu Tours</span>
+                            <span className="ml-2">GoViet Tours</span>
                         </div>
                     </div>
                     <div className="flex-1 p-3 space-y-2 overflow-y-auto text-sm">

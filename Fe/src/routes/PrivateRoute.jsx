@@ -1,12 +1,13 @@
 import React, { useEffect, useRef } from 'react';
-import { Navigate } from 'react-router-dom';
+import { Navigate, Outlet } from 'react-router-dom';
 import { toast } from 'react-toastify';
+import { hasRole } from '../services/authServices';
 
-const PrivateRoute = ({ children, route }) => {
+const PrivateRoute = ({ children, role }) => {
     // Kiểm tra trạng thái đăng nhập từ Local localStorage
     const isAuthenticated = localStorage.getItem("token");
     const hasShownToast = useRef(false); // đánh dấu đã hiển thị toast hay chưa
-    const roleId = parseInt(localStorage.getItem("role")); // thêm dòng này
+    const roleId = hasRole(role)
 
     useEffect(() => {
         if (!isAuthenticated && !hasShownToast.current) {
@@ -15,16 +16,11 @@ const PrivateRoute = ({ children, route }) => {
         }
     }, [isAuthenticated]);
 
-    // Chặn admin truy cập các route dành cho user
-    if (isAuthenticated) {
-        if (roleId === 2) {
-            toast.error("Admin không được phép truy cập trang này");
-            return <Navigate to="/admin" replace />;
-        }
-        return children;
-    } else {
-        return <Navigate to="/login" replace />;
-    }
+    if(!isAuthenticated) return <Navigate to="/login" replace />;
+    if(!roleId) return <Navigate to="/" replace />;
+    return(
+        <>{children ? children : <Outlet></Outlet>}</>
+    );
 };
 
 export default PrivateRoute;

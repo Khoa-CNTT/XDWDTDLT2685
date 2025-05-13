@@ -7,6 +7,7 @@ import LoginImg from '../../../assets/Travel/Login.png';
 import { toast } from 'react-toastify'
 import Navbar from '../../../components/Navbar/Navbar';
 import { loginApi } from '../../../services/authApi';
+import { setToken, setRole } from '../../../services/authServices'
 
 
 const Login = () => {
@@ -28,12 +29,22 @@ const Login = () => {
                 const res = await loginApi(user_name, password);
                 console.log("kequa token", res);
                 if (res.data && res.data.token) {
-                    localStorage.setItem("token", res.data.token)
+                    setToken(res.data.token);       
                     localStorage.setItem("user_id", res.data.user_id)
-                    setTimeout(() => {
+                    const role = setRole(res.data.role_id);
+                    if(role === 1){
+                        setTimeout(() => {
                         toast.success("Đăng nhập thành công!");
                         navigate("/");
                     }, 1500);
+                        
+                    }else{
+                        setTimeout(() => {
+                            toast.success("Đăng nhập admin thành công!");
+                            navigate('/admin')
+                        }, 1500);
+                        
+                    }
                 } 
             } catch (error) {
                 console.error("Login error:", error);
@@ -63,7 +74,6 @@ const Login = () => {
         }
         return newErrors;
     }
-
     return (
         <>
             <Navbar />
@@ -126,7 +136,7 @@ const Login = () => {
                             <hr className='-ml-10 border-gray-400' />
                         </div>
                         <div className='flex flex-col gap-5 '>
-                            <a href='#!' className=' flex items-center dark:text-[#101828] justify-center gap-2 p-3 border max-w-[500px] rounded-xl bg-white cursor-pointer font-medium active:scale-[.98] active:duration-75 hover:scale-[1.01] ease-in-out hover:transition-all'>
+                            <a href='http://localhost:8088/oauth2/authorization/google' className=' flex items-center dark:text-[#101828] justify-center gap-2 p-3 border max-w-[500px] rounded-xl bg-white cursor-pointer font-medium active:scale-[.98] active:duration-75 hover:scale-[1.01] ease-in-out hover:transition-all'>
                                 <FcGoogle className='w-8 h-8 ' />
                                 Login with Google
                             </a>

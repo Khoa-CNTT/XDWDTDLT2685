@@ -17,6 +17,7 @@ const PaymentSidebar = ({
 }) => {
     const location = useLocation();
     const { item, startDate, endDate } = location.state || {};
+    const [loading, setLoading] = useState(false)
     // console.log("1111", item)
     const navigate = useNavigate();
     const priceAdult = item.price_adult;
@@ -26,11 +27,27 @@ const PaymentSidebar = ({
     const total_quality = countAdult + countChildren;
     const handleSubmit = async (e) => {
         e.preventDefault();
+        if (!full_name || !email || !phone_number || !address) {
+            toast.warning("Vui lòng nhập đầy đủ thông tin cá nhân");
+            return;
+        }
+        // kiểm tra số điện thoại
+        const isValidPhone = /^0\d{9}$/.test(phone_number) && !/^(\d)\1{9}$/.test(phone_number);
+        if (!isValidPhone) {
+            toast.error('Số điện thoại không hợp lệ!');
+            return;
+        }
+        // Kiểm tra đã chọn số lượng vé
+        if (countAdult === 0 && countChildren === 0) {
+            toast.warning("Vui lòng chọn ít nhất một vé người lớn hoặc trẻ em");
+            return;
+        }
         if (!paymentMethod) {
             toast.warning("Vui lòng chọn phương thức thanh toán");
             return;
         }
         try {
+            setLoading(true)
             const tour_id = localStorage.getItem('tour_id');
             const user_id = localStorage.getItem('user_id');
             const data = {

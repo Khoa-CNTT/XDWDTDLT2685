@@ -2,9 +2,12 @@ import React, { useEffect, useState } from "react";
 import { Link, NavLink, useNavigate } from "react-router-dom";
 import LogoImg from "../../assets/Travel/Logo1.png";
 import { FaCaretDown, FaPhoneAlt } from "react-icons/fa";
-import { FiSun, FiMoon } from "react-icons/fi";
+import { FiSun, FiMoon, FiLogOut } from "react-icons/fi";
 import { HiMenuAlt3, HiMenuAlt1 } from "react-icons/hi";
 import ResponsiveMenu from "../Navbar/ResponsiveMenu";
+import { BsTicketPerforated } from "react-icons/bs";
+import { FiUser } from "react-icons/fi";
+
 
 import "flowbite";
 import { FaUserAlt } from "react-icons/fa";
@@ -27,6 +30,7 @@ const Navbar = () => {
         localStorage.removeItem("user_id");
         localStorage.removeItem("avatar");
         localStorage.removeItem("tour_id");
+        localStorage.removeItem("role");
         toast.success("Đăng xuất thành công!");
         navigate("/login")
     }
@@ -150,7 +154,7 @@ const Navbar = () => {
                                 Book Now
                             </Link>
                             <div className="relative py-4 group">
-                                <div className="flex items-center cursor-pointer dropdown">
+                                <div className="flex items-center cursor-pointer ">
                                     {
                                         avatar ? (
                                             <img
@@ -165,7 +169,7 @@ const Navbar = () => {
                                     <span>
                                         <FaCaretDown className="transition-all duration-200 group-hover:rotate-180:" />
                                     </span>
-                                    <div className="absolute -left-9 z-[9999] hidden w-[200px] top-[57px] rounded-md bg-white p-2 text-black group-hover:block shadow-md ">
+                                    <div className="absolute -left-2 z-[9999] hidden w-[200px] top-[59px] rounded-md bg-white p-2 text-black group-hover:block shadow-xl ">
                                         <ul className="space-y-3">
                                             {token ? (
                                                 <>
@@ -174,10 +178,10 @@ const Navbar = () => {
                                                             to="/profile"
                                                             onClick={() => window.scrollTo(0, 0)}
                                                             className={({ isActive }) =>
-                                                                `inline-block w-full p-2 text-lg font-medium rounded-md hover:bg-primary/50 ${isActive ? "active" : ""
-                                                                }`
+                                                                ` w-full p-2 text-base font-normal rounded-md flex hover:bg-primary/50  items-center gap-2 ${isActive ? "active" : ""}`
                                                             }
                                                         >
+                                                            <FiUser className="w-4 h-4 text-primary" />
                                                             Thông tin cá nhân
                                                         </NavLink>
                                                     </li>
@@ -185,18 +189,19 @@ const Navbar = () => {
                                                         <NavLink
                                                             to="/tourbooking"
                                                             className={({ isActive }) =>
-                                                                `inline-block w-full p-2 text-lg font-medium rounded-md hover:bg-primary/50 ${isActive ? "active" : ""
-                                                                }`
+                                                                ` w-full p-2 text-base font-normal rounded-md hover:bg-primary/50 flex items-center gap-2 ${isActive ? "active" : ""}`
                                                             }
                                                         >
+                                                            <BsTicketPerforated className="w-4 h-4 text-primary" />
                                                             Tour đã đặt
                                                         </NavLink>
                                                     </li>
                                                     <li>
                                                         <button
                                                             onClick={handleLogout}
-                                                            className="inline-block w-full p-2 text-lg font-medium text-left rounded-md hover:bg-primary/50"
+                                                            className="flex items-center w-full gap-2 p-2 text-base font-normal text-left rounded-md hover:bg-primary/50"
                                                         >
+                                                            <FiLogOut className="w-4 h-4 text-primary" />
                                                             Đăng xuất
                                                         </button>
                                                     </li>
@@ -206,8 +211,7 @@ const Navbar = () => {
                                                     <NavLink
                                                         to="/login"
                                                         className={({ isActive }) =>
-                                                            `inline-block w-full p-2 text-lg font-medium rounded-md hover:bg-primary/50 ${isActive ? "active" : ""
-                                                            }`
+                                                            `inline-block w-full p-2 text-lg font-medium rounded-md hover:bg-primary/50 ${isActive ? "active" : ""}`
                                                         }
                                                     >
                                                         Đăng nhập

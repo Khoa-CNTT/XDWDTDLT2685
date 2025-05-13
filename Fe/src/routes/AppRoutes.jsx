@@ -18,6 +18,8 @@ import Signup from '../pages/auth/Signup/Signup';
 import ProfileChangePassword from '../components/Profile/ProfileChangePassword';
 import Layout from '../layout/Layout';
 import Search from '../pages/Search';
+import RedirectPage from '../pages/auth/Login/RedirectPage';
+import AdminLayout from '../layout/AdminLayout';
 
 const AppRoutes = () => {
     return (
@@ -34,12 +36,12 @@ const AppRoutes = () => {
                         <Route path='/tours' element={<Tours />}></Route>
                         <Route path='/tourguide' element={<TourGuide />}></Route>
                         <Route path='/profile' element={
-                            <PrivateRoute>
+                            <PrivateRoute role={1}>
                                 <Profile />
                             </PrivateRoute>}>
                         </Route>
                         <Route path='/payment' element={
-                            <PrivateRoute>
+                            <PrivateRoute role={1}>
                                 <Payment />
                             </PrivateRoute>}>
                         </Route>
@@ -49,8 +51,15 @@ const AppRoutes = () => {
                         <Route path='/search' element={<Search />}></Route>
 
                     </Route>
+                    <Route path='/admin' element={
+                        <PrivateRoute role={2}>
+                            <AdminLayout />
+                        </PrivateRoute>}>
+
+                    </Route>
                     <Route path='/login' element={<Login />}></Route>
                     <Route path='/signup' element={<Signup />}></Route>
+                    <Route path="/oauth2/redirect" element={<RedirectPage />} />
                 </Routes>
             </BrowserRouter>
         </>
