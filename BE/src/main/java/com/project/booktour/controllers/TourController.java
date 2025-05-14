@@ -49,8 +49,6 @@ import java.util.stream.Collectors;
 public class TourController {
     private static final Logger logger = LoggerFactory.getLogger(TourController.class);
     private final ITourService tourService;
-    private final ObjectMapper objectMapper;
-    private final IBookingService bookingService;
     // Phương thức lấy danh sách tour đã đặt theo userId
     @GetMapping("/user/{user_id}")
     public ResponseEntity<?> getBookedTours(@Valid @PathVariable("user_id") Long userId) {

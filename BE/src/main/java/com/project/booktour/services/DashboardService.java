@@ -112,9 +112,14 @@ public class DashboardService {
         List<TourStatsResponse> tourStats = new ArrayList<>();
 
         for (Tour tour : tours) {
+            // Đếm số lượt đặt đã xác nhận
             Long bookedSlots = bookingRepository.countByTourAndBookingStatus(tour.getTourId(), BookingStatus.CONFIRMED) != null
                     ? bookingRepository.countByTourAndBookingStatus(tour.getTourId(), BookingStatus.CONFIRMED) : 0L;
+
+            // Tính số slot còn lại
             Integer availableSlots = tour.getQuantity() != null ? (tour.getQuantity() - bookedSlots.intValue()) : 0;
+
+            // Tính điểm đánh giá trung bình
             Double averageRating = tour.getReviews() != null && !tour.getReviews().isEmpty()
                     ? tour.getReviews().stream()
                     .mapToDouble(review -> review.getRating() != null ? review.getRating() : 0.0)
@@ -122,6 +127,7 @@ public class DashboardService {
                     .orElse(0.0)
                     : 0.0;
 
+            // Tạo DTO cho tour
             TourStatsResponse tourStat = new TourStatsResponse(
                     "tour" + String.format("%03d", tour.getTourId()),
                     tour.getTitle(),
@@ -134,7 +140,11 @@ public class DashboardService {
             tourStats.add(tourStat);
         }
 
-        return tourStats;
+        // Sắp xếp theo số lượt đặt giảm dần và giới hạn top 5
+        return tourStats.stream()
+                .sorted((t1, t2) -> Integer.compare(t2.getBookedSlots(), t1.getBookedSlots()))
+                .limit(5)
+                .collect(Collectors.toList());
     }
 
     private List<BookingStatsResponse> getLatestBookings() {

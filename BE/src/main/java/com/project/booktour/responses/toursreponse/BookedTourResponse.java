@@ -2,10 +2,9 @@ package com.project.booktour.responses.toursreponse;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.project.booktour.models.Booking;
-import com.project.booktour.models.Tour;
-import com.project.booktour.models.TourImage;
+import com.project.booktour.models.*;
 import com.project.booktour.responses.BaseResponse;
+import jakarta.validation.constraints.Min;
 import lombok.*;
 
 import java.time.LocalDate;
@@ -21,20 +20,28 @@ public class BookedTourResponse extends BaseResponse {
     private String description;
     private String duration;
 
-    @JsonProperty("price_adult")
-    private String priceAdult;
+    @JsonProperty("total_price")
+    private String totalPrice;
 
     @JsonProperty("image")
-    private String image; // Thay List<String> images bằng String image
+    private String image;
 
-    @JsonProperty("startDate")
+    @JsonProperty("start_date")
     private LocalDate startDate;
 
-    @JsonProperty("endDate")
+    @JsonProperty("end_date")
     private LocalDate endDate;
 
-    @JsonProperty("bookingId")
+    @JsonProperty("booking_id")
     private Long bookingId;
+    private String destination;
+    private Double rating;
+    private String paymentMethod;
+    @JsonProperty("num_adults")
+    private int numAdults;
+
+    @JsonProperty("num_children")
+    private int numChildren;
 
     public static BookedTourResponse fromBooking(Booking booking, ObjectMapper objectMapper) throws Exception {
         Tour tour = booking.getTour();
@@ -49,17 +56,45 @@ public class BookedTourResponse extends BaseResponse {
             imageUrl = "http://localhost:8088/api/v1/tours/images/" + firstImage.getImageUrl();
         }
 
+        // Lấy checkout đầu tiên (hoặc theo logic tùy bạn)
+        Checkout checkout = null;
+        if (booking.getCheckouts() != null && !booking.getCheckouts().isEmpty()) {
+            checkout = booking.getCheckouts().get(0); // hoặc logic chọn bản ghi mới nhất
+        }
+
+        // Tính rating trung bình
+        Double averageRating = null;
+        if (tour.getReviews() != null && !tour.getReviews().isEmpty()) {
+            averageRating = tour.getReviews().stream()
+                    .mapToDouble(Review::getRating)
+                    .average()
+                    .orElse(0.0);
+        }
+
         BookedTourResponse response = new BookedTourResponse();
         response.setTitle(tour.getTitle());
         response.setDescription(tour.getDescription());
         response.setDuration(tour.getDuration());
-        response.setPriceAdult(String.format("%,.0f VNĐ", tour.getPriceAdult())); // Định dạng giá
-        response.setImage(imageUrl); // Gán URL ảnh đầu tiên
+        response.setTotalPrice(String.format("%,.0f VNĐ", booking.getTotalPrice()));
+        if (checkout != null) {
+            response.setPaymentMethod(checkout.getPaymentMethod());
+        } else {
+            response.setTotalPrice("Không có thông tin"); // fallback
+            response.setPaymentMethod("Không có thông tin");
+        }
+
+        response.setImage(imageUrl);
         response.setStartDate(tour.getStartDate());
         response.setEndDate(tour.getEndDate());
+        response.setDestination(tour.getDestination());
+        response.setRating(averageRating);
         response.setBookingId(booking.getBookingId());
-        response.setCreatedAt(booking.getCreatedAt()); // Từ BaseResponse
-        response.setUpdatedAt(booking.getUpdatedAt()); // Từ BaseResponse
+        response.setNumAdults(booking.getNumAdults());
+        response.setNumChildren(booking.getNumChildren());
+        response.setCreatedAt(booking.getCreatedAt());
+        response.setUpdatedAt(booking.getUpdatedAt());
+
         return response;
     }
+
 }

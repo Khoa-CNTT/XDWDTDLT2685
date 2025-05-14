@@ -26,4 +26,5 @@ public interface IBookingService {
     Optional<Booking> findById(Long id) throws DataNotFoundException;
     // Thêm phương thức mới để lấy danh sách Booking (không phải DTO)
     List<Booking> findBookingsByUserId(Long userId);
+
 }

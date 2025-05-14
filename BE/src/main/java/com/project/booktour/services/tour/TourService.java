@@ -248,7 +248,9 @@ public class TourService implements ITourService {
             return Collections.emptyList();
         }
 
+        // Sắp xếp bookings theo createdAt giảm dần (mới nhất trước)
         return bookings.stream()
+                .sorted((b1, b2) -> b2.getCreatedAt().compareTo(b1.getCreatedAt())) // Sắp xếp theo createdAt
                 .map(booking -> {
                     try {
                         return BookedTourResponse.fromBooking(booking, objectMapper);

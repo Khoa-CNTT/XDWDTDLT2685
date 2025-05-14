@@ -14,6 +14,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
@@ -58,16 +59,15 @@ public class BookingService implements IBookingService {
         booking.setUser(user);
         booking.setTour(tour);
         booking.setPromotion(promotion);
-        Booking savedBooking = bookingRepository.save(booking); // Lưu booking để lấy bookingId
+        Booking savedBooking = bookingRepository.save(booking);
 
-        // Tạo bản ghi Checkout ngay sau khi lưu booking
         Checkout checkout = Checkout.builder()
                 .booking(savedBooking)
                 .paymentMethod(bookingDTO.getPaymentMethod() != null ? bookingDTO.getPaymentMethod() : "OFFICE")
                 .paymentDetails(bookingDTO.getPaymentMethod() != null && bookingDTO.getPaymentMethod().equalsIgnoreCase("VNPAY") ? "Initiated VNPAY payment" : "Payment to be processed at office")
                 .amount(bookingDTO.getTotalPrice())
                 .paymentStatus(PaymentStatus.PENDING)
-                .transactionId("BOOK-" + savedBooking.getBookingId()) // Đảm bảo định dạng BOOK-<bookingId>
+                .transactionId("BOOK-" + savedBooking.getBookingId())
                 .paymentDate(LocalDateTime.now())
                 .build();
         checkoutRepository.save(checkout);
@@ -78,21 +78,28 @@ public class BookingService implements IBookingService {
     @Override
     public Page<BookingDTO> getAllBookings(String keyword, PageRequest pageRequest) {
         Page<Booking> bookingPage = bookingRepository.findAll(keyword, pageRequest);
+        LocalDate currentDate = LocalDate.now();
+
         return bookingPage.map(booking -> {
             Optional<Checkout> checkoutOpt = checkoutRepository.findByBookingBookingId(booking.getBookingId());
             String paymentMethod = checkoutOpt.map(Checkout::getPaymentMethod).orElse(null);
             PaymentStatus paymentStatus = checkoutOpt.map(Checkout::getPaymentStatus).orElse(null);
 
-            // Định dạng tourId thành dạng "Tour" + số thứ tự (3 chữ số)
             String formattedTourId = String.format("Tour%03d", booking.getTour().getTourId());
+
+            // Kiểm tra và cập nhật trạng thái COMPLETED nếu tour đã kết thúc
+            if (booking.getBookingStatus() == BookingStatus.CONFIRMED && booking.getTour().getEndDate().isBefore(currentDate)) {
+                booking.setBookingStatus(BookingStatus.COMPLETED);
+                booking.setUpdatedAt(LocalDateTime.now());
+                bookingRepository.save(booking);
+            }
 
             return BookingDTO.builder()
                     .title(booking.getTour().getTitle())
                     .bookingId(booking.getBookingId())
                     .userId(booking.getUser().getUserId())
-                    .tourId(booking.getTour().getTourId()) // Giữ là Long
-                    .formattedTourId(formattedTourId) // Thêm định dạng String
-                    .title(booking.getTour().getTitle())
+                    .tourId(booking.getTour().getTourId())
+                    .formattedTourId(formattedTourId)
                     .numAdults(booking.getNumAdults())
                     .numChildren(booking.getNumChildren())
                     .totalPrice(booking.getTotalPrice())
@@ -119,6 +126,14 @@ public class BookingService implements IBookingService {
         Optional<Checkout> checkoutOpt = checkoutRepository.findByBookingBookingId(booking.getBookingId());
         String paymentMethod = checkoutOpt.map(Checkout::getPaymentMethod).orElse(null);
         PaymentStatus paymentStatus = checkoutOpt.map(Checkout::getPaymentStatus).orElse(null);
+
+        // Kiểm tra và cập nhật trạng thái COMPLETED nếu tour đã kết thúc
+        LocalDate currentDate = LocalDate.now();
+        if (booking.getBookingStatus() == BookingStatus.CONFIRMED && booking.getTour().getEndDate().isBefore(currentDate)) {
+            booking.setBookingStatus(BookingStatus.COMPLETED);
+            booking.setUpdatedAt(LocalDateTime.now());
+            bookingRepository.save(booking);
+        }
 
         return BookingDTO.builder()
                 .bookingId(booking.getBookingId())
@@ -169,7 +184,6 @@ public class BookingService implements IBookingService {
         booking.setTour(tour);
         booking.setPromotion(promotion);
 
-        // Admin có quyền sửa booking_status từ PENDING thành CONFIRMED
         if (bookingDTO.getBookingStatus() != null && booking.getBookingStatus() == BookingStatus.PENDING
                 && bookingDTO.getBookingStatus() == BookingStatus.CONFIRMED) {
             booking.setBookingStatus(BookingStatus.CONFIRMED);
@@ -182,7 +196,6 @@ public class BookingService implements IBookingService {
     public void deleteBooking(Long id) throws DataNotFoundException {
         Booking booking = bookingRepository.findById(id)
                 .orElseThrow(() -> new DataNotFoundException("Cannot find booking with id: " + id));
-        // Logic hủy booking (nếu cần, có thể thêm kiểm tra)
         bookingRepository.save(booking);
     }
 
@@ -192,10 +205,19 @@ public class BookingService implements IBookingService {
                 .orElseThrow(() -> new DataNotFoundException("Cannot find user with id: " + userId));
 
         List<Booking> bookings = bookingRepository.findByUserUserId(userId);
+        LocalDate currentDate = LocalDate.now();
+
         return bookings.stream().map(booking -> {
             Optional<Checkout> checkoutOpt = checkoutRepository.findByBookingBookingId(booking.getBookingId());
             String paymentMethod = checkoutOpt.map(Checkout::getPaymentMethod).orElse(null);
             PaymentStatus paymentStatus = checkoutOpt.map(Checkout::getPaymentStatus).orElse(null);
+
+            // Kiểm tra và cập nhật trạng thái COMPLETED nếu tour đã kết thúc
+            if (booking.getBookingStatus() == BookingStatus.CONFIRMED && booking.getTour().getEndDate().isBefore(currentDate)) {
+                booking.setBookingStatus(BookingStatus.COMPLETED);
+                booking.setUpdatedAt(LocalDateTime.now());
+                bookingRepository.save(booking);
+            }
 
             return BookingDTO.builder()
                     .title(booking.getTour().getTitle())
@@ -224,9 +246,10 @@ public class BookingService implements IBookingService {
         try {
             return bookingRepository.existsByUserUserIdAndTourTourId(userId, tourId);
         } catch (Exception e) {
-            return false; // Hoặc ném ngoại lệ tùy thuộc vào yêu cầu
+            return false;
         }
     }
+
     @Override
     public Optional<Booking> findById(Long id) throws DataNotFoundException {
         return Optional.of(bookingRepository.findById(id)
@@ -241,6 +264,5 @@ public class BookingService implements IBookingService {
     public Long countBookingsByTourId(Long tourId) {
         return bookingRepository.countBookingsByTourId(tourId);
     }
-
 
 }

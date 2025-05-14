@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import java.time.LocalDate;
+import java.util.List;
 
 @Entity
 @Table(name = "booking")
@@ -45,4 +46,7 @@ public class Booking extends BaseEntity {
     @ManyToOne
     @JoinColumn(name = "promotion_id")
     private Promotion promotion;
+    @OneToMany(mappedBy = "booking", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    private List<Checkout> checkouts;
+
 }

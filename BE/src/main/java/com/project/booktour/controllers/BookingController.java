@@ -14,6 +14,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
@@ -33,7 +34,6 @@ public class BookingController {
     private final PaymentService paymentService;
 
     private final TourRepository tourRepository; // Thêm TourRepository để kiểm tra tour
-
     @PostMapping("")
     public ResponseEntity<?> createBooking(
             @RequestBody @Valid BookingDTO bookingDTO,
