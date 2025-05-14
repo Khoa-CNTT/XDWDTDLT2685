@@ -3,6 +3,7 @@ import { BsTicketPerforated } from "react-icons/bs";
 import { useLocation, useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import { postBooking } from '../../services/booking';
+import { FaSyncAlt } from 'react-icons/fa';
 
 
 const PaymentSidebar = ({
@@ -28,7 +29,7 @@ const PaymentSidebar = ({
     const handleSubmit = async (e) => {
         e.preventDefault();
         if (!full_name || !email || !phone_number || !address) {
-            toast.warning("Vui lòng nhập đầy đủ thông tin cá nhân");
+            toast.warning("Vui lòng nhập đầy đủ thông tin liên hệ");
             return;
         }
         // kiểm tra số điện thoại
@@ -46,8 +47,9 @@ const PaymentSidebar = ({
             toast.warning("Vui lòng chọn phương thức thanh toán");
             return;
         }
+
         try {
-            setLoading(true)
+
             const tour_id = localStorage.getItem('tour_id');
             const user_id = localStorage.getItem('user_id');
             const data = {
@@ -65,9 +67,9 @@ const PaymentSidebar = ({
                 phone_number: phone_number
             };
             console.log("Sending data:", data);
+            setLoading(true);
             const res = await postBooking(data);
             console.log("res", res)
-
 
             if (res.status === 200) {
                 const { paymentUrl } = res.data;
@@ -79,14 +81,20 @@ const PaymentSidebar = ({
                 const booked = new Set(JSON.parse(localStorage.getItem('booked_tours') || '[]'));
                 booked.add(tour_id);
                 localStorage.setItem('booked_tours', JSON.stringify([...booked]))
-                toast.success('Đặt tour thành công!');
-                navigate("/tourbooking")
+                setTimeout(() => {
+                    toast.success('Đặt tour thành công!');
+                    navigate("/tourbooking")
+                }, 1000);
             } else {
-                toast.warning('Đặt tour không thành công!');
+                setTimeout(() => {
+                    toast.warning('Đặt tour không thành công!');
+                    setLoading(false);
+                }, 1000);
             }
         } catch (error) {
             toast.error('Có lỗi xảy ra khi đặt tour!');
-            console.error('Lỗi hệ thống:', error);
+            // console.error('Lỗi hệ thống:', error);
+            setLoading(false);
         }
     };
 
@@ -149,11 +157,17 @@ const PaymentSidebar = ({
 
                     <div className="relative">
                         <button
-                            className="w-full p-2 text-lg font-semibold text-white bg-orange-500 rounded-lg"
-                            disabled={!agreed}
+                            className={`w-full p-2 text-lg font-semibold text-white rounded-lg ${loading ? 'bg-gray-400 cursor-not-allowed' : 'bg-orange-500'}`}
+                            disabled={!agreed || loading}
                             onClick={handleSubmit}
                         >
-                            Đặt Ngay
+                            {loading ? (
+                                <div className="flex items-center justify-center gap-2">
+                                    <FaSyncAlt className="animate-spin" />
+                                </div>
+                            ) : (
+                                "Đặt Ngay"
+                            )}
                         </button>
 
                         {!agreed && (

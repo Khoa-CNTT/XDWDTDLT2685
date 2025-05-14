@@ -54,6 +54,7 @@ const AppRoutes = () => {
                     <Route path='/admin' element={
                         <PrivateRoute role={2}>
                             <AdminLayout />
+                            
                         </PrivateRoute>}>
 
                     </Route>
