@@ -1,8 +1,8 @@
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
-import { getDataBookingTourById } from "../../services/bookingService";
 import Invoice from "./BookingDetailAll";
 import GoBack from "../../components/GoBack/Goback";
+import { getDataBookingTourById } from "../../services/bookingService";
 
 function BookingDetail() {
     const { id } = useParams();
@@ -14,42 +14,53 @@ function BookingDetail() {
         const fetchApi = async () => {
             try {
                 const response = await getDataBookingTourById(id);
+
                 if (response.status === 200) {
                     const data = response.data;
-                    // Ánh xạ dữ liệu từ BookingDTO sang định dạng Invoice mong đợi
+                    // Ánh xạ dữ liệu từ API sang định dạng Invoice mong đợi
                     const mappedData = {
-                        bookingId: data.bookingId || id,
-                        adults: data.numAdults || 0,
-                        children: data.numChildren || 0,
-                        unitPriceAdult: data.totalPrice ? Math.round(data.totalPrice / (data.numAdults + data.numChildren * 0.5)) : 0, // Giả định giá trẻ em bằng 50% người lớn
-                        unitPriceChild: data.totalPrice ? Math.round(data.totalPrice / (data.numAdults + data.numChildren * 0.5)) * 0.5 : 0,
-                        customerName: data.fullName || "Không xác định",
-                        tourName: data.title || "Không xác định",
+                        bookingId: data.booking_id || id || "N/A",
+                        adults: Number(data.num_adults) || 0,
+                        children: Number(data.num_children) || 0,
+                        totalPrice: Number(data.total_price) || 0,
+                        unitPriceAdult:
+                            data.num_adults && Number(data.total_price) > 0
+                                ? Math.round((Number(data.total_price) * 0.7) / Number(data.num_adults))
+                                : 0,
+                        unitPriceChild:
+                            data.num_children && Number(data.total_price) > 0
+                                ? Math.round((Number(data.total_price) * 0.3) / Number(data.num_children))
+                                : 0,
+                        customerName: data.full_name || "Không xác định",
                         address: data.address || "Không xác định",
-                        phone: data.phoneNumber || "Không xác định",
+                        phone: data.phone_number || "Không xác định",
                         email: data.email || "Không xác định",
-                        bookingDate: data.createdAt ? new Date(data.createdAt).toLocaleString("vi-VN") : "Không xác định",
-                        bookingStatus: data.bookingStatus
+                        bookingDate: data.created_at ? new Date(data.created_at).toLocaleString("vi-VN") : "Không xác định",
+                        bookingStatus: data.booking_status
                             ? {
                                   PENDING: "Chưa xác nhận",
                                   CONFIRMED: "Đã xác nhận",
                                   CANCELLED: "Đã hủy",
-                              }[data.bookingStatus] || "Không xác định"
+                              }[data.booking_status] || "Không xác định"
                             : "Không xác định",
-                        paymentMethodName: data.paymentMethod || "Không xác định",
-                        paymentStatus: data.paymentStatus
+                        paymentMethodName: data.payment_method || "Không xác định",
+                        paymentStatus: data.payment_status
                             ? {
                                   PENDING: "Chưa thanh toán",
                                   COMPLETED: "Đã thanh toán",
                                   PAID: "Đã thanh toán",
-                              }[data.paymentStatus] || "Không xác định"
+                              }[data.payment_status] || "Không xác định"
                             : "Không xác định",
-                        transactionCode: data.transactionId || `TRANS-${id}`, // Giả định nếu không có
-                        paymentDate: data.paymentDate || new Date().toLocaleString("vi-VN"), // Giả định nếu không có
-                        account: "N/A", // Không có trong BookingDTO, gán mặc định
-                        tax: 0, // Không có trong BookingDTO, gán mặc định
-                        discount: data.promotionId ? Math.round(data.totalPrice * 0.1) : 0, // Giả định giảm giá 10% nếu có promotion
-                        title: data.title || "Không xác định",
+                        transactionCode: data.transaction_id || `TRANS-${id}`,
+                        paymentDate: data.updated_at ? new Date(data.updated_at).toLocaleString("vi-VN") : new Date().toLocaleString("vi-VN"),
+                        account: "N/A",
+                        tax: Number(data.tax) || 0,
+                        discount: data.promotion_id ? Math.round(Number(data.total_price) * 0.1) : 0,
+                        title: data.title || "Tour không xác định", // Chỉ giữ title, xóa tourName
+                        specialRequests: data.special_requests || "Không có",
+                        tourId: data.tour_id || "Không xác định",
+                        userId: data.user_id || "Không xác định",
+                        promotionId: data.promotion_id || "Không có",
                     };
                     setBookingDetail(mappedData);
                 } else {
@@ -70,7 +81,7 @@ function BookingDetail() {
     }
 
     if (!bookingDetail) {
-        return <p>Không tìm thấy !</p>;
+        return <p>Không tìm thấy!</p>;
     }
 
     return (

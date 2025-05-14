@@ -310,7 +310,7 @@ function EditTour({ item }) {
     // Đầu vào: Không có
     // Đầu ra: JSX hiển thị ảnh hoặc thông báo nếu không có ảnh
     const renderAnh = () => {
-        console.log("Rendering images:", data.images, "Files:", files); // Ghi log danh sách ảnh và file
+        // Ghi log danh sách ảnh và file
         // Ưu tiên hiển thị ảnh mới được tải lên
         if (files.length > 0) {
             return (

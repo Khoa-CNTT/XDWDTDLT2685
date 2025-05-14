@@ -18,6 +18,7 @@ export const getDataBookingTour = async (page, limit = 10, keyword = "") => {
         };
     }
 };
+
 // Lấy thông tin booking theo ID
 export const getDataBookingTourById = async (id) => {
     try {
@@ -34,10 +35,11 @@ export const getDataBookingTourById = async (id) => {
         };
     }
 };
+
 // Xác nhận thanh toán và cập nhật trạng thái booking sang CONFIRMED
 export const confirmPaymentAndBooking = async (bookingId) => {
     try {
-        const res = await post(`bookings/${bookingId}/confirm-payment-and-booking`);
+        const res = await post(`/bookings/${bookingId}/confirm-payment-and-booking`);
         return {
             status: res.status,
             data: res.data,
@@ -47,6 +49,22 @@ export const confirmPaymentAndBooking = async (bookingId) => {
         return {
             status: error.response?.status || 500,
             data: error.response?.data || "Đã xảy ra lỗi khi xác nhận thanh toán và booking",
+        };
+    }
+};
+// Gửi email hóa đơn kèm PDF
+export const sendInvoiceEmail = async (bookingId) => {
+    try {
+        const res = await post(`/bookings/${bookingId}/send-invoice`);
+        return {
+            status: res.status,
+            data: res.data,
+        };
+    } catch (error) {
+        console.error(`Lỗi khi gửi email hóa đơn với booking ID ${bookingId}:`, error);
+        return {
+            status: error.response?.status || 500,
+            data: error.response?.data || "Đã xảy ra lỗi khi gửi email hóa đơn",
         };
     }
 };

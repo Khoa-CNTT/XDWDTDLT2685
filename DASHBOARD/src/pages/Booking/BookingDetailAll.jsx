@@ -1,21 +1,57 @@
 import React from "react";
 import photo from "../../assets/Img/logo.png";
 import ToolReport from "../../components/ToolReport";
-import GoBack from "../../components/GoBack/Goback";
 
 function Invoice({ item }) {
-    const totalAdult = item.adults * item.unitPriceAdult;
-    const totalChild = item.children * item.unitPriceChild;
-    // Lấy giá trị thuế và giảm giá, mặc định là 0 nếu không có
-    const tax = item.tax || 0;
-    const discount = item.discount || 0;
-    // Tính giá gốc (trước thuế và giảm giá)
+    // Kiểm tra dữ liệu đầu vào
+    if (!item) {
+        console.error("Invoice: item is undefined or null", item);
+        return <div className="text-center text-red-600">Lỗi: Dữ liệu hóa đơn không hợp lệ</div>;
+    }
+
+    // Sử dụng trực tiếp item từ BookingDetail
+    const bookingData = {
+        customerName: item.customerName || "Không xác định",
+        address: item.address || "Không có",
+        email: item.email || "Không có",
+        phone: item.phone || "Không có",
+        adults: Number(item.adults) || 0,
+        children: Number(item.children) || 0,
+        bookingId: item.bookingId || "N/A",
+        bookingDate: item.bookingDate || "Không có",
+        bookingStatus: item.bookingStatus || "Chưa xác nhận",
+        paymentMethodName: item.paymentMethodName || "Không có",
+        paymentStatus: item.paymentStatus || "Chưa thanh toán",
+        transactionCode: item.transactionCode || "TX0000",
+        paymentDate: item.paymentDate || "Không có",
+        account: item.account || "N/A",
+        totalPrice: Number(item.totalPrice) || 0,
+        unitPriceAdult: Number(item.unitPriceAdult) || 0,
+        unitPriceChild: Number(item.unitPriceChild) || 0,
+        tax: Number(item.tax) || 0,
+        discount: Number(item.discount) || 0,
+        title: item.title || "Tour không xác định", // Chỉ giữ title, xóa tourName
+        specialRequests: item.specialRequests || "Không có",
+        tourId: item.tourId || "Không xác định",
+        userId: item.userId || "Không xác định",
+        promotionId: item.promotionId || "Không có",
+    };
+
+    // Tính toán giá
+    const totalAdult = bookingData.adults * bookingData.unitPriceAdult;
+    const totalChild = bookingData.children * bookingData.unitPriceChild;
     const originalPrice = totalAdult + totalChild;
-    const finalPrice = originalPrice + tax - discount;
-    // Lấy thời gian hiện tại
+    const finalPrice = originalPrice + bookingData.tax - bookingData.discount;
+
+    // Kiểm tra finalPrice với totalPrice
+    if (bookingData.totalPrice > 0 && finalPrice !== bookingData.totalPrice) {
+        console.warn(`Tổng giá tính toán (${finalPrice}) không khớp với totalPrice từ API (${bookingData.totalPrice})`);
+    }
+
+    // Thời gian hiện tại
     const currentDateTime = new Date().toLocaleString("vi-VN");
 
-    // Định nghĩa provider fix cứng
+    // Thông tin nhà cung cấp
     const provider = {
         companyName: "Công ty Du lịch GoViet",
         address: "123 Đường Quang Trung, Quận Thanh Khê, TP. Đà Nẵng",
@@ -37,8 +73,9 @@ function Invoice({ item }) {
                         <img
                             src={photo}
                             className="h-20 w-20 transform rounded-full bg-gray-50 object-cover dark:bg-slate-950"
+                            alt="Logo"
                         />
-                        <h2 className="text-xl font-semibold text-gray-800 dark:text-gray-200">{item.title}</h2>
+                        <h2 className="text-xl font-semibold text-gray-800 dark:text-gray-200">{bookingData.title}</h2>
                     </div>
                     <p className="text-xl text-gray-600 dark:text-gray-400">Thời gian lập hóa đơn: {currentDateTime}</p>
                 </div>
@@ -46,12 +83,12 @@ function Invoice({ item }) {
                 <div className="mb-6 grid grid-cols-1 gap-6 md:grid-cols-2">
                     <div>
                         <p className="text-base font-medium text-blue-500 dark:text-blue-300">
-                            Người đặt: <span className="font-normal text-gray-700 dark:text-gray-300">{item.customerName}</span>
+                            Người đặt: <span className="font-normal text-gray-700 dark:text-gray-300">{bookingData.customerName}</span>
                         </p>
                         <ul className="mt-2 list-none text-sm text-gray-600 dark:text-gray-400">
-                            <li>Địa chỉ: {item.address}</li>
-                            <li>SĐT: {item.phone}</li>
-                            <li>Email: {item.email}</li>
+                            <li>Địa chỉ: {bookingData.address}</li>
+                            <li>SĐT: {bookingData.phone}</li>
+                            <li>Email: {bookingData.email}</li>
                         </ul>
                     </div>
                     <div>
@@ -69,37 +106,53 @@ function Invoice({ item }) {
                 <div className="mb-6 flex justify-between rounded-md bg-blue-50 p-4 dark:bg-slate-700">
                     <div>
                         <p className="text-sm">
-                            <strong className="text-blue-500 dark:text-blue-300">Mã đơn đặt:</strong> {item.bookingId}
+                            <strong className="text-blue-500 dark:text-blue-300">Mã đơn đặt:</strong> {bookingData.bookingId}
                         </p>
                         <p className="text-sm">
-                            <strong className="text-blue-500 dark:text-blue-300">Ngày đặt:</strong> {item.bookingDate}
+                            <strong className="text-blue-500 dark:text-blue-300">Ngày đặt:</strong> {bookingData.bookingDate}
                         </p>
                         <p className="text-sm">
                             <strong className="text-blue-500 dark:text-blue-300">Trạng thái:</strong>
                             <span
                                 className={`ml-2 font-semibold ${
-                                    item.bookingStatus === "Đã hoàn thành"
+                                    bookingData.bookingStatus === "Đã hoàn thành"
                                         ? "text-green-600"
-                                        : item.bookingStatus === "Đã xác nhận"
+                                        : bookingData.bookingStatus === "Đã xác nhận"
                                           ? "text-yellow-600"
                                           : "text-red-600"
                                 }`}
                             >
-                                {item.bookingStatus}
+                                {bookingData.bookingStatus}
                             </span>
                         </p>
                     </div>
                     <div>
                         <p className="text-sm">
-                            <strong className="text-blue-500 dark:text-blue-300">Mã giao dịch:</strong> {item.transactionCode}
+                            <strong className="text-blue-500 dark:text-blue-300">Mã giao dịch:</strong> {bookingData.transactionCode}
                         </p>
                         <p className="text-sm">
-                            <strong className="text-blue-500 dark:text-blue-300">Ngày thanh toán:</strong> {item.paymentDate}
+                            <strong className="text-blue-500 dark:text-blue-300">Ngày thanh toán:</strong> {bookingData.paymentDate}
                         </p>
                         <p className="text-sm">
-                            <strong className="text-blue-500 dark:text-blue-300">Tài khoản thanh toán:</strong> {item.account}
+                            <strong className="text-blue-500 dark:text-blue-300">Tài khoản thanh toán:</strong> {bookingData.account}
                         </p>
                     </div>
+                </div>
+
+                {/* Thông tin bổ sung */}
+                <div className="mb-6 rounded-md bg-blue-50 p-4 dark:bg-slate-700">
+                    <p className="text-sm">
+                        <strong className="text-blue-500 dark:text-blue-300">Yêu cầu đặc biệt:</strong> {bookingData.specialRequests}
+                    </p>
+                    <p className="text-sm">
+                        <strong className="text-blue-500 dark:text-blue-300">Mã tour:</strong> {bookingData.tourId}
+                    </p>
+                    <p className="text-sm">
+                        <strong className="text-blue-500 dark:text-blue-300">Mã người dùng:</strong> {bookingData.userId}
+                    </p>
+                    <p className="text-sm">
+                        <strong className="text-blue-500 dark:text-blue-300">Mã khuyến mãi:</strong> {bookingData.promotionId}
+                    </p>
                 </div>
 
                 <hr className="mb-6 border-gray-300 dark:border-gray-600" />
@@ -117,44 +170,54 @@ function Invoice({ item }) {
                     <tbody>
                         <tr className="border-b border-gray-200 bg-blue-50 dark:border-gray-700 dark:bg-slate-900">
                             <td className="p-3 text-gray-700 dark:text-stone-50">Người lớn</td>
-                            <td className="p-3 text-center text-gray-700 dark:text-stone-50">{item.adults}</td>
-                            <td className="p-3 text-center text-gray-700 dark:text-stone-50">{item.tourName}</td>
-                            <td className="p-3 text-center text-gray-700 dark:text-stone-50">{item.unitPriceAdult.toLocaleString("vi-VN")} VND</td>
-                            <td className="p-3 text-right text-gray-700 dark:text-stone-50">{totalAdult.toLocaleString("vi-VN")} VND</td>
+                            <td className="p-3 text-center text-gray-700 dark:text-stone-50">{bookingData.adults}</td>
+                            <td className="p-3 text-center text-gray-700 dark:text-stone-50">{bookingData.title}</td>
+                            <td className="p-3 text-center text-gray-700 dark:text-stone-50">
+                                {(bookingData.unitPriceAdult || 0).toLocaleString("vi-VN")} VND
+                            </td>
+                            <td className="p-3 text-right text-gray-700 dark:text-stone-50">{(totalAdult || 0).toLocaleString("vi-VN")} VND</td>
                         </tr>
                         <tr className="border-b border-gray-200 bg-blue-50 dark:border-gray-700 dark:bg-slate-900">
                             <td className="p-3 text-gray-700 dark:text-stone-50">Trẻ em</td>
-                            <td className="p-3 text-center text-gray-700 dark:text-stone-50">{item.children}</td>
-                            <td className="p-3 text-center text-gray-700 dark:text-stone-50">{item.tourName}</td>
-                            <td className="p-3 text-center text-gray-700 dark:text-stone-50">{item.unitPriceChild.toLocaleString("vi-VN")} VND</td>
-                            <td className="p-3 text-right text-gray-700 dark:text-stone-50">{totalChild.toLocaleString("vi-VN")} VND</td>
+                            <td className="p-3 text-center text-gray-700 dark:text-stone-50">{bookingData.children}</td>
+                            <td className="p-3 text-center text-gray-700 dark:text-stone-50">{bookingData.title}</td>
+                            <td className="p-3 text-center text-gray-700 dark:text-stone-50">
+                                {(bookingData.unitPriceChild || 0).toLocaleString("vi-VN")} VND
+                            </td>
+                            <td className="p-3 text-right text-gray-700 dark:text-stone-50">{(totalChild || 0).toLocaleString("vi-VN")} VND</td>
                         </tr>
                     </tbody>
                 </table>
 
                 <div className="mb-6 space-y-1 text-right">
                     <p className="text-sm text-gray-700 dark:text-gray-300">
-                        <span className="font-medium">Giá gốc:</span> {originalPrice.toLocaleString("vi-VN")} VND
+                        <span className="font-medium">Giá gốc:</span> {(originalPrice || 0).toLocaleString("vi-VN")} VND
                     </p>
                     <p className="text-sm text-gray-700 dark:text-gray-300">
-                        <span className="font-medium">Thuế:</span> {tax.toLocaleString("vi-VN")} VND{" "}
-                        {tax > 0 && <span className="text-xs text-gray-500">({((tax / originalPrice) * 100).toFixed(2)}%)</span>}
+                        <span className="font-medium">Thuế:</span> {(bookingData.tax || 0).toLocaleString("vi-VN")} VND{" "}
+                        {bookingData.tax > 0 && (
+                            <span className="text-xs text-gray-500">({((bookingData.tax / originalPrice) * 100).toFixed(2)}%)</span>
+                        )}
                     </p>
                     <p className="text-sm text-gray-700 dark:text-gray-300">
-                        <span className="font-medium">Giảm giá:</span> {discount.toLocaleString("vi-VN")} VND{" "}
-                        {discount > 0 && <span className="text-xs text-gray-500">({((discount / originalPrice) * 100).toFixed(2)}%)</span>}
+                        <span className="font-medium">Giảm giá:</span> {(bookingData.discount || 0).toLocaleString("vi-VN")} VND{" "}
+                        {bookingData.discount > 0 && (
+                            <span className="text-xs text-gray-500">({((bookingData.discount / originalPrice) * 100).toFixed(2)}%)</span>
+                        )}
                     </p>
-                    <p className="text-lg font-bold text-gray-900 dark:text-white">Tổng cộng: {finalPrice.toLocaleString("vi-VN")} VND</p>
+                    <p className="text-lg font-bold text-gray-900 dark:text-white">
+                        Tổng cộng: {(bookingData.totalPrice || 0).toLocaleString("vi-VN")} VND
+                    </p>
                 </div>
 
                 <div className="mb-6 rounded-md bg-blue-50 p-4 dark:bg-slate-700">
                     <p className="text-sm">
-                        <strong className="text-blue-700 dark:text-blue-300">Phương thức thanh toán:</strong> {item.paymentMethodName}
+                        <strong className="text-blue-700 dark:text-blue-300">Phương thức thanh toán:</strong> {bookingData.paymentMethodName}
                     </p>
                     <p className="text-sm">
                         <strong className="text-blue-700 dark:text-blue-300">Trạng thái thanh toán:</strong>
-                        <span className={`ml-2 font-semibold ${item.paymentStatus === "Đã thanh toán" ? "text-green-600" : "text-red-600"}`}>
-                            {item.paymentStatus}
+                        <span className={`ml-2 font-semibold ${bookingData.paymentStatus === "Đã thanh toán" ? "text-green-600" : "text-red-600"}`}>
+                            {bookingData.paymentStatus}
                         </span>
                     </p>
                 </div>
@@ -181,7 +244,6 @@ function Invoice({ item }) {
                 </p>
                 <hr className="mb-6 border-gray-300 dark:border-gray-600" />
                 <div className="mb-4 flex flex-col items-center justify-between gap-4 sm:flex-row">
-                    <GoBack />
                     <ToolReport
                         item={item}
                         type="invoice"

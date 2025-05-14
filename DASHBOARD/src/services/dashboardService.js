@@ -3,6 +3,7 @@ import { get } from "../util/requestserver";
 export const getDashboardData = async () => {
     try {
         const res = await get("dashboard");
+
         return {
             status: res.status,
             data: res.data,

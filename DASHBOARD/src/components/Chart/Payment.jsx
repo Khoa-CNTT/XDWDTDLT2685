@@ -1,17 +1,32 @@
 import { useEffect, useState } from "react";
 import { PieChart, Pie, Cell, Tooltip, Legend, ResponsiveContainer } from "recharts";
 import icons from "../../util/icon";
-import { getDataPayment } from "../../services/tourStatistics";
+import { getDashboardData } from "../../services/dashboardService";
 
 const { MdPayment } = icons;
+
+// Mảng màu sắc cho các phương thức thanh toán
+const COLORS = ["#0088FE", "#00C49F", "#FFBB28", "#FF8042"];
+
 const PaymentDataCard = () => {
     const [data, setData] = useState([]);
 
     useEffect(() => {
         const fetchApi = async () => {
             try {
-                const res = await getDataPayment();
-                setData(res || []);
+                const res = await getDashboardData();
+                // Debug API response
+                if (res.status === 200 && res.data && res.data.paymentMethods) {
+                    // Ánh xạ paymentMethods thành định dạng phù hợp cho PieChart
+                    const formattedData = res.data.paymentMethods.map((method, index) => ({
+                        method: method.name, // Đổi key 'name' thành 'method' để khớp với nameKey
+                        percentage: method.percentage,
+                        color: COLORS[index % COLORS.length], // Gán màu từ mảng COLORS
+                    }));
+                    setData(formattedData);
+                } else {
+                    setData([]);
+                }
             } catch (error) {
                 console.error("Error fetching payment data:", error);
                 setData([]);
@@ -63,7 +78,7 @@ const PaymentDataCard = () => {
                         </div>
                     </div>
                 ) : (
-                    <p className="py-4 text-center text-gray-500 dark:text-gray-400">Đang tải dữ liệu...</p>
+                    <p className="py-4 text-center text-gray-500 dark:text-gray-400">Không có dữ liệu thanh toán</p>
                 )}
             </div>
         </div>

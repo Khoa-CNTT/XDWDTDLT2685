@@ -1,9 +1,12 @@
 import { useEffect, useState } from "react";
 import icons from "../../util/icon";
-import { getTourStatistics } from "../../services/tourStatistics";
 import { Cell, Legend, Pie, PieChart, ResponsiveContainer, Tooltip } from "recharts";
+import { getDashboardData } from "../../services/dashboardService";
 
 const { FaMap } = icons;
+
+// Mảng màu mặc định cho các miền
+const COLORS = ["#8884d8", "#82ca9d", "#ffc658"];
 
 function TourStatistics() {
     const [domesticData, setDomesticData] = useState([]);
@@ -11,8 +14,22 @@ function TourStatistics() {
     useEffect(() => {
         const fetchApi = async () => {
             try {
-                const res = await getTourStatistics();
-                setDomesticData(res?.domestic || []);
+                const res = await getDashboardData();
+
+                if (res.status !== 200) {
+                    console.error("Không thể lấy dữ liệu dashboard:", res);
+                    return;
+                }
+
+                const regionData = res?.data?.regionBookings || [];
+
+                // Gán màu cho từng khu vực
+                const mappedData = regionData.map((item, index) => ({
+                    ...item,
+                    color: COLORS[index % COLORS.length],
+                }));
+
+                setDomesticData(mappedData);
             } catch (error) {
                 console.error("Lỗi khi lấy dữ liệu thống kê:", error);
             }
@@ -28,11 +45,10 @@ function TourStatistics() {
                 <div className="w-fit rounded-lg bg-blue-500/20 p-2 text-[#019fb5] dark:bg-blue-600/20">
                     <FaMap size={26} />
                 </div>
-                <p className="card-title text-lg font-semibold">Điểm đến</p>
+                <p className="card-title text-lg font-semibold">Điểm đến theo vùng</p>
             </div>
 
             <div className="card-body p-4">
-                {/* Biểu đồ Trong nước */}
                 <div className="flex flex-col items-center justify-center gap-6 sm:flex-row sm:items-start">
                     {/* Biểu đồ */}
                     <div className="flex w-full flex-col items-center justify-center sm:w-1/2">
@@ -65,11 +81,13 @@ function TourStatistics() {
                             </ResponsiveContainer>
                         </div>
                     </div>
+
+                    {/* Bảng thông tin */}
                     <div className="hidden w-full sm:block sm:w-1/2">
                         <table className="w-full border-collapse text-left dark:text-amber-50">
                             <thead>
                                 <tr className="border-b">
-                                    <th className="py-2">Tên</th>
+                                    <th className="py-2">Tên vùng</th>
                                     <th className="py-2 text-center">Số lượt đặt</th>
                                 </tr>
                             </thead>
@@ -101,4 +119,5 @@ function TourStatistics() {
         </div>
     );
 }
+
 export default TourStatistics;
