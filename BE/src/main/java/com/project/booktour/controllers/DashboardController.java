@@ -19,12 +19,12 @@ public class DashboardController {
 
     @GetMapping
     @PreAuthorize("hasRole('ROLE_ADMIN')")
-    public ResponseEntity<DashboardDTO> getDashboardStats() {
+    public ResponseEntity<?> getDashboardStats() {
         try {
             DashboardDTO stats = dashboardService.getDashboardStats();
             return ResponseEntity.ok(stats);
         } catch (Exception e) {
-            return ResponseEntity.badRequest().body(new DashboardDTO(0L, 0L, 0L, 0.0, null, null));
+            return ResponseEntity.badRequest().body("lỗi ");
         }
     }
 }

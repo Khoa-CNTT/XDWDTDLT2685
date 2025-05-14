@@ -137,45 +137,46 @@ public class BookingController {
         }
     }
 
-    @PostMapping("/{bookingId}/confirm")
+
+    @PostMapping("/{bookingId}/confirm-payment-and-booking")
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<?> confirmBooking(@PathVariable Long bookingId) {
+    public ResponseEntity<?> confirmPaymentAndBooking(@PathVariable Long bookingId) {
         try {
+            // Kiểm tra checkout
+            Optional<Checkout> checkoutOpt = checkoutRepository.findByBookingBookingId(bookingId);
+            if (!checkoutOpt.isPresent()) {
+                return ResponseEntity.badRequest().body("Checkout not found");
+            }
+
+            Checkout checkout = checkoutOpt.get();
+            if (checkout.getPaymentStatus() != PaymentStatus.PENDING) {
+                return ResponseEntity.badRequest().body("Payment is already completed or cannot be confirmed");
+            }
+
+            // Kiểm tra booking
             Optional<Booking> bookingOpt = bookingService.findById(bookingId);
-            if (bookingOpt.isPresent()) {
-                Booking booking = bookingOpt.get();
-                if (booking.getBookingStatus() == BookingStatus.PENDING) {
-                    booking.setBookingStatus(BookingStatus.CONFIRMED);
-                    bookingService.updateBooking(booking.getBookingId(), convertToDTO(booking));
-                    return ResponseEntity.ok("Booking confirmed successfully");
-                }
+            if (!bookingOpt.isPresent()) {
+                return ResponseEntity.badRequest().body("Cannot find booking with id: " + bookingId);
+            }
+
+            Booking booking = bookingOpt.get();
+            if (booking.getBookingStatus() != BookingStatus.PENDING) {
                 return ResponseEntity.badRequest().body("Booking is already confirmed or cannot be confirmed");
             }
-            return ResponseEntity.badRequest().body("Cannot find booking with id: " + bookingId);
+
+            // Cập nhật trạng thái thanh toán
+            checkout.setPaymentStatus(PaymentStatus.COMPLETED);
+            checkoutRepository.save(checkout);
+
+            // Cập nhật trạng thái booking
+            booking.setBookingStatus(BookingStatus.CONFIRMED);
+            bookingService.updateBooking(booking.getBookingId(), convertToDTO(booking));
+
+            return ResponseEntity.ok("Payment and booking confirmed successfully");
         } catch (DataNotFoundException e) {
             return ResponseEntity.badRequest().body(e.getMessage());
         } catch (Exception e) {
-            return ResponseEntity.badRequest().body("An error occurred while confirming the booking");
-        }
-    }
-
-    @PostMapping("/{bookingId}/confirm-payment")
-    @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<?> confirmOfficePayment(@PathVariable Long bookingId) {
-        try {
-            Optional<Checkout> checkoutOpt = checkoutRepository.findByBookingBookingId(bookingId);
-            if (checkoutOpt.isPresent()) {
-                Checkout checkout = checkoutOpt.get();
-                if (checkout.getPaymentMethod().equalsIgnoreCase("OFFICE") && checkout.getPaymentStatus() == PaymentStatus.PENDING) {
-                    checkout.setPaymentStatus(PaymentStatus.COMPLETED);
-                    checkoutRepository.save(checkout);
-                    return ResponseEntity.ok("Payment confirmed successfully");
-                }
-                return ResponseEntity.badRequest().body("Payment cannot be confirmed or is already completed");
-            }
-            return ResponseEntity.badRequest().body("Checkout not found");
-        } catch (Exception e) {
-            return ResponseEntity.badRequest().body("An error occurred while confirming payment");
+            return ResponseEntity.badRequest().body("An error occurred while confirming payment and booking");
         }
     }
 

@@ -14,4 +14,5 @@ public interface CheckoutRepository extends JpaRepository<Checkout, Long> {
 
     @Query("SELECT c.paymentMethod, COUNT(c) FROM Checkout c WHERE c.booking IN (SELECT b FROM Booking b) GROUP BY c.paymentMethod")
     List<Object[]> countBookingsByPaymentMethod();
+
 }

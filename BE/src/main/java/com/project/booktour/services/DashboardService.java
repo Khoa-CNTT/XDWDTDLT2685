@@ -1,9 +1,7 @@
 package com.project.booktour.services;
 
-import com.project.booktour.dtos.DashboardDTO;
-import com.project.booktour.dtos.PaymentMethodDTO;
-import com.project.booktour.dtos.RegionBookingDTO;
-import com.project.booktour.models.Region;
+import com.project.booktour.dtos.*;
+import com.project.booktour.models.*;
 import com.project.booktour.repositories.BookingRepository;
 import com.project.booktour.repositories.CheckoutRepository;
 import com.project.booktour.repositories.TourRepository;
@@ -11,8 +9,11 @@ import com.project.booktour.repositories.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -25,43 +26,50 @@ public class DashboardService {
 
     public DashboardDTO getDashboardStats() {
         Long activeTours = tourRepository.countByAvailabilityTrue() != null ? tourRepository.countByAvailabilityTrue() : 0L;
-        Long totalBookings = bookingRepository.countTotalBookings() != null ? bookingRepository.countTotalBookings() : 0L;
+        Long totalBookings = bookingRepository.count();
         Long totalUsers = userRepository.countActiveUsers() != null ? userRepository.countActiveUsers() : 0L;
-        Double totalRevenue = bookingRepository.sumTotalRevenue() != null ? bookingRepository.sumTotalRevenue() : 0.0;
+        Double totalRevenue = calculateTotalRevenue() != null ? calculateTotalRevenue() : 0.0;
 
-        // Lấy số lượt đặt theo vùng
         List<RegionBookingDTO> regionBookings = getRegionBookings();
-
-        // Lấy tỷ lệ phương thức thanh toán
         List<PaymentMethodDTO> paymentMethods = getPaymentMethods();
+        List<TourStatsDTO> tourStats = getTourStats().stream().limit(5).toList();
+        List<BookingStatsDTO> latestBookings = getLatestBookings();
+        List<MonthlyRevenueDTO> monthlyRevenues = getMonthlyRevenues();
 
-        return new DashboardDTO(activeTours, totalBookings, totalUsers, totalRevenue, regionBookings, paymentMethods);
+        return new DashboardDTO(activeTours, totalBookings, totalUsers, totalRevenue, regionBookings, paymentMethods, tourStats, latestBookings, monthlyRevenues);
+    }
+
+    private Double calculateTotalRevenue() {
+        List<Checkout> checkouts = checkoutRepository.findAll();
+        return checkouts.stream()
+                .filter(checkout -> checkout.getPaymentStatus() != null && checkout.getPaymentStatus() == PaymentStatus.COMPLETED)
+                .mapToDouble(Checkout::getAmount)
+                .sum();
     }
 
     private List<RegionBookingDTO> getRegionBookings() {
         List<Object[]> bookingCounts = bookingRepository.countBookingsByRegion();
         List<RegionBookingDTO> regionBookings = new ArrayList<>();
 
-        // Khởi tạo giá trị mặc định cho cả 3 miền
         regionBookings.add(new RegionBookingDTO("Miền Bắc", 0L));
         regionBookings.add(new RegionBookingDTO("Miền Trung", 0L));
         regionBookings.add(new RegionBookingDTO("Miền Nam", 0L));
 
-        // Cập nhật số lượt đặt từ kết quả truy vấn
         for (Object[] result : bookingCounts) {
             Region region = (Region) result[0];
             Long count = (Long) result[1];
-
-            switch (region) {
-                case NORTH:
-                    regionBookings.set(0, new RegionBookingDTO("Miền Bắc", count));
-                    break;
-                case CENTRAL:
-                    regionBookings.set(1, new RegionBookingDTO("Miền Trung", count));
-                    break;
-                case SOUTH:
-                    regionBookings.set(2, new RegionBookingDTO("Miền Nam", count));
-                    break;
+            if (count != null) {
+                switch (region) {
+                    case NORTH:
+                        regionBookings.set(0, new RegionBookingDTO("Miền Bắc", count));
+                        break;
+                    case CENTRAL:
+                        regionBookings.set(1, new RegionBookingDTO("Miền Trung", count));
+                        break;
+                    case SOUTH:
+                        regionBookings.set(2, new RegionBookingDTO("Miền Nam", count));
+                        break;
+                }
             }
         }
 
@@ -69,29 +77,146 @@ public class DashboardService {
     }
 
     private List<PaymentMethodDTO> getPaymentMethods() {
-        List<Object[]> paymentCounts = checkoutRepository.countBookingsByPaymentMethod();
+        List<Checkout> checkouts = checkoutRepository.findAll();
         List<PaymentMethodDTO> paymentMethods = new ArrayList<>();
 
-        // Lấy tổng số booking từ bookingRepository
-        long totalBookings = bookingRepository.countTotalBookings() != null ? bookingRepository.countTotalBookings() : 0;
+        // Tính tổng số checkout đã hoàn thành
+        long totalCompletedCheckouts = checkouts.stream()
+                .filter(checkout -> checkout.getPaymentStatus() != null && checkout.getPaymentStatus() == PaymentStatus.COMPLETED)
+                .count();
 
-        // Khởi tạo giá trị mặc định cho các phương thức thanh toán
-        paymentMethods.add(new PaymentMethodDTO("VNPAY", 0.0));
-        paymentMethods.add(new PaymentMethodDTO("Thanh toán tại văn phòng", 0.0));
+        // Đếm số checkout cho từng phương thức thanh toán
+        long vnpayCount = checkouts.stream()
+                .filter(c -> c.getPaymentMethod() != null && "VNPAY".equalsIgnoreCase(c.getPaymentMethod()) && c.getPaymentStatus() == PaymentStatus.COMPLETED)
+                .count();
+        long officeCount = checkouts.stream()
+                .filter(c -> c.getPaymentMethod() != null && "OFFICE".equalsIgnoreCase(c.getPaymentMethod()) && c.getPaymentStatus() == PaymentStatus.COMPLETED)
+                .count();
 
-        // Cập nhật số lượng giao dịch cho từng phương thức
-        for (Object[] result : paymentCounts) {
-            String paymentMethod = (String) result[0];
-            Long count = (Long) result[1];
-            double percentage = totalBookings > 0 ? (count * 100.0) / totalBookings : 0.0;
+        // Tính tỷ lệ phần trăm
+        double vnpayPercentage = totalCompletedCheckouts > 0 ? (vnpayCount * 100.0) / totalCompletedCheckouts : 0.0;
+        double officePercentage = totalCompletedCheckouts > 0 ? (officeCount * 100.0) / totalCompletedCheckouts : 0.0;
 
-            if ("VNPAY".equalsIgnoreCase(paymentMethod)) {
-                paymentMethods.set(0, new PaymentMethodDTO("VNPAY", percentage));
-            } else if ("OFFICE".equalsIgnoreCase(paymentMethod)) { // Sửa để khớp với dữ liệu thực tế
-                paymentMethods.set(1, new PaymentMethodDTO("Thanh toán tại văn phòng", percentage));
-            }
-        }
+        paymentMethods.add(new PaymentMethodDTO("VNPAY", vnpayPercentage));
+        paymentMethods.add(new PaymentMethodDTO("Thanh toán tại văn phòng", officePercentage));
 
         return paymentMethods;
+    }
+
+    private List<TourStatsDTO> getTourStats() {
+        List<Tour> tours = tourRepository.findAll();
+        List<TourStatsDTO> tourStats = new ArrayList<>();
+
+        for (Tour tour : tours) {
+            Long bookedSlots = bookingRepository.countByTourAndBookingStatus(tour.getTourId(), BookingStatus.CONFIRMED) != null
+                    ? bookingRepository.countByTourAndBookingStatus(tour.getTourId(), BookingStatus.CONFIRMED) : 0L;
+            Integer availableSlots = tour.getQuantity() != null ? (tour.getQuantity() - bookedSlots.intValue()) : 0;
+            Double averageRating = tour.getReviews() != null && !tour.getReviews().isEmpty()
+                    ? tour.getReviews().stream()
+                    .mapToDouble(review -> review.getRating() != null ? review.getRating() : 0.0)
+                    .average()
+                    .orElse(0.0)
+                    : 0.0;
+
+            TourStatsDTO tourStat = new TourStatsDTO(
+                    "tour" + String.format("%03d", tour.getTourId()),
+                    tour.getTitle(),
+                    bookedSlots.intValue(),
+                    availableSlots,
+                    tour.getPriceAdult(),
+                    Math.round(averageRating * 10.0) / 10.0,
+                    tour.getDuration()
+            );
+            tourStats.add(tourStat);
+        }
+
+        return tourStats;
+    }
+
+    private List<BookingStatsDTO> getLatestBookings() {
+        List<Booking> bookings = bookingRepository.findTop5ByOrderByCreatedAtDesc();
+        List<BookingStatsDTO> latestBookings = new ArrayList<>();
+
+        for (Booking booking : bookings) {
+            String regionStr;
+            switch (booking.getTour().getRegion()) {
+                case NORTH:
+                    regionStr = "Miền Bắc";
+                    break;
+                case CENTRAL:
+                    regionStr = "Miền Trung";
+                    break;
+                case SOUTH:
+                    regionStr = "Miền Nam";
+                    break;
+                default:
+                    regionStr = "Không xác định";
+            }
+
+            Checkout checkout = checkoutRepository.findByBookingBookingId(booking.getBookingId()).orElse(null);
+            String paymentMethod = checkout != null && checkout.getPaymentMethod() != null ? checkout.getPaymentMethod() : "Không xác định";
+            String status = booking.getBookingStatus() != null ? booking.getBookingStatus().toString() : "PENDING";
+
+            BookingStatsDTO bookingStat = new BookingStatsDTO(
+                    "booking" + String.format("%03d", booking.getBookingId()),
+                    booking.getUser().getUsername(),
+                    booking.getTour().getTitle(),
+                    booking.getTotalPrice(),
+                    status,
+                    paymentMethod,
+                    regionStr,
+                    booking.getCreatedAt() != null ? booking.getCreatedAt().toString() : ""
+            );
+            latestBookings.add(bookingStat);
+        }
+
+        return latestBookings;
+    }
+
+    private List<MonthlyRevenueDTO> getMonthlyRevenues() {
+        List<Checkout> checkouts = checkoutRepository.findAll();
+
+        // Nhóm doanh thu từ Checkout theo tháng
+        Map<String, Double> revenueByMonthFromCheckout = checkouts.stream()
+                .filter(checkout -> checkout.getPaymentStatus() != null && checkout.getPaymentStatus() == PaymentStatus.COMPLETED)
+                .filter(checkout -> checkout.getPaymentDate() != null)
+                .collect(Collectors.groupingBy(
+                        checkout -> checkout.getPaymentDate().format(DateTimeFormatter.ofPattern("MM-yyyy")),
+                        Collectors.summingDouble(Checkout::getAmount)
+                ));
+
+
+        // Lấy danh sách 12 tháng của năm hiện tại (2025)
+        LocalDate currentDate = LocalDate.now(); // 2025-05-14
+        int currentYear = currentDate.getYear();
+        List<MonthlyRevenueDTO> monthlyRevenues = new ArrayList<>();
+        for (int month = 1; month <= 12; month++) {
+            String monthYear = String.format("%02d-%d", month, currentYear); // Ví dụ: "01-2025", "02-2025", ...
+            Double revenue = revenueByMonthFromCheckout.getOrDefault(monthYear, 0.0); // Lấy doanh thu, mặc định là 0.0 nếu không có
+            monthlyRevenues.add(new MonthlyRevenueDTO(monthYear, revenue));
+        }
+
+        // Chuyển đổi tên tháng sang tiếng Anh để khớp với biểu đồ
+        Map<String, String> monthMap = new HashMap<>();
+        monthMap.put("01", "January");
+        monthMap.put("02", "February");
+        monthMap.put("03", "March");
+        monthMap.put("04", "April");
+        monthMap.put("05", "May");
+        monthMap.put("06", "June");
+        monthMap.put("07", "July");
+        monthMap.put("08", "August");
+        monthMap.put("09", "September");
+        monthMap.put("10", "October");
+        monthMap.put("11", "November");
+        monthMap.put("12", "December");
+
+        return monthlyRevenues.stream()
+                .map(dto -> {
+                    String[] parts = dto.getMonthYear().split("-");
+                    String monthName = monthMap.get(parts[0]);
+                    return new MonthlyRevenueDTO(monthName, dto.getRevenue());
+                })
+                .collect(Collectors.toList());
     }
 }

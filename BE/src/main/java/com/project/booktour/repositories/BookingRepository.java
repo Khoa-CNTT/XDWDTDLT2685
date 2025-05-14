@@ -1,8 +1,8 @@
-// com.project.booktour.repositories.BookingRepository.java
 package com.project.booktour.repositories;
 
 import com.project.booktour.exceptions.DataNotFoundException;
 import com.project.booktour.models.Booking;
+import com.project.booktour.models.BookingStatus;
 import com.project.booktour.models.User;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -15,8 +15,6 @@ import java.util.Optional;
 
 @Repository
 public interface BookingRepository extends JpaRepository<Booking, Long> {
-//    List<Booking> findBookingsByUserUserIdAndTourTourId(Long userId, Long tourId);
-
     boolean existsByUserUserIdAndTourTourId(Long userId, Long tourId);
     List<Booking> findByUserUserId(Long userId);
 
@@ -36,4 +34,11 @@ public interface BookingRepository extends JpaRepository<Booking, Long> {
             "GROUP BY t.region")
     List<Object[]> countBookingsByRegion();
 
+    @Query("SELECT COUNT(b) FROM Booking b WHERE b.tour.tourId = :tourId")
+    Long countBookingsByTourId(Long tourId);
+
+    List<Booking> findTop5ByOrderByCreatedAtDesc();
+
+    @Query("SELECT COUNT(b) FROM Booking b WHERE b.tour.tourId = :tourId AND b.bookingStatus = :bookingStatus")
+    Long countByTourAndBookingStatus(Long tourId, BookingStatus bookingStatus);
 }

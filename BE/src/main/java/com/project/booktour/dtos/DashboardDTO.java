@@ -1,4 +1,3 @@
-
 package com.project.booktour.dtos;
 
 import lombok.AllArgsConstructor;
@@ -17,4 +16,7 @@ public class DashboardDTO {
     private Double totalRevenue;      // Tổng doanh thu
     private List<RegionBookingDTO> regionBookings; // Số lượt đặt theo miền
     private List<PaymentMethodDTO> paymentMethods;
+    private List<TourStatsDTO> tourStats; // Thống kê tour
+    private List<BookingStatsDTO> latestBookings; // Thêm danh sách 5 booking mới nhất
+    private List<MonthlyRevenueDTO> monthlyRevenues;
 }
