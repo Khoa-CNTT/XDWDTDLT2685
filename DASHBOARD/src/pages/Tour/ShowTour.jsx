@@ -15,12 +15,14 @@ function ShowTour() {
     const [originalData, setOriginalData] = useState([]);
     const [currentPage, setCurrentPage] = useState(0);
     const [totalPages, setTotalPages] = useState(0);
+    const [isLoading, setIsLoading] = useState(false); // Thêm trạng thái loading
     const limit = 10; // số tour mỗi trang
 
     const { register, handleSubmit } = useForm();
 
     const fetchApi = async (page = 0) => {
         try {
+            setIsLoading(true); // Bắt đầu loading
             const res = await getDataTour(page, limit);
             if (res.status !== 200) throw new Error(res.data?.error || "Lỗi không xác định");
 
@@ -43,6 +45,8 @@ function ShowTour() {
             setData([]);
             setOriginalData([]);
             setTotalPages(0);
+        } finally {
+            setIsLoading(false); // Kết thúc loading
         }
     };
 
@@ -117,7 +121,14 @@ function ShowTour() {
                 </div>
             </div>
 
-            <TourTable currentEntries={data} />
+            {isLoading ? (
+                <div className="flex items-center justify-center py-10">
+                    <div className="h-12 w-12 animate-spin rounded-full border-t-4 border-b-4 border-blue-500"></div>
+                    <span className="ml-4 text-lg text-gray-700 dark:text-gray-200">Đang tải...</span>
+                </div>
+            ) : (
+                <TourTable currentEntries={data} />
+            )}
 
             <EntriesFilter
                 currentPage={currentPage}

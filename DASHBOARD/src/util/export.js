@@ -18,7 +18,7 @@ export const handleCopy = (data, type) => {
         content = data
             .map(
                 (item) =>
-                    `Tên:${item.tourName}\nThời gian:${item.duration}\nSố lượng người lớn:${item.adult}\nSố lượng trẻ em:${item.child}\nTổng tiền:${item.totalPrice}\nNgày bắt đầu:${item.startDate}\nNgày kết thúc:${item.endDate}`,
+                    `Tên:${item.title}\nThời gian:${item.duration}\nSố lượng người lớn:${item.num_adults}\nSố lượng trẻ em:${item.num_children}\nTổng tiền:${item.total_price}\nNgày bắt đầu:${item.created_at}\nNgày kết thúc:${item.endDate}`,
             )
             .join("\n\n");
     }
@@ -46,7 +46,7 @@ export const handlePrint = (type) => {
 
     //Tao cua so in
     const printWindow = window.open("", "", "width=800,height=600");
-    printWindow.document.write("<html><head><title>CÔNG TY MTV</title></head><body>");
+    printWindow.document.write("<html><head><title>CÔNG TY GOVIET</title></head><body>");
     printWindow.document.write(`<h1 style='text-align:center;'>Danh sách ${type.toUpperCase()}</h1>`);
     printWindow.document.write(document.querySelector("table").outerHTML);
     printWindow.document.write(`
@@ -282,7 +282,12 @@ export const handlePrintReport = (item, type) => {
     const tax = item?.tax || 0;
     const discount = item?.discount || 0;
     const finalPrice = originalPrice + tax - discount;
-
+    const provider = {
+        companyName: "Công ty Du lịch GoViet",
+        address: "123 Đường Quang Trung, Quận Thanh Khê, TP. Đà Nẵng",
+        phone: "0901234567",
+        email: "support@goviet.com",
+    };
     if (type === "invoice") {
         const html = `
         <!DOCTYPE html>
@@ -290,7 +295,7 @@ export const handlePrintReport = (item, type) => {
 <head>
     <meta charset="UTF-8">
     <script src="https://cdn.tailwindcss.com"></script>
-    <title>Công ty MTV</title>
+    <title>Công ty GoViet</title>
     <style>
         @page { size: A4; margin: 10mm; }
         body { font-size: 12px; line-height: 1.2; }
@@ -322,10 +327,10 @@ export const handlePrintReport = (item, type) => {
             <section class="flex-1">
                 <h3 class="text-lg font-semibold text-gray-700">Thông tin đơn vị cung cấp</h3>
                 <div class="space-y-0.5">
-                    <p><strong>Đơn vị:</strong> ${item.provider.companyName}</p>
-                    <p><strong>Địa chỉ:</strong> ${item.provider.address}</p>
-                    <p><strong>SĐT:</strong> ${item.provider.phone}</p>
-                    <p><strong>Email:</strong> ${item.provider.email}</p>
+                    <p><strong>Đơn vị:</strong> ${provider.companyName}</p>
+                    <p><strong>Địa chỉ:</strong> ${provider.address}</p>
+                    <p><strong>SĐT:</strong> ${provider.phone}</p>
+                    <p><strong>Email:</strong> ${provider.email}</p>
                 </div>
             </section>
         </div>
@@ -392,8 +397,8 @@ export const handlePrintReport = (item, type) => {
         <!-- Footer -->
         <footer class="text-center text-smaller border-t border-black pt-2 mt-auto">
             Nếu có sai sót, vui lòng liên hệ: 
-            <a href="mailto:${item.provider.email}" class="text-blue-600 underline">${item.provider.email}</a> | 
-            <a href="tel:${item.provider.phone}" class="text-blue-600 underline">${item.provider.phone}</a>
+            <a href="mailto:${provider.email}" class="text-blue-600 underline">${provider.email}</a> | 
+            <a href="tel:${provider.phone}" class="text-blue-600 underline">${provider.phone}</a>
         </footer>
     </div>
 </body>

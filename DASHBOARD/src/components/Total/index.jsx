@@ -13,6 +13,7 @@ function TotalAll() {
         const fetchApi = async () => {
             try {
                 const res = await getDashboardData();
+
                 if (res.status === 200) {
                     setDashboardSummary(res.data);
                 } else {

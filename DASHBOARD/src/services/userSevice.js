@@ -4,7 +4,7 @@ import { del, get, put } from "../util/requestserver"; // Import put thay vì pa
 export const getDataUser = async () => {
     try {
         const res = await get("users");
-        console.log("res", res);
+
         if (res.status !== 200) {
             throw new Error("Lỗi phản hồi từ server");
         }
