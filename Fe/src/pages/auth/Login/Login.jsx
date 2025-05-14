@@ -36,8 +36,7 @@ const Login = () => {
                         setTimeout(() => {
                         toast.success("Đăng nhập thành công!");
                         navigate("/");
-                    }, 1500);
-                        
+                    }, 1500);    
                     }else{
                         setTimeout(() => {
                             toast.success("Đăng nhập admin thành công!");

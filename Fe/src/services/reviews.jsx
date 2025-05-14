@@ -8,3 +8,6 @@ export const postReview = (data) => {
         },
     });
 };
+export const getAllReview = async () => {
+    return axios.get('reviews');
+};
