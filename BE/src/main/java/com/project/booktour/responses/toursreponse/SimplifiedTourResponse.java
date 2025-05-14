@@ -2,7 +2,7 @@
 
 
 
-package com.project.booktour.responses;
+package com.project.booktour.responses.toursreponse;
 
 
 
@@ -10,8 +10,8 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.project.booktour.dtos.ScheduleDTO;
-import com.project.booktour.models.Review;
 import com.project.booktour.models.Tour;
+import com.project.booktour.responses.BaseResponse;
 import lombok.*;
 
 import java.time.LocalDate;

@@ -24,4 +24,6 @@ public interface IBookingService {
     boolean hasUserBookedTour(Long userId, Long tourId);
     Page<BookingDTO> getAllBookings(String keyword ,PageRequest pageRequest);
     Optional<Booking> findById(Long id) throws DataNotFoundException;
+    // Thêm phương thức mới để lấy danh sách Booking (không phải DTO)
+    List<Booking> findBookingsByUserId(Long userId);
 }

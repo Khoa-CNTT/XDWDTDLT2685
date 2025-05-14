@@ -10,7 +10,7 @@ import com.project.booktour.models.User;
 import com.project.booktour.repositories.ReviewRepository;
 import com.project.booktour.repositories.TourRepository;
 import com.project.booktour.repositories.UserRepository;
-import com.project.booktour.responses.ReviewResponse;
+import com.project.booktour.responses.reviewsreponse.ReviewResponse;
 import com.project.booktour.services.booking.BookingService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;

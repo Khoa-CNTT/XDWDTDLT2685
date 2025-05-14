@@ -1,6 +1,6 @@
 package com.project.booktour.controllers;
 
-import com.project.booktour.services.PaymentService;
+import com.project.booktour.services.checkout.PaymentService;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;

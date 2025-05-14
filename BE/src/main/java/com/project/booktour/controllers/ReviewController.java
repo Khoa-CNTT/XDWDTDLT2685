@@ -6,7 +6,7 @@ import com.project.booktour.exceptions.InvalidParamException;
 import com.project.booktour.exceptions.UnauthorizedException;
 import com.project.booktour.models.Review;
 import com.project.booktour.models.User;
-import com.project.booktour.responses.ReviewResponse;
+import com.project.booktour.responses.reviewsreponse.ReviewResponse;
 import com.project.booktour.services.review.ReviewService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;

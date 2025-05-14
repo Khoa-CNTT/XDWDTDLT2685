@@ -87,6 +87,7 @@ public class BookingService implements IBookingService {
             String formattedTourId = String.format("Tour%03d", booking.getTour().getTourId());
 
             return BookingDTO.builder()
+                    .title(booking.getTour().getTitle())
                     .bookingId(booking.getBookingId())
                     .userId(booking.getUser().getUserId())
                     .tourId(booking.getTour().getTourId()) // Giữ là Long
@@ -120,6 +121,8 @@ public class BookingService implements IBookingService {
         PaymentStatus paymentStatus = checkoutOpt.map(Checkout::getPaymentStatus).orElse(null);
 
         return BookingDTO.builder()
+                .bookingId(booking.getBookingId())
+                .title(booking.getTour().getTitle())
                 .userId(booking.getUser().getUserId())
                 .tourId(booking.getTour().getTourId())
                 .numAdults(booking.getNumAdults())
@@ -195,6 +198,7 @@ public class BookingService implements IBookingService {
             PaymentStatus paymentStatus = checkoutOpt.map(Checkout::getPaymentStatus).orElse(null);
 
             return BookingDTO.builder()
+                    .title(booking.getTour().getTitle())
                     .userId(booking.getUser().getUserId())
                     .tourId(booking.getTour().getTourId())
                     .numAdults(booking.getNumAdults())
@@ -228,4 +232,15 @@ public class BookingService implements IBookingService {
         return Optional.of(bookingRepository.findById(id)
                 .orElseThrow(() -> new DataNotFoundException("Cannot find booking with id: " + id)));
     }
+
+    @Override
+    public List<Booking> findBookingsByUserId(Long userId) {
+        return bookingRepository.findByUserUserId(userId);
+    }
+
+    public Long countBookingsByTourId(Long tourId) {
+        return bookingRepository.countBookingsByTourId(tourId);
+    }
+
+
 }

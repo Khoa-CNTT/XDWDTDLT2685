@@ -1,17 +1,16 @@
 package com.project.booktour.services.user;
 
 import com.project.booktour.components.JwtTokenUtil;
-import com.project.booktour.responses.LoginResponse;
+import com.project.booktour.responses.usersresponse.LoginResponse;
 import com.project.booktour.dtos.UpdateUserDTO;
 import com.project.booktour.dtos.UserDTO;
-import com.project.booktour.exceptions.PermissionDenyException;
 import com.project.booktour.models.Role;
 import com.project.booktour.models.Token;
 import com.project.booktour.models.User;
 import com.project.booktour.repositories.RoleRepository;
 import com.project.booktour.repositories.TokenRepository;
 import com.project.booktour.repositories.UserRepository;
-import com.project.booktour.responses.UserProfileResponse;
+import com.project.booktour.responses.usersresponse.UserProfileResponse;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.apache.tika.Tika;

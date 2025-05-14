@@ -1,14 +1,14 @@
 package com.project.booktour.controllers;
 
-import com.project.booktour.responses.LoginResponse;
+import com.project.booktour.responses.usersresponse.LoginResponse;
 import com.project.booktour.dtos.UpdateUserDTO;
 import com.project.booktour.dtos.UserDTO;
 import com.project.booktour.dtos.UserLoginDTO;
 import com.project.booktour.exceptions.DataNotFoundException;
 import com.project.booktour.models.User;
-import com.project.booktour.responses.UserListResponse;
-import com.project.booktour.responses.UserProfileResponse;
-import com.project.booktour.responses.UserResponse;
+import com.project.booktour.responses.usersresponse.UserListResponse;
+import com.project.booktour.responses.usersresponse.UserProfileResponse;
+import com.project.booktour.responses.usersresponse.UserResponse;
 import com.project.booktour.services.user.IUserService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;

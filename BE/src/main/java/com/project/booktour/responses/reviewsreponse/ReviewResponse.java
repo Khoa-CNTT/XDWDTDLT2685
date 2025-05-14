@@ -1,8 +1,8 @@
-package com.project.booktour.responses;
+package com.project.booktour.responses.reviewsreponse;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.project.booktour.responses.BaseResponse;
 import lombok.*;
-import java.time.LocalDateTime;
 
 @Data
 @Getter

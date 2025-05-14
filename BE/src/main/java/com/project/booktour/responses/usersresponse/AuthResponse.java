@@ -1,4 +1,4 @@
-package com.project.booktour.responses;
+package com.project.booktour.responses.usersresponse;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

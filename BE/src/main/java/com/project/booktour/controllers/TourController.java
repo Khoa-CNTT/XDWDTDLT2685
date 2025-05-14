@@ -4,12 +4,15 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.project.booktour.dtos.TourDTO;
 import com.project.booktour.dtos.TourImageDTO;
 import com.project.booktour.exceptions.DataNotFoundException;
+import com.project.booktour.models.Booking;
 import com.project.booktour.models.Region;
 import com.project.booktour.models.Tour;
 import com.project.booktour.models.TourImage;
-import com.project.booktour.responses.SimplifiedTourResponse;
-import com.project.booktour.responses.TourListResponse;
-import com.project.booktour.responses.TourResponse;
+import com.project.booktour.responses.toursreponse.BookedTourResponse;
+import com.project.booktour.responses.toursreponse.SimplifiedTourResponse;
+import com.project.booktour.responses.toursreponse.TourListResponse;
+import com.project.booktour.responses.toursreponse.TourResponse;
+import com.project.booktour.services.booking.IBookingService;
 import com.project.booktour.services.tour.ITourService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -47,6 +50,20 @@ public class TourController {
     private static final Logger logger = LoggerFactory.getLogger(TourController.class);
     private final ITourService tourService;
     private final ObjectMapper objectMapper;
+    private final IBookingService bookingService;
+    // Phương thức lấy danh sách tour đã đặt theo userId
+    @GetMapping("/user/{user_id}")
+    public ResponseEntity<?> getBookedTours(@Valid @PathVariable("user_id") Long userId) {
+        try {
+            List<BookedTourResponse> bookedTours = tourService.getBookedToursByUserId(userId);
+            if (bookedTours.isEmpty()) {
+                return ResponseEntity.ok("Không tìm thấy tour nào đã đặt cho user này.");
+            }
+            return ResponseEntity.ok(bookedTours);
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body("Đã xảy ra lỗi khi lấy danh sách tour đã đặt: " + e.getMessage());
+        }
+    }
 
     @GetMapping("")
     public ResponseEntity<?> getTours(@RequestParam Map<String, String> params) {

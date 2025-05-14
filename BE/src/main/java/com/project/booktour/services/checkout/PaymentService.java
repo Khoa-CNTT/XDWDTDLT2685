@@ -1,4 +1,4 @@
-package com.project.booktour.services;
+package com.project.booktour.services.checkout;
 
 import com.project.booktour.components.VNPayUtil;
 import com.project.booktour.configurations.VNPayConfig;

@@ -1,7 +1,7 @@
 package com.project.booktour.controllers;
 
 import com.project.booktour.models.CustomOAuth2User;
-import com.project.booktour.responses.AuthResponse;
+import com.project.booktour.responses.usersresponse.AuthResponse;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;

@@ -1,7 +1,6 @@
 package com.project.booktour.services.tour;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.project.booktour.dtos.ReviewDTO;
 import com.project.booktour.dtos.TourDTO;
 import com.project.booktour.dtos.TourImageDTO;
 import com.project.booktour.exceptions.DataNotFoundException;
@@ -9,13 +8,14 @@ import com.project.booktour.exceptions.InvalidParamException;
 import com.project.booktour.models.Review;
 import com.project.booktour.models.Tour;
 import com.project.booktour.models.TourImage;
-import com.project.booktour.responses.ReviewResponse;
-import com.project.booktour.responses.SimplifiedTourResponse;
-import com.project.booktour.responses.TourResponse;
+import com.project.booktour.responses.toursreponse.BookedTourResponse;
+import com.project.booktour.responses.toursreponse.SimplifiedTourResponse;
+import com.project.booktour.responses.toursreponse.TourResponse;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 
 import java.util.List;
+import java.util.Map;
 
 public interface ITourService {
 
@@ -41,4 +41,5 @@ public interface ITourService {
 
     List<TourImage> updateTourImages(Long tourId, List<TourImageDTO> tourImageDTOs) throws Exception;
 
+    List<BookedTourResponse>  getBookedToursByUserId(Long userId);
 }

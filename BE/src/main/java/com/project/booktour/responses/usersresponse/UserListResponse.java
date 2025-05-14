@@ -1,17 +1,15 @@
-package com.project.booktour.responses;
-
+package com.project.booktour.responses.usersresponse;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-
 import java.util.List;
 
 @AllArgsConstructor
-@NoArgsConstructor
-@Builder
 @Data
-public class TourListResponse {
-    private List<SimplifiedTourResponse> tours;
+@Builder
+@NoArgsConstructor
+public class UserListResponse {
+    private List<UserResponse> users;
     private int totalPages;
 }

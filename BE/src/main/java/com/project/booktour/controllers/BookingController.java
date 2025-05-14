@@ -2,12 +2,10 @@ package com.project.booktour.controllers;
 
 import com.project.booktour.dtos.BookingDTO;
 import com.project.booktour.exceptions.DataNotFoundException;
-import com.project.booktour.models.Booking;
-import com.project.booktour.models.BookingStatus;
-import com.project.booktour.models.Checkout;
-import com.project.booktour.models.PaymentStatus;
+import com.project.booktour.models.*;
 import com.project.booktour.repositories.CheckoutRepository;
-import com.project.booktour.services.PaymentService;
+import com.project.booktour.repositories.TourRepository;
+import com.project.booktour.services.checkout.PaymentService;
 import com.project.booktour.services.booking.BookingService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
@@ -21,7 +19,6 @@ import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.*;
 
-import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -35,40 +32,66 @@ public class BookingController {
     private final CheckoutRepository checkoutRepository;
     private final PaymentService paymentService;
 
+    private final TourRepository tourRepository; // Thêm TourRepository để kiểm tra tour
+
     @PostMapping("")
     public ResponseEntity<?> createBooking(
             @RequestBody @Valid BookingDTO bookingDTO,
             BindingResult result,
             HttpServletRequest request) {
         try {
+            // Kiểm tra lỗi validate từ BookingDTO
             if (result.hasErrors()) {
                 List<String> errorMessages = result.getFieldErrors()
                         .stream().map(FieldError::getDefaultMessage).toList();
                 return ResponseEntity.badRequest().body(errorMessages);
             }
 
-            Booking booking = bookingService.createBooking(bookingDTO);
-
-            String paymentMethod = bookingDTO.getPaymentMethod();
-            if (!"VNPAY".equalsIgnoreCase(paymentMethod) && !"OFFICE".equalsIgnoreCase(paymentMethod)) {
-                return ResponseEntity.badRequest().body("Invalid payment method. Must be 'VNPAY' or 'OFFICE'");
+            // Kiểm tra tour có tồn tại và còn khả dụng không
+            Optional<Tour> tourOpt = tourRepository.findById(bookingDTO.getTourId());
+            if (!tourOpt.isPresent()) {
+                return ResponseEntity.badRequest().body("Không tìm thấy tour");
             }
 
-            // Xóa phần tạo Checkout vì đã được xử lý trong BookingService
-            // Nếu là VNPAY, gọi PaymentService để tạo URL thanh toán
+            Tour tour = tourOpt.get();
+            if (!tour.getAvailability()) {
+                return ResponseEntity.badRequest().body("Tour hiện không khả dụng");
+            }
+
+            // Tính tổng số chỗ yêu cầu (người lớn + trẻ em)
+            int requestedSlots = bookingDTO.getNumAdults() + bookingDTO.getNumChildren();
+            // Lấy số chỗ đã được đặt
+            Long bookedSlots = bookingService.countBookingsByTourId(bookingDTO.getTourId());
+            int availableSlots = tour.getQuantity() - bookedSlots.intValue();
+
+            // Kiểm tra số chỗ trống
+            if (requestedSlots > availableSlots) {
+                return ResponseEntity.badRequest().body("Không đủ chỗ trống. Chỉ còn " + availableSlots + " chỗ.");
+            }
+
+            // Tiến hành tạo booking
+            Booking booking = bookingService.createBooking(bookingDTO);
+
+            // Kiểm tra phương thức thanh toán
+            String paymentMethod = bookingDTO.getPaymentMethod();
+            if (!"VNPAY".equalsIgnoreCase(paymentMethod) && !"OFFICE".equalsIgnoreCase(paymentMethod)) {
+                return ResponseEntity.badRequest().body("Phương thức thanh toán không hợp lệ. Phải là 'VNPAY' hoặc 'OFFICE'");
+            }
+
+            // Nếu là VNPAY, tạo URL thanh toán
             if ("VNPAY".equalsIgnoreCase(paymentMethod)) {
                 String ipAddress = request.getRemoteAddr();
                 String paymentUrl = paymentService.createPaymentUrl(booking.getBookingId(), ipAddress);
                 Map<String, Object> response = new HashMap<>();
-                response.put("message", "Booking created successfully");
+                response.put("message", "Đặt tour thành công");
                 response.put("paymentUrl", paymentUrl);
                 response.put("bookingId", booking.getBookingId());
                 return ResponseEntity.ok(response);
             }
 
-            return ResponseEntity.ok("Booking created successfully. Please proceed to office payment.");
+            return ResponseEntity.ok("Đặt tour thành công. Vui lòng thanh toán tại văn phòng.");
         } catch (Exception e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
+            return ResponseEntity.badRequest().body("Lỗi: " + e.getMessage());
         }
     }
 

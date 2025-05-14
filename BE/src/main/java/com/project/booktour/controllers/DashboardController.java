@@ -1,7 +1,7 @@
 // com.project.booktour.controllers.DashboardController.java
 package com.project.booktour.controllers;
 
-import com.project.booktour.dtos.DashboardDTO;
+import com.project.booktour.responses.dashboardreponse.DashboardResponse;
 import com.project.booktour.services.DashboardService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -21,7 +21,7 @@ public class DashboardController {
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     public ResponseEntity<?> getDashboardStats() {
         try {
-            DashboardDTO stats = dashboardService.getDashboardStats();
+            DashboardResponse stats = dashboardService.getDashboardStats();
             return ResponseEntity.ok(stats);
         } catch (Exception e) {
             return ResponseEntity.badRequest().body("lỗi ");

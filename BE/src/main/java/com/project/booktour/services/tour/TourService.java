@@ -2,20 +2,18 @@ package com.project.booktour.services.tour;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.project.booktour.dtos.ReviewDTO;
 import com.project.booktour.dtos.TourDTO;
 import com.project.booktour.dtos.TourImageDTO;
 import com.project.booktour.exceptions.DataNotFoundException;
 import com.project.booktour.exceptions.InvalidParamException;
-import com.project.booktour.exceptions.UnauthorizedException;
 import com.project.booktour.models.*;
 import com.project.booktour.repositories.ReviewRepository;
 import com.project.booktour.repositories.TourImageRepository;
 import com.project.booktour.repositories.TourRepository;
-import com.project.booktour.repositories.UserRepository;
-import com.project.booktour.responses.ReviewResponse;
-import com.project.booktour.responses.SimplifiedTourResponse;
-import com.project.booktour.responses.TourResponse;
+import com.project.booktour.responses.reviewsreponse.ReviewResponse;
+import com.project.booktour.responses.toursreponse.BookedTourResponse;
+import com.project.booktour.responses.toursreponse.SimplifiedTourResponse;
+import com.project.booktour.responses.toursreponse.TourResponse;
 import com.project.booktour.services.booking.BookingService;
 import com.project.booktour.services.review.ReviewService;
 import jakarta.transaction.Transactional;
@@ -38,6 +36,7 @@ public class TourService implements ITourService {
     private final ObjectMapper objectMapper;
     private final ReviewRepository reviewRepository;
     private final ReviewService reviewService;
+    private final BookingService bookingService;
 
     @Override
     public Tour createTour(TourDTO tourDTO) throws DataNotFoundException, JsonProcessingException, InvalidParamException {
@@ -242,5 +241,22 @@ public class TourService implements ITourService {
         Tour savedTour = tourRepository.save(existingTour);
 
         return savedTour.getTourImages();
+    }
+    public List<BookedTourResponse> getBookedToursByUserId(Long userId) {
+        List<Booking> bookings = bookingService.findBookingsByUserId(userId);
+        if (bookings.isEmpty()) {
+            return Collections.emptyList();
+        }
+
+        return bookings.stream()
+                .map(booking -> {
+                    try {
+                        return BookedTourResponse.fromBooking(booking, objectMapper);
+                    } catch (Exception e) {
+                        throw new RuntimeException("Lỗi khi chuyển đổi booking: " + e.getMessage());
+                    }
+                })
+                .filter(Objects::nonNull)
+                .collect(Collectors.toList());
     }
 }

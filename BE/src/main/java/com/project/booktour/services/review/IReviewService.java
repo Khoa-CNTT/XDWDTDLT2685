@@ -3,7 +3,7 @@ package com.project.booktour.services.review;
 import com.project.booktour.dtos.ReviewDTO;
 import com.project.booktour.exceptions.DataNotFoundException;
 import com.project.booktour.models.Review;
-import com.project.booktour.responses.ReviewResponse;
+import com.project.booktour.responses.reviewsreponse.ReviewResponse;
 
 import java.util.List;
 
