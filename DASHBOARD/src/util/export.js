@@ -3,6 +3,8 @@ import * as XLSX from "xlsx";
 import { saveAs } from "file-saver";
 import jsPDF from "jspdf";
 import autoTable from "jspdf-autotable";
+import "../assets/Font/Roboto_Condensed-Bold-normal.js";
+
 //Hàm Copy dữ liệu
 export const handleCopy = (data, type) => {
     let content = "";
@@ -18,7 +20,7 @@ export const handleCopy = (data, type) => {
         content = data
             .map(
                 (item) =>
-                    `Tên:${item.title}\nThời gian:${item.duration}\nSố lượng người lớn:${item.num_adults}\nSố lượng trẻ em:${item.num_children}\nTổng tiền:${item.total_price}\nNgày bắt đầu:${item.created_at}\nNgày kết thúc:${item.endDate}`,
+                    `Tên:${item.title}\nKhách hàng:${item.full_name}\nSố lượng người lớn:${item.num_adults}\nSố lượng trẻ em:${item.num_children}\nTổng tiền:${item.total_price}\nNgày bắt đầu:${item.created_at}\nPhương thức thanh toán:${item.payment_method}\nTrạng thái thanh toán:${item.payment_status}\nTrạng thái booking:${item.booking_status}`,
             )
             .join("\n\n");
     }
@@ -124,20 +126,22 @@ export const renderCSV = (data, type) => {
             "Trẻ em",
             "Tổng tiền",
             "Trạng thái",
+            "Phương thức thanh toán",
             "Thanh toán",
         ];
         rows = data.map((b) => [
-            b.bookingId,
-            b.customerName,
+            b.booking_id,
+            b.full_name,
             b.email,
-            b.phone,
+            b.phone_number,
             b.address,
-            b.bookingDate,
-            b.adults,
-            b.children,
-            b.totalPrice,
-            b.bookingStatus,
-            b.paymentStatus,
+            b.created_at,
+            b.num_adults,
+            b.num_children,
+            b.total_price,
+            b.booking_status,
+            b.payment_method,
+            b.payment_status,
         ]);
     }
 
@@ -177,16 +181,19 @@ export const handleExcel = (data, type) => {
                   "Kết thúc": item.endDate || "N/A",
               }
             : {
-                  "Khách hàng": item.customerName,
+                  "Mã booking": item.booking_id,
+                  "Khách hàng": item.full_name,
+                  "Tên tour": item.title,
                   Email: item.email,
-                  SĐT: item.phone,
+                  SĐT: item.phone_number,
                   "Địa chỉ": item.address,
-                  "Ngày đặt": item.bookingDate,
-                  "Người lớn": item.adults,
-                  "Trẻ em": item.children,
-                  "Tổng tiền": item.totalPrice,
-                  "Trạng thái booking": item.bookingStatus,
-                  "Thanh toán thanh toán": item.paymentStatus,
+                  "Ngày đặt": item.created_at,
+                  "Người lớn": item.num_adults,
+                  "Trẻ em": item.num_children,
+                  "Tổng tiền": item.total_price,
+                  "Trạng thái booking": item.booking_status,
+                  "Phương thức thanh toán": item.payment_method,
+                  "Trạng thái thanh toán": item.payment_status,
               },
     );
 
@@ -205,6 +212,27 @@ export const handleExcel = (data, type) => {
 // Hàm xuất PDF
 export const handleToPdf = (data, type) => {
     const doc = new jsPDF("landscape", "pt", "a4");
+    doc.setFont("Roboto", "normal");
+
+    const headers =
+        type === "tour"
+            ? ["Tên", "Thời gian", "Mô tả", "Số lượng", "Giá người lớn", "Giá trẻ em", "Điểm đến", "Khả dụng", "Bắt đầu", "Kết thúc"]
+            : [
+                  "Mã Booking",
+                  "Tên tour",
+                  "Khách hàng",
+                  "Email",
+                  "SĐT",
+                  "Địa chỉ",
+                  "Ngày đặt",
+                  "Người lớn",
+                  "Trẻ em",
+                  "Tổng tiền",
+                  "Trạng thái",
+                  "Thanh toán",
+                  "Phương thức",
+              ];
+
     const rows = data.map((item) =>
         type === "tour"
             ? [
@@ -220,58 +248,45 @@ export const handleToPdf = (data, type) => {
                   item.endDate || "N/A",
               ]
             : [
-                  item.tourName || "N/A",
-                  item.customerName || "N/A",
+                  item.booking_id || "N/A",
+                  item.title || "N/A",
+                  item.full_name || "N/A",
                   item.email || "N/A",
-                  item.phone || "N/A",
+                  item.phone_number || "N/A",
                   item.address || "N/A",
-                  item.bookingDate || "N/A",
-                  item.adults || 0,
-                  item.children || 0,
-                  item.totalPrice || 0,
-                  item.bookingStatus || "N/A",
-                  item.paymentStatus || "N/A",
+                  item.created_at || "N/A",
+                  item.num_adults || 0,
+                  item.num_children || 0,
+                  item.total_price || 0,
+                  item.booking_status || "N/A",
+                  item.payment_status || "N/A",
+                  item.payment_method || "N/A",
               ],
     );
-
-    const headers =
-        type === "tour"
-            ? ["Tên", "Thời gian", "Mô tả", "Số lượng", "Giá người lớn", "Giá trẻ em", "Điểm đến", "Khả dụng", "Bắt đầu", "Kết thúc"]
-            : ["Tên", "Khách hàng", "Email", "SĐT", "Địa chỉ", "Ngày đặt", "Người lớn", "Trẻ em", "Tổng tiền", "Trạng thái đặt tour", "Thanh toán"];
 
     autoTable(doc, {
         head: [headers],
         body: rows,
-        theme: "grid", // Sử dụng theme dạng lưới
+        theme: "grid",
         styles: {
-            font: "helvetica", // Sử dụng font Helvetica
-            fontSize: 10, // Kích thước font
-            textColor: [0, 0, 0], // Màu chữ (đen)
-            cellPadding: 5, // Khoảng cách giữa nội dung và viền ô
+            font: "Roboto",
+            fontSize: 10,
+            textColor: [0, 0, 0],
+            cellPadding: 5,
+            halign: "left",
         },
         headStyles: {
-            fillColor: [41, 128, 185], // Màu nền tiêu đề (xanh dương)
-            textColor: [255, 255, 255], // Màu chữ tiêu đề (trắng)
-            fontSize: 12, // Kích thước font tiêu đề
-            fontStyle: "bold", // Font chữ đậm
+            fillColor: [41, 128, 185],
+            textColor: [255, 255, 255],
+            fontSize: 12,
+            fontStyle: "bold",
         },
-        bodyStyles: {
-            fontSize: 10, // Kích thước font nội dung
-        },
-        alternateRowStyles: {
-            fillColor: [240, 240, 240], // Màu nền xen kẽ (xám nhạt)
-        },
-        margin: { top: 40 }, // Lề trên
-        didDrawPage: (data) => {
-            // Thêm tiêu đề trang
-            doc.setFontSize(16);
-            doc.setFont("helvetica", "bold");
-            doc.text(`Danh sách ${type === "tour" ? "Tour" : "Booking"}`, data.settings.margin.left, 30);
-        },
+        startY: 40,
     });
 
-    doc.save(`${type}.pdf`); // Lưu file PDF
+    doc.save(`${type}.pdf`);
 };
+
 export const handlePrintReport = (item, type) => {
     const printWindow = window.open("", "", "width=900,height=700");
     const currentDate = new Date().toLocaleString("vi-VN");
@@ -365,14 +380,14 @@ export const handlePrintReport = (item, type) => {
                 <tr>
                     <td class="border border-black p-1">Người lớn</td>
                     <td class="border border-black p-1">${item.adults}</td>
-                    <td class="border border-black p-1">${item.tourName}</td>
+                    <td class="border border-black p-1">${item.title}</td>
                     <td class="border border-black p-1">${item.unitPriceAdult.toLocaleString("vi-VN")} VND</td>
                     <td class="border border-black p-1">${totalAdult.toLocaleString("vi-VN")} VND</td>
                 </tr>
                 <tr>
                     <td class="border border-black p-1">Trẻ em</td>
                     <td class="border border-black p-1">${item.children}</td>
-                    <td class="border border-black p-1">${item.tourName}</td>
+                    <td class="border border-black p-1">${item.title}</td>
                     <td class="border border-black p-1">${item.unitPriceChild.toLocaleString("vi-VN")} VND</td>
                     <td class="border border-black p-1">${totalChild.toLocaleString("vi-VN")} VND</td>
                 </tr>

@@ -16,7 +16,6 @@ function TourRecent() {
                 if (!res || !res.data || !res.data.latestBookings || !Array.isArray(res.data.latestBookings)) {
                     throw new Error("Dữ liệu booking không hợp lệ hoặc không tồn tại");
                 }
-                console.log("Latest bookings:", res.data.latestBookings);
 
                 // Ánh xạ latestBookings
                 const formattedData = res.data.latestBookings.map((booking) => ({

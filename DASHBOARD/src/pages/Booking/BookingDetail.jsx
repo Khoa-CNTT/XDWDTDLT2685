@@ -58,7 +58,7 @@ function BookingDetail() {
                         discount: data.promotion_id ? Math.round(Number(data.total_price) * 0.1) : 0,
                         title: data.title || "Tour không xác định", // Chỉ giữ title, xóa tourName
                         specialRequests: data.special_requests || "Không có",
-                        tourId: data.tour_id || "Không xác định",
+                        tourId: data.formatted_tour_id || "Không xác định",
                         userId: data.user_id || "Không xác định",
                         promotionId: data.promotion_id || "Không có",
                     };

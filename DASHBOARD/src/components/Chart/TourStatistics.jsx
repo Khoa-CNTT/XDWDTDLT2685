@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import icons from "../../util/icon";
-import { Cell, Legend, Pie, PieChart, ResponsiveContainer, Tooltip } from "recharts";
+import { Cell, Legend, Pie, PieChart, Tooltip } from "recharts";
 import { getDashboardData } from "../../services/dashboardService";
 
 const { FaMap } = icons;
@@ -53,32 +53,30 @@ function TourStatistics() {
                     {/* Biểu đồ */}
                     <div className="flex w-full flex-col items-center justify-center sm:w-1/2">
                         <div className="flex items-center justify-center">
-                            <ResponsiveContainer
+                            <PieChart
                                 width={300}
                                 height={300}
                             >
-                                <PieChart>
-                                    <Pie
-                                        data={domesticData}
-                                        cx="50%"
-                                        cy="50%"
-                                        innerRadius={60}
-                                        outerRadius={90}
-                                        paddingAngle={3}
-                                        dataKey="value"
-                                        nameKey="name"
-                                    >
-                                        {domesticData.map((entry, index) => (
-                                            <Cell
-                                                key={`cell-${index}`}
-                                                fill={entry.color}
-                                            />
-                                        ))}
-                                    </Pie>
-                                    <Tooltip />
-                                    <Legend />
-                                </PieChart>
-                            </ResponsiveContainer>
+                                <Pie
+                                    data={domesticData}
+                                    cx="50%"
+                                    cy="50%"
+                                    innerRadius={60}
+                                    outerRadius={90}
+                                    paddingAngle={3}
+                                    dataKey="value"
+                                    nameKey="name"
+                                >
+                                    {domesticData.map((entry, index) => (
+                                        <Cell
+                                            key={`cell-${index}`}
+                                            fill={entry.color}
+                                        />
+                                    ))}
+                                </Pie>
+                                <Tooltip />
+                                <Legend />
+                            </PieChart>
                         </div>
                     </div>
 

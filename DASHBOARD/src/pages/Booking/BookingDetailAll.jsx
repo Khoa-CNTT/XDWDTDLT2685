@@ -41,12 +41,7 @@ function Invoice({ item }) {
     const totalAdult = bookingData.adults * bookingData.unitPriceAdult;
     const totalChild = bookingData.children * bookingData.unitPriceChild;
     const originalPrice = totalAdult + totalChild;
-    const finalPrice = originalPrice + bookingData.tax - bookingData.discount;
-
-    // Kiểm tra finalPrice với totalPrice
-    if (bookingData.totalPrice > 0 && finalPrice !== bookingData.totalPrice) {
-        console.warn(`Tổng giá tính toán (${finalPrice}) không khớp với totalPrice từ API (${bookingData.totalPrice})`);
-    }
+    // const finalPrice = originalPrice + bookingData.tax - bookingData.discount;
 
     // Thời gian hiện tại
     const currentDateTime = new Date().toLocaleString("vi-VN");
@@ -157,41 +152,43 @@ function Invoice({ item }) {
 
                 <hr className="mb-6 border-gray-300 dark:border-gray-600" />
 
-                <table className="mb-6 w-full border-collapse">
-                    <thead>
-                        <tr className="bg-blue-400 text-white dark:bg-blue-400">
-                            <th className="rounded-tl-md p-3 text-left text-sm font-semibold">Hạng mục</th>
-                            <th className="p-3 text-center text-sm font-semibold">Số lượng</th>
-                            <th className="p-3 text-center text-sm font-semibold">Điểm đến</th>
-                            <th className="p-3 text-center text-sm font-semibold">Đơn giá</th>
-                            <th className="rounded-tr-md p-3 text-right text-sm font-semibold">Thành tiền</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr className="border-b border-gray-200 bg-blue-50 dark:border-gray-700 dark:bg-slate-900">
-                            <td className="p-3 text-gray-700 dark:text-stone-50">Người lớn</td>
-                            <td className="p-3 text-center text-gray-700 dark:text-stone-50">{bookingData.adults}</td>
-                            <td className="p-3 text-center text-gray-700 dark:text-stone-50">{bookingData.title}</td>
-                            <td className="p-3 text-center text-gray-700 dark:text-stone-50">
-                                {(bookingData.unitPriceAdult || 0).toLocaleString("vi-VN")} VND
-                            </td>
-                            <td className="p-3 text-right text-gray-700 dark:text-stone-50">{(totalAdult || 0).toLocaleString("vi-VN")} VND</td>
-                        </tr>
-                        <tr className="border-b border-gray-200 bg-blue-50 dark:border-gray-700 dark:bg-slate-900">
-                            <td className="p-3 text-gray-700 dark:text-stone-50">Trẻ em</td>
-                            <td className="p-3 text-center text-gray-700 dark:text-stone-50">{bookingData.children}</td>
-                            <td className="p-3 text-center text-gray-700 dark:text-stone-50">{bookingData.title}</td>
-                            <td className="p-3 text-center text-gray-700 dark:text-stone-50">
-                                {(bookingData.unitPriceChild || 0).toLocaleString("vi-VN")} VND
-                            </td>
-                            <td className="p-3 text-right text-gray-700 dark:text-stone-50">{(totalChild || 0).toLocaleString("vi-VN")} VND</td>
-                        </tr>
-                    </tbody>
-                </table>
+                <div className="overflow-x-auto">
+                    <table className="mb-6 w-full min-w-[600px] border-collapse">
+                        <thead>
+                            <tr className="bg-blue-400 text-white dark:bg-blue-400">
+                                <th className="rounded-tl-md p-3 text-left text-sm font-semibold whitespace-nowrap">Hạng mục</th>
+                                <th className="p-3 text-center text-sm font-semibold whitespace-nowrap">Số lượng</th>
+                                <th className="p-3 text-center text-sm font-semibold whitespace-nowrap">Điểm đến</th>
+                                <th className="p-3 text-center text-sm font-semibold whitespace-nowrap">Đơn giá</th>
+                                <th className="rounded-tr-md p-3 text-right text-sm font-semibold whitespace-nowrap">Thành tiền</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr className="border-b border-gray-200 bg-blue-50 dark:border-gray-700 dark:bg-slate-900">
+                                <td className="p-3 whitespace-nowrap text-gray-700 dark:text-stone-50">Người lớn</td>
+                                <td className="p-3 text-center text-gray-700 dark:text-stone-50">{bookingData.adults}</td>
+                                <td className="p-3 text-center text-gray-700 dark:text-stone-50">{bookingData.title}</td>
+                                <td className="p-3 text-center text-gray-700 dark:text-stone-50">
+                                    {(bookingData.unitPriceAdult || 0).toLocaleString("vi-VN")} VND
+                                </td>
+                                <td className="p-3 text-right text-gray-700 dark:text-stone-50">{(totalAdult || 0).toLocaleString("vi-VN")} VND</td>
+                            </tr>
+                            <tr className="border-b border-gray-200 bg-blue-50 dark:border-gray-700 dark:bg-slate-900">
+                                <td className="p-3 whitespace-nowrap text-gray-700 dark:text-stone-50">Trẻ em</td>
+                                <td className="p-3 text-center text-gray-700 dark:text-stone-50">{bookingData.children}</td>
+                                <td className="p-3 text-center text-gray-700 dark:text-stone-50">{bookingData.title}</td>
+                                <td className="p-3 text-center text-gray-700 dark:text-stone-50">
+                                    {(bookingData.unitPriceChild || 0).toLocaleString("vi-VN")} VND
+                                </td>
+                                <td className="p-3 text-right text-gray-700 dark:text-stone-50">{(totalChild || 0).toLocaleString("vi-VN")} VND</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
 
                 <div className="mb-6 space-y-1 text-right">
                     <p className="text-sm text-gray-700 dark:text-gray-300">
-                        <span className="font-medium">Giá gốc:</span> {(originalPrice || 0).toLocaleString("vi-VN")} VND
+                        <span className="font-medium">Giá gốc:</span> {(bookingData.totalPrice || 0).toLocaleString("vi-VN")} VND
                     </p>
                     <p className="text-sm text-gray-700 dark:text-gray-300">
                         <span className="font-medium">Thuế:</span> {(bookingData.tax || 0).toLocaleString("vi-VN")} VND{" "}

@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { centralProvinces, dataRegion, destinations, northProvinces, southProvinces } from "../../../context/TourContext";
 
 // Hàm lấy khu vực dựa trên điểm đến
@@ -22,6 +22,8 @@ function TourForm({
     loading,
     uploadProgress,
 }) {
+    const [errors, setErrors] = useState({});
+
     // Tự động cập nhật khu vực khi điểm đến thay đổi
     useEffect(() => {
         if (data.destination) {
@@ -31,6 +33,19 @@ function TourForm({
             }
         }
     }, [data.destination, data.region, handleChange]);
+
+    // Hàm xử lý thay đổi giá và kiểm tra giá > 1000
+    const handlePriceChange = (e) => {
+        handleChange(e);
+        const { name, value } = e.target;
+        if (name === "price_adult" || name === "price_child") {
+            if (value === "" || parseFloat(value) <= 1000) {
+                setErrors((prev) => ({ ...prev, [name]: "Giá phải lớn hơn 1000 VNĐ" }));
+            } else {
+                setErrors((prev) => ({ ...prev, [name]: "" }));
+            }
+        }
+    };
 
     return (
         <form
@@ -130,13 +145,14 @@ function TourForm({
                 <label className="block font-medium">Giá người lớn (VNĐ):</label>
                 <input
                     type="number"
-                    name="priceAdult"
-                    value={data.priceAdult ?? ""}
-                    onChange={handleChange}
+                    name="price_adult"
+                    value={data.price_adult || data.priceAdult || ""}
+                    onChange={handlePriceChange}
                     className="mt-1 w-full rounded-md border border-gray-300 p-2 focus:ring-2 focus:ring-[#00c0d1]"
-                    min="0"
+                    min="1001"
                     required
                 />
+                {errors.price_adult && <p className="mt-1 text-sm text-red-500">{errors.price_adult}</p>}
             </div>
 
             {/* Giá trẻ em */}
@@ -144,13 +160,14 @@ function TourForm({
                 <label className="block font-medium">Giá trẻ em (VNĐ):</label>
                 <input
                     type="number"
-                    name="priceChild"
-                    value={data.priceChild ?? ""}
-                    onChange={handleChange}
+                    name="price_child"
+                    value={data.price_child || data.priceChild || ""}
+                    onChange={handlePriceChange}
                     className="mt-1 w-full rounded-md border border-gray-300 p-2 focus:ring-2 focus:ring-[#00c0d1]"
-                    min="0"
+                    min="1001"
                     required
                 />
+                {errors.price_child && <p className="mt-1 text-sm text-red-500">{errors.price_child}</p>}
             </div>
 
             {/* Trạng thái tour */}
@@ -260,18 +277,12 @@ function TourForm({
                             <div className="mt-2">
                                 <label className="block">Nội dung:</label>
                                 <textarea
-                                    value={day.content.map((line) => `  ${line}`).join("\n") || ""}
-                                    onChange={(e) =>
-                                        handleItineraryChange(
-                                            index,
-                                            "content",
-                                            e.target.value
-                                                .split("\n")
-                                                .map((line) => line.trimStart())
-                                                .filter(Boolean),
-                                        )
-                                    }
-                                    className="mt-1 w-full rounded-md border border-gray-300 p-2 leading-relaxed whitespace-pre-wrap focus:ring-2 focus:ring-[#00c0d1]"
+                                    value={Array.isArray(day.content) ? day.content.join("\n") : typeof day.content === "string" ? day.content : ""}
+                                    onChange={(e) => {
+                                        const newContent = e.target.value.split("\n").filter((line) => line.trim() !== "");
+                                        handleItineraryChange(index, "content", newContent);
+                                    }}
+                                    className="mt-1 w-full rounded-md border border-gray-300 p-2 focus:ring-2 focus:ring-[#00c0d1]"
                                     rows="4"
                                     required
                                 />
