@@ -8,14 +8,6 @@ import { FaSyncAlt } from 'react-icons/fa';
 
 const BookingDetailSibar = ({total_price,title}) => {
     const [loading, setLoading] = useState(false)
-    // console.log("1111", item)
-    // const navigate = useNavigate();
-    // const priceAdult = item.price_adult;
-    // const priceChild = item.price_child;
-
-    // const total = countAdult * priceAdult + countChildren * priceChild;
-    // const total_quality = countAdult + countChildren;
-
     return (
 
         <div className='pt-10'>

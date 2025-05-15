@@ -45,7 +45,7 @@ const BlogAddComment = () => {
                 toast.warning('Có lỗi xảy ra khi gửi đánh giá.');
             }
         } catch (error) {
-            toast.error('Lỗi hệ thống, vui lòng thử lại sau.');
+            toast.warning('Bạn đã đánh giá tour này rồi. Vui lòng đặt lại tour nếu muốn đánh giá tiếp.');
             console.error('Error submitting review:', error);
         }
     };

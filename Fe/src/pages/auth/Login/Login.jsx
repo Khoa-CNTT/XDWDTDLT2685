@@ -29,22 +29,24 @@ const Login = () => {
                 const res = await loginApi(user_name, password);
                 console.log("kequa token", res);
                 if (res.data && res.data.token) {
-                    setToken(res.data.token);       
+                    setToken(res.data.token);
                     localStorage.setItem("user_id", res.data.user_id)
-                    const role = setRole(res.data.role_id);
-                    if(role === 1){
+                    setRole(res.data.role_id);
+                    const role = Number(res.data.role_id);
+                    console.log("role", role);
+                    if (role === 1) {
                         setTimeout(() => {
-                        toast.success("Đăng nhập thành công!");
-                        navigate("/");
-                    }, 1500);    
-                    }else{
+                            toast.success("Đăng nhập thành công!");
+                            navigate("/");
+                        }, 1500);
+                    } else {
                         setTimeout(() => {
                             toast.success("Đăng nhập admin thành công!");
                             navigate('/admin')
                         }, 1500);
-                        
+
                     }
-                } 
+                }
             } catch (error) {
                 console.error("Login error:", error);
                 toast.error("Tên đăng nhập hoặc mật khẩu không đúng")

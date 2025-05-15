@@ -5,6 +5,7 @@ import { FiClock } from 'react-icons/fi';
 import { FaRegUser } from 'react-icons/fa';
 import { Link } from 'react-router-dom';
 import { getAllBookingId } from '../../services/tour';
+import NoPage from '../../pages/NoPage';
 
 const TourHistory = () => {
     const [bookings, setBookings] = useState([]);
@@ -21,17 +22,19 @@ const TourHistory = () => {
         };
         fetchData();
     }, []);
-
+    if (bookings.length === 0) {
+        return <NoPage redirectTo="/tour" />;
+    }
     return (
         <div className='pt-10'>
             <div className='container space-y-10'>
                 {bookings.map((item, index) => (
                     <div key={index} className='w-full bg-gray-100 p-6 h-[300px] rounded-lg shadow-xl'>
                         <div className='relative flex space-x-10'>
-                            <Link to={`/tourbookingdetail/${item.bookingId}`}>
+                            <Link to={`/tourbookingdetail/${item.booking_id}`}>
                                 <img
                                     onClick={() => {
-                                        localStorage.setItem('booking_id', item.bookingId);
+                                        localStorage.setItem('booking_id', item.booking_id);
                                         window.scrollTo(0, 0);
                                     }}
                                     src={item.image}
@@ -53,10 +56,10 @@ const TourHistory = () => {
                                 <div className='flex items-center gap-6'>
                                     <div className='flex gap-2 opacity-70'>
                                         <IoLocationOutline className='w-6 h-6' />
-                                        <p>Hà Nội</p>
+                                        <p>{item.destination}</p>
                                     </div>
                                     <div className='flex items-center p-2 justify-center bg-white w-[100px] h-[25px] rounded-full'>
-                                        <StarDisplay rating={5} />
+                                        <StarDisplay rating={item.rating} />
                                     </div>
                                 </div>
                                 <Link
@@ -76,13 +79,14 @@ const TourHistory = () => {
                                     </div>
                                     <div className='flex items-center'>
                                         <FaRegUser />
-                                        <span className='ml-1'>3</span>
+
+                                        <span className='ml-1'>{item.num_adults + item.num_children}</span>
                                     </div>
                                 </div>
                                 <hr className='border-gray-300' />
                                 <div className='flex items-center justify-between'>
                                     <div className=' opacity-70'>
-                                        <p className='mt-4 text-xl font-bold'>{item.price_adult.toLocaleString('vi-VN')}/VNĐ</p>
+                                        <p className='mt-4 text-xl font-bold'>{item.total_price.toLocaleString('vi-VN')}</p>
                                     </div>
                                     <button className='w-[100px] text-lg rounded-xl h-10 border bg-primary text-white border-gray-200'>Đánh giá</button>
                                 </div>
