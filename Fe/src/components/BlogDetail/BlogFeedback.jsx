@@ -19,6 +19,8 @@ const BlogFeedback = ({ item }) => {
                             <div className='ml-8 space-y-2'>
                                 <h3 className='font-semibold'>{fb.full_name}</h3>
                                 <StarDisplay rating={fb.rating} />
+                                <p className='text-lg'>{item.duration}</p>
+                                <p className='text-lg'>{fb.comment}</p>
                                 <p className='font-semibold'>
                                     {(() => {
                                         const date = new Date(fb.created_at);
@@ -28,7 +30,7 @@ const BlogFeedback = ({ item }) => {
                                         return `${day}-${month}-${year}`;
                                     })()}
                                 </p>
-                                <p className='text-lg'>{fb.comment}</p>
+                                
                             </div>
                         </div>
                     </div>

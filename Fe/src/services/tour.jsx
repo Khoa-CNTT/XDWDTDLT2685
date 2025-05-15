@@ -43,3 +43,11 @@ export const getSearchTour = async (page, limit = 6, title, priceMin, priceMax, 
     });
 };
 
+export const getAllBookingId = (id) => { 
+    const token = localStorage.getItem("token");
+    return axios.get(`tours/user/${id}`, {
+        headers: {
+            Authorization: `Bearer ${token}`,
+        },
+    });
+};

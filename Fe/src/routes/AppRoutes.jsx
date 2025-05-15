@@ -20,6 +20,7 @@ import Layout from '../layout/Layout';
 import Search from '../pages/Search';
 import RedirectPage from '../pages/auth/Login/RedirectPage';
 import AdminLayout from '../layout/AdminLayout';
+import TourBookingDetail from '../components/TourBookingDetail/TourBookingDetail';
 
 const AppRoutes = () => {
     return (
@@ -49,7 +50,7 @@ const AppRoutes = () => {
                         <Route path='/changepassword' element={<ProfileChangePassword />}></Route>
                         <Route path='*' element={<NoPage />}></Route>
                         <Route path='/search' element={<Search />}></Route>
-
+                        <Route path='/tourbookingdetail/:id' element={<TourBookingDetail />}></Route>
                     </Route>
                     <Route path='/admin' element={
                         <PrivateRoute role={2}>

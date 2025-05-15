@@ -20,3 +20,12 @@ export const postBooking = async (data) => {
         };
     }
 };
+
+export const getBookingId = (id) => { 
+    const token = localStorage.getItem("token");
+    return axios.get(`bookings/${id}`, {
+        headers: {
+            Authorization: `Bearer ${token}`,
+        },
+    });
+};

@@ -1,6 +1,6 @@
 import React from 'react';
 
-const PaymentInformation = ({ full_name, setFullName, email, setEmail, phone_number, setPhoneNumber, address, setAddress }) => {
+const PaymentInformation = ({ full_name, setFullName, email, setEmail, phone_number, setPhoneNumber, address, setAddress,disabled = false }) => {
     
     return (
         <div className='pt-10 '>
@@ -20,6 +20,8 @@ const PaymentInformation = ({ full_name, setFullName, email, setEmail, phone_num
                                     onChange={(e) => setFullName(e.target.value)}
                                     className='h-auto p-3  border border-gray-400 rounded-lg w-[300px]'
                                     placeholder='Tên của bạn...'
+                                    disabled={disabled}
+
                                 />
                             </div>
                             {/* email */}
@@ -33,6 +35,8 @@ const PaymentInformation = ({ full_name, setFullName, email, setEmail, phone_num
                                     onChange={(e) => setEmail(e.target.value)}
                                     className=' p-3 border border-gray-400 rounded-lg w-[300px]'
                                     placeholder='Nhập email liên hệ...'
+                                    disabled={disabled}
+
                                 />
                             </div>
                         </div>
@@ -49,6 +53,8 @@ const PaymentInformation = ({ full_name, setFullName, email, setEmail, phone_num
                                     onChange={(e) => setPhoneNumber(e.target.value)}
                                     className='h-auto p-3  border border-gray-400 rounded-lg w-[300px]'
                                     placeholder='Nhập số điện thoại liên hệ...'
+                                    disabled={disabled}
+
                                 />
                             </div>
                             {/* address */}
@@ -62,6 +68,8 @@ const PaymentInformation = ({ full_name, setFullName, email, setEmail, phone_num
                                     onChange={(e) => setAddress(e.target.value)}
                                     className=' p-3 border border-gray-400 rounded-lg w-[300px]'
                                     placeholder='Nhập địa chỉ liên hệ...'
+                                    disabled={disabled}
+
                                 />
                             </div>
                         </div>

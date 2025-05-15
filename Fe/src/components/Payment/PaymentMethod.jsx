@@ -17,7 +17,7 @@ const mapPaymentMethod = (method) => {
     }
 };
 
-const PaymentMethod = ({ setPaymentMethod }) => {
+const PaymentMethod = ({ value, setPaymentMethod, disabled = false }) => {
     const [selected, setSelected] = useState('');
 
     const handleSelect = (method) => {
