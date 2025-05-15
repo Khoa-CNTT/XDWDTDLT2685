@@ -4,9 +4,12 @@ import com.project.booktour.dtos.ReviewDTO;
 import com.project.booktour.exceptions.DataNotFoundException;
 import com.project.booktour.exceptions.InvalidParamException;
 import com.project.booktour.exceptions.UnauthorizedException;
+import com.project.booktour.models.Booking;
+import com.project.booktour.models.BookingStatus;
 import com.project.booktour.models.Review;
 import com.project.booktour.models.Tour;
 import com.project.booktour.models.User;
+import com.project.booktour.repositories.BookingRepository;
 import com.project.booktour.repositories.ReviewRepository;
 import com.project.booktour.repositories.TourRepository;
 import com.project.booktour.repositories.UserRepository;
@@ -15,6 +18,8 @@ import com.project.booktour.services.booking.BookingService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -26,6 +31,7 @@ public class ReviewService implements IReviewService {
     private final TourRepository tourRepository;
     private final UserRepository userRepository;
     private final BookingService bookingService;
+    private final BookingRepository bookingRepository; // Thêm repository để cập nhật booking
 
     @Override
     public List<Review> getAllReviews() {
@@ -34,21 +40,40 @@ public class ReviewService implements IReviewService {
 
     @Override
     public Review createReview(ReviewDTO reviewDTO) throws Exception {
-        // Kiểm tra xem người dùng đã đặt tour chưa
+        // Kiểm tra xem người dùng có booking cho tour này không
         if (!bookingService.hasUserBookedTour(reviewDTO.getUserId(), reviewDTO.getTourId())) {
-            throw new UnauthorizedException("Người dùng chưa đặt tour này và không thể để lại đánh giá");
+            throw new UnauthorizedException("Bạn chưa đặt tour này và không thể đánh giá.");
+        }
+
+        // Lấy tour để kiểm tra endDate
+        Tour tour = tourRepository.findById(reviewDTO.getTourId())
+                .orElseThrow(() -> new DataNotFoundException("Không tìm thấy tour với ID: " + reviewDTO.getTourId()));
+
+        // Kiểm tra và cập nhật trạng thái booking nếu tour đã kết thúc
+        List<Booking> bookings = bookingRepository.findByUserUserIdAndTourTourId(reviewDTO.getUserId(), reviewDTO.getTourId());
+        boolean hasCompletedTour = false;
+        for (Booking booking : bookings) {
+            if (booking.getBookingStatus() == BookingStatus.CONFIRMED && tour.getEndDate().isBefore(LocalDate.now())) {
+                booking.setBookingStatus(BookingStatus.COMPLETED);
+                booking.setUpdatedAt(LocalDateTime.now());
+                bookingRepository.save(booking);
+                hasCompletedTour = true;
+            } else if (booking.getBookingStatus() == BookingStatus.COMPLETED) {
+                hasCompletedTour = true;
+            }
+        }
+
+        if (!hasCompletedTour) {
+            throw new UnauthorizedException("Bạn chỉ có thể đánh giá sau khi hoàn thành tour.");
         }
 
         // Kiểm tra xem người dùng đã đánh giá tour này chưa
         if (reviewRepository.existsByUserUserIdAndTourTourId(reviewDTO.getUserId(), reviewDTO.getTourId())) {
-            throw new InvalidParamException("Người dùng đã đánh giá tour này trước đó");
+            throw new InvalidParamException("Bạn đã đánh giá tour này trước đó.");
         }
 
-        Tour tour = tourRepository.findById(reviewDTO.getTourId())
-                .orElseThrow(() -> new DataNotFoundException("Không tìm thấy tour với id: " + reviewDTO.getTourId()));
-
         User user = userRepository.findById(reviewDTO.getUserId())
-                .orElseThrow(() -> new DataNotFoundException("Không tìm thấy người dùng với id: " + reviewDTO.getUserId()));
+                .orElseThrow(() -> new DataNotFoundException("Không tìm thấy người dùng với ID: " + reviewDTO.getUserId()));
 
         Review review = Review.builder()
                 .tour(tour)
@@ -60,6 +85,51 @@ public class ReviewService implements IReviewService {
         return reviewRepository.save(review);
     }
 
+    @Override
+    public void updateReview(Long reviewId, ReviewDTO reviewDTO) throws Exception {
+        // Kiểm tra xem người dùng có booking cho tour này không
+        if (!bookingService.hasUserBookedTour(reviewDTO.getUserId(), reviewDTO.getTourId())) {
+            throw new UnauthorizedException("Bạn chưa đặt tour này và không thể cập nhật đánh giá.");
+        }
+
+        // Lấy tour để kiểm tra endDate
+        Tour tour = tourRepository.findById(reviewDTO.getTourId())
+                .orElseThrow(() -> new DataNotFoundException("Không tìm thấy tour với ID: " + reviewDTO.getTourId()));
+
+        // Kiểm tra và cập nhật trạng thái booking nếu tour đã kết thúc
+        List<Booking> bookings = bookingRepository.findByUserUserIdAndTourTourId(reviewDTO.getUserId(), reviewDTO.getTourId());
+        boolean hasCompletedTour = false;
+        for (Booking booking : bookings) {
+            if (booking.getBookingStatus() == BookingStatus.CONFIRMED && tour.getEndDate().isBefore(LocalDate.now())) {
+                booking.setBookingStatus(BookingStatus.COMPLETED);
+                booking.setUpdatedAt(LocalDateTime.now());
+                bookingRepository.save(booking);
+                hasCompletedTour = true;
+            } else if (booking.getBookingStatus() == BookingStatus.COMPLETED) {
+                hasCompletedTour = true;
+            }
+        }
+
+        if (!hasCompletedTour) {
+            throw new UnauthorizedException("Bạn chỉ có thể cập nhật đánh giá sau khi hoàn thành tour.");
+        }
+
+        Review existingReview = reviewRepository.findById(reviewId)
+                .orElseThrow(() -> new DataNotFoundException("Không tìm thấy đánh giá với ID: " + reviewId));
+
+        // Kiểm tra quyền sở hữu đánh giá
+        if (!existingReview.getUser().getUserId().equals(reviewDTO.getUserId())) {
+            throw new UnauthorizedException("Bạn không có quyền cập nhật đánh giá của người khác.");
+        }
+
+        existingReview.setTour(tour);
+        existingReview.setComment(reviewDTO.getComment());
+        existingReview.setRating(reviewDTO.getRating());
+
+        reviewRepository.save(existingReview);
+    }
+
+    // Các phương thức khác giữ nguyên
     @Override
     public List<Review> getReviewsByTour(Long tourId) {
         return reviewRepository.findByTourTourId(tourId);
@@ -73,48 +143,22 @@ public class ReviewService implements IReviewService {
     @Override
     public List<ReviewResponse> getReviewListByTour(Long tourId) throws DataNotFoundException {
         if (!tourRepository.existsById(tourId)) {
-            throw new DataNotFoundException("Không tìm thấy tour với id: " + tourId);
+            throw new DataNotFoundException("Không tìm thấy tour với ID: " + tourId);
         }
 
         List<Review> reviews = reviewRepository.findByTourTourId(tourId);
-
         return reviews.stream()
                 .map(ReviewResponse::fromReview)
                 .collect(Collectors.toList());
     }
 
     @Override
-    public void updateReview(Long reviewId, ReviewDTO reviewDTO) throws Exception {
-        // Kiểm tra xem người dùng đã đặt tour chưa
-        if (!bookingService.hasUserBookedTour(reviewDTO.getUserId(), reviewDTO.getTourId())) {
-            throw new UnauthorizedException("Người dùng chưa đặt tour này và không thể cập nhật đánh giá");
-        }
-
-        Review existingReview = reviewRepository.findById(reviewId)
-                .orElseThrow(() -> new DataNotFoundException("Không tìm thấy đánh giá với id: " + reviewId));
-
-        Tour tour = tourRepository.findById(reviewDTO.getTourId())
-                .orElseThrow(() -> new DataNotFoundException("Không tìm thấy tour với id: " + reviewDTO.getTourId()));
-
-        User user = userRepository.findById(reviewDTO.getUserId())
-                .orElseThrow(() -> new DataNotFoundException("Không tìm thấy người dùng với id: " + reviewDTO.getUserId()));
-
-        existingReview.setTour(tour);
-        existingReview.setUser(user);
-        existingReview.setComment(reviewDTO.getComment());
-        existingReview.setRating(reviewDTO.getRating());
-
-        reviewRepository.save(existingReview);
-    }
-
-    @Override
     public void deleteReview(Long reviewId, Long userId) throws Exception {
         Review review = reviewRepository.findById(reviewId)
-                .orElseThrow(() -> new DataNotFoundException("Không tìm thấy đánh giá với id: " + reviewId));
+                .orElseThrow(() -> new DataNotFoundException("Không tìm thấy đánh giá với ID: " + reviewId));
 
-        // Kiểm tra quyền sở hữu
         if (!review.getUser().getUserId().equals(userId)) {
-            throw new UnauthorizedException("Bạn không có quyền xóa đánh giá của người khác");
+            throw new UnauthorizedException("Bạn không có quyền xóa đánh giá của người khác.");
         }
 
         reviewRepository.delete(review);

@@ -5,6 +5,7 @@ import com.project.booktour.models.BookingStatus;
 import jakarta.validation.constraints.*;
 import lombok.*;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Data
@@ -20,9 +21,6 @@ public class BookingDTO {
     @Min(value = 1, message = "User ID must be greater than 0")
     @JsonProperty("user_id")
     private Long userId;
-
-
-
 
     @JsonProperty("tour_id")
     private Long tourId; // Thay đổi thành String để lưu dạng "Tour001"
@@ -82,4 +80,17 @@ public class BookingDTO {
 
     @JsonProperty("payment_status")
     private String paymentStatus;
+    @JsonProperty("start_date")
+    private LocalDate startDate;
+
+    @JsonProperty("end_date")
+    private LocalDate endDate;
+
+    @JsonProperty("price_adult")
+    private double priceAdult;
+
+    @JsonProperty("price_child")
+    private double priceChild;
+    private String code;
+
 }

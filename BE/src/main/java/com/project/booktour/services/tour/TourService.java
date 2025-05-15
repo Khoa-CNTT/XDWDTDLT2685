@@ -13,6 +13,7 @@ import com.project.booktour.repositories.TourRepository;
 import com.project.booktour.responses.reviewsreponse.ReviewResponse;
 import com.project.booktour.responses.toursreponse.BookedTourResponse;
 import com.project.booktour.responses.toursreponse.SimplifiedTourResponse;
+import com.project.booktour.responses.toursreponse.TopBookedTourResponse;
 import com.project.booktour.responses.toursreponse.TourResponse;
 import com.project.booktour.services.booking.BookingService;
 import com.project.booktour.services.review.ReviewService;
@@ -259,6 +260,17 @@ public class TourService implements ITourService {
                     }
                 })
                 .filter(Objects::nonNull)
+                .collect(Collectors.toList());
+    }
+    @Override
+    public List<TopBookedTourResponse> getTopBookedTours() {
+        // Lấy 5 tour được đặt nhiều nhất
+        PageRequest pageable = PageRequest.of(0, 5);
+        List<Tour> topTours = tourRepository.findTopBookedTours(pageable);
+
+        // Chuyển đổi sang TopBookedTourResponse
+        return topTours.stream()
+                .map(TopBookedTourResponse::fromTour)
                 .collect(Collectors.toList());
     }
 }

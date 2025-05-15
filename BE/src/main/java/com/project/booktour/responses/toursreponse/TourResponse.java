@@ -32,9 +32,6 @@ public class TourResponse extends BaseResponse {
 
     @JsonProperty("img")
     private List<String> images;
-
-    private String code;
-
     private int quantity;
     private String description;
     private String duration;
@@ -59,7 +56,6 @@ public class TourResponse extends BaseResponse {
         List<ScheduleDTO> itinerary = tour.getItinerary() != null
                 ? objectMapper.readValue(tour.getItinerary(), new TypeReference<List<ScheduleDTO>>() {})
                 : null;
-
         // Hardcode giá trị cho include và notinclude
         List<String> includeList = Arrays.asList(
                 "Dịch vụ đón và trả khách",
@@ -99,36 +95,7 @@ public class TourResponse extends BaseResponse {
                 .build();
         tourResponse.setCreatedAt(tour.getCreatedAt());
         tourResponse.setUpdatedAt(tour.getUpdatedAt());
-        String code = generateCodeFromTitle(tour.getDestination());
-        tourResponse.setCode(code);
         return tourResponse;
     }
 
-    private static String generateCodeFromTitle(String destination) {
-        if (destination == null || destination.isBlank()) {
-            return "UNKNOWN";
-        }
-        String cleaned = destination.replace("-", " ");
-        String[] words = cleaned.trim().toUpperCase().split("\\s+");
-
-        StringBuilder codeBuilder = new StringBuilder();
-        for (String word : words) {
-            if (!word.isEmpty()) {
-                codeBuilder.append(removeVietnameseAccent(word.charAt(0)));
-            }
-        }
-
-        return codeBuilder.toString();
-    }
-
-    private static char removeVietnameseAccent(char c) {
-        String original = "ÀÁÂÃÈÉÊÌÍÒÓÔÕÙÚĂĐĨŨƠƯàáâãèéêìíòóôõùúăđĩũơư";
-        String replacement = "AAAAEEEIIOOOOUUAĐIUOUaaaaeeeiioooouuadiuou";
-
-        int index = original.indexOf(c);
-        if (index >= 0) {
-            return replacement.charAt(index);
-        }
-        return c;
-    }
 }

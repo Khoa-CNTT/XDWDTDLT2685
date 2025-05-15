@@ -32,7 +32,7 @@ public class PaymentController {
         paymentService.handlePaymentCallback(params);
         String status = params.get("vnp_TransactionStatus");
         String result = "00".equals(status) ? "success" : "failure";
-        String redirectUrl = "http://localhost:3000/payment-result?status=" +
+        String redirectUrl = "http://localhost:5173/payment-result?status=" +
                 URLEncoder.encode(result, StandardCharsets.UTF_8);
         logger.info("Redirecting to: " + redirectUrl);
         return ResponseEntity.ok(redirectUrl);

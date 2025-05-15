@@ -33,6 +33,9 @@ public interface TourRepository extends JpaRepository<Tour, Long> {
                                       @Param("starRating") Float starRating,
                                       @Param("duration") String duration,
                                       @Param("title") String title);
+    @Query("SELECT t FROM Tour t LEFT JOIN Booking b ON t.tourId = b.tour.tourId " +
+            "GROUP BY t ORDER BY COUNT(b) DESC")
+    List<Tour> findTopBookedTours(org.springframework.data.domain.Pageable pageable);
 
 
 }

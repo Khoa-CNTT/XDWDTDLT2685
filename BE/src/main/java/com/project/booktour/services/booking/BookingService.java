@@ -150,6 +150,10 @@ public class BookingService implements IBookingService {
                 .email(booking.getUser().getEmail())
                 .address(booking.getUser().getAddress())
                 .phoneNumber(booking.getUser().getPhoneNumber())
+                .startDate(booking.getTour().getStartDate())
+                .endDate(booking.getTour().getEndDate())
+                .priceAdult(booking.getTour().getPriceAdult())
+                .priceChild(booking.getTour().getPriceChild())
                 .createdAt(booking.getCreatedAt())
                 .updatedAt(booking.getUpdatedAt())
                 .paymentMethod(paymentMethod)
@@ -264,5 +268,8 @@ public class BookingService implements IBookingService {
     public Long countBookingsByTourId(Long tourId) {
         return bookingRepository.countBookingsByTourId(tourId);
     }
+
+
+
 
 }

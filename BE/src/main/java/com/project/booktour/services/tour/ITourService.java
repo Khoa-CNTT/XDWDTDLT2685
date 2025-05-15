@@ -10,6 +10,7 @@ import com.project.booktour.models.Tour;
 import com.project.booktour.models.TourImage;
 import com.project.booktour.responses.toursreponse.BookedTourResponse;
 import com.project.booktour.responses.toursreponse.SimplifiedTourResponse;
+import com.project.booktour.responses.toursreponse.TopBookedTourResponse;
 import com.project.booktour.responses.toursreponse.TourResponse;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -42,4 +43,5 @@ public interface ITourService {
     List<TourImage> updateTourImages(Long tourId, List<TourImageDTO> tourImageDTOs) throws Exception;
 
     List<BookedTourResponse>  getBookedToursByUserId(Long userId);
+    List<TopBookedTourResponse> getTopBookedTours();
 }

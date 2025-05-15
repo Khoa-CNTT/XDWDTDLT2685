@@ -8,10 +8,7 @@ import com.project.booktour.models.Booking;
 import com.project.booktour.models.Region;
 import com.project.booktour.models.Tour;
 import com.project.booktour.models.TourImage;
-import com.project.booktour.responses.toursreponse.BookedTourResponse;
-import com.project.booktour.responses.toursreponse.SimplifiedTourResponse;
-import com.project.booktour.responses.toursreponse.TourListResponse;
-import com.project.booktour.responses.toursreponse.TourResponse;
+import com.project.booktour.responses.toursreponse.*;
 import com.project.booktour.services.booking.IBookingService;
 import com.project.booktour.services.tour.ITourService;
 import jakarta.validation.Valid;
@@ -344,5 +341,15 @@ public class TourController {
         Tika tika = new Tika();
         String mimeType = tika.detect(file.getInputStream());
         return mimeType.startsWith("image/");
+    }
+    // Endpoint mới: Lấy 5 tour được đặt nhiều nhất
+    @GetMapping("/top-booked")
+    public ResponseEntity<?> getTopBookedTours() {
+        try {
+            List<TopBookedTourResponse> topTours = tourService.getTopBookedTours();
+            return ResponseEntity.ok(topTours);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Lỗi khi lấy danh sách tour được đặt nhiều nhất: " + e.getMessage());
+        }
     }
 }
