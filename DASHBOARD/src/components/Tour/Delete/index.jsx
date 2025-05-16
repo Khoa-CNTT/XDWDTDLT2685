@@ -38,8 +38,8 @@ function DeleteTour({ item }) {
                 await Swal.fire({
                     position: "center",
                     icon: "error",
-                    title: result.data.error || "Lỗi",
-                    text: result.data.message || "Không tìm thấy tour",
+                    title: "Tour đã được đặt",
+                    text: "Tour này đã được booking nên không thể xóa.",
                     confirmButtonColor: "#d33",
                 });
             } else if (result.status >= 500) {

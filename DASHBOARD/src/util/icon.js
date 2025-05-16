@@ -12,6 +12,7 @@ import {
     MdEmail,
     MdPayment,
     MdCheckCircle,
+    MdContactSupport,
 } from "react-icons/md";
 import {
     IoMdAnalytics,
@@ -106,5 +107,6 @@ const icons = {
     MdCheckCircle,
     IoIosUnlock,
     IoIosLock,
+    MdContactSupport,
 };
 export default icons;

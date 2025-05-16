@@ -1,5 +1,5 @@
 import icons from "./icon";
-const { MdDashboard, GrUserAdmin, FaUserAlt, MdTour, TbBrandBooking, FiLogOut } = icons; // Đảm bảo có icon cho Logout
+const { MdDashboard, GrUserAdmin, FaUserAlt, MdTour, TbBrandBooking, FiLogOut, MdContactSupport } = icons; // Đảm bảo có icon cho Logout
 
 export const menu = [
     {
@@ -45,6 +45,15 @@ export const menu = [
                 path: "/booking",
                 text: "Quản lý booking",
                 icon: TbBrandBooking,
+            },
+        ],
+    },
+    {
+        link: [
+            {
+                path: "/contact",
+                text: "Liên hệ",
+                icon: MdContactSupport,
             },
         ],
     },

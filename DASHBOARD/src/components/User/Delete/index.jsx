@@ -4,17 +4,45 @@ import DeleteButton from "../../Button/DeleteButton";
 
 function DeleteUser({ user, onReload }) {
     const handleDeleteUser = async () => {
-        const response = await deleteUser(user.id);
-        if (response.success) {
-            onReload?.(); // Gọi reload nếu có callback
-            return true; // Trả về true để hiển thị thông báo thành công
+        try {
+            const response = await deleteUser(user.id);
+            if (response.success) {
+                onReload?.();
+                return true;
+            }
+            // Kiểm tra lỗi 400
+            if (response.status === 400) {
+                Swal.fire({
+                    title: "Lỗi!",
+                    text: "Đang đặt tour, không thể xóa!",
+                    icon: "error",
+                });
+                return false;
+            }
+            // Các lỗi khác
+            Swal.fire({
+                title: "Lỗi!",
+                text: response.data || "Đã xảy ra lỗi khi xóa người dùng!",
+                icon: "error",
+            });
+            return false;
+        } catch (error) {
+            // Xử lý lỗi từ Axios
+            if (error.response?.status === 400) {
+                Swal.fire({
+                    title: "Lỗi!",
+                    text: "Đang đặt tour, không thể xóa!",
+                    icon: "error",
+                });
+            } else {
+                Swal.fire({
+                    title: "Lỗi!",
+                    text: error.response?.data || "Đã xảy ra lỗi khi xóa người dùng!",
+                    icon: "error",
+                });
+            }
+            return false;
         }
-        Swal.fire({
-            title: "Lỗi!",
-            text: response.message,
-            icon: "error",
-        });
-        return false;
     };
 
     return (
@@ -27,4 +55,5 @@ function DeleteUser({ user, onReload }) {
         </DeleteButton>
     );
 }
+
 export default DeleteUser;

@@ -16,14 +16,14 @@ function ShowBookingTour() {
     const [totalPages, setTotalPages] = useState(1); // Tổng số trang
     const [totalItems, setTotalItems] = useState(0); // Tổng số booking
     const [isLoading, setIsLoading] = useState(false); // Trạng thái loading
-    const limit = 10; // Page size cố định là 10, giống ShowTour
+    const limit = 10;
 
     const { register, handleSubmit } = useForm();
 
     const fetchApi = async (page = 0) => {
         try {
             setIsLoading(true); // Bắt đầu loading
-            const res = await getDataBookingTour(page, limit); // Gửi page và limit=10
+            const res = await getDataBookingTour(page, limit);
 
             const dataArray = res.data?.content && Array.isArray(res.data.content) ? res.data.content : [];
 

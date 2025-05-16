@@ -4,7 +4,8 @@ import { saveAs } from "file-saver";
 import jsPDF from "jspdf";
 import autoTable from "jspdf-autotable";
 import "../assets/Font/Roboto_Condensed-Bold-normal.js";
-
+import "../assets/Font/Roboto-Regular-normal.js";
+import photo from "./../assets/Img/logo.png";
 //Hàm Copy dữ liệu
 export const handleCopy = (data, type) => {
     let content = "";
@@ -212,7 +213,9 @@ export const handleExcel = (data, type) => {
 // Hàm xuất PDF
 export const handleToPdf = (data, type) => {
     const doc = new jsPDF("landscape", "pt", "a4");
-    doc.setFont("Roboto", "normal");
+
+    // Đặt font mặc định cho toàn bộ PDF
+    doc.setFont("Roboto-Regular", "normal");
 
     const headers =
         type === "tour"
@@ -269,17 +272,18 @@ export const handleToPdf = (data, type) => {
         body: rows,
         theme: "grid",
         styles: {
-            font: "Roboto",
+            font: "Roboto-Regular",
             fontSize: 10,
             textColor: [0, 0, 0],
             cellPadding: 5,
             halign: "left",
         },
         headStyles: {
+            font: "Roboto_Condensed-Bold",
+            fontSize: 12,
+            fontStyle: "normal",
             fillColor: [41, 128, 185],
             textColor: [255, 255, 255],
-            fontSize: 12,
-            fontStyle: "bold",
         },
         startY: 40,
     });
@@ -291,133 +295,237 @@ export const handlePrintReport = (item, type) => {
     const printWindow = window.open("", "", "width=900,height=700");
     const currentDate = new Date().toLocaleString("vi-VN");
 
+    // Kiểm tra dữ liệu đầu vào
+    if (!item) {
+        printWindow.document.write("<h1>Lỗi: Dữ liệu hóa đơn không hợp lệ</h1>");
+        printWindow.document.close();
+        return;
+    }
+
+    // Tính toán giá
     const totalAdult = (item?.adults || 0) * (item?.unitPriceAdult || 0);
     const totalChild = (item?.children || 0) * (item?.unitPriceChild || 0);
     const originalPrice = totalAdult + totalChild;
     const tax = item?.tax || 0;
     const discount = item?.discount || 0;
     const finalPrice = originalPrice + tax - discount;
+
+    // Thông tin nhà cung cấp
     const provider = {
         companyName: "Công ty Du lịch GoViet",
         address: "123 Đường Quang Trung, Quận Thanh Khê, TP. Đà Nẵng",
         phone: "0901234567",
         email: "support@goviet.com",
     };
+
     if (type === "invoice") {
         const html = `
         <!DOCTYPE html>
-<html lang="vi">
-<head>
-    <meta charset="UTF-8">
-    <script src="https://cdn.tailwindcss.com"></script>
-    <title>Công ty GoViet</title>
-    <style>
-        @page { size: A4; margin: 10mm; }
-        body { font-size: 12px; line-height: 1.2; }
-        .compact { margin-bottom: 0.5rem; }
-        table { font-size: 11px; }
-        .text-smaller { font-size: 10px; }
-    </style>
-</head>
-<body class="font-sans p-4 min-h-screen bg-gray-50 text-gray-800">
-    <div class="max-w-full mx-auto bg-white p-6 rounded-lg shadow border border-gray-300 flex flex-col justify-between h-[257mm]">
-        <!-- Header -->
-        <header class="compact">
-            <h2 class="text-2xl font-bold text-center text-blue-700">Hóa đơn thanh toán</h2>
-            <p class="text-center"><strong>Thời gian lập hóa đơn:</strong> ${currentDate}</p>
-        </header>
-        <hr class="my-2 border-black" />
-
-        <!-- Customer & Provider Info (2 columns) -->
-        <div class="flex flex-col sm:flex-row gap-4 compact">
-            <section class="flex-1">
-                <h3 class="text-lg font-semibold text-gray-700">Thông tin khách hàng</h3>
-                <div class="space-y-0.5">
-                    <p><strong>Người đặt:</strong> ${item.customerName}</p>
-                    <p><strong>Địa chỉ:</strong> ${item.address}</p>
-                    <p><strong>SĐT:</strong> ${item.phone}</p>
-                    <p><strong>Email:</strong> ${item.email}</p>
+        <html lang="vi">
+        <head>
+            <meta charset="UTF-8">
+            <meta name="viewport" content="width=device-width, initial-scale=1.0">
+            <title>Hóa đơn - GoViet</title>
+            <style>
+                @page { 
+                    size: A4; 
+                    margin: 10mm; 
+                }
+                body { 
+                    font-family: 'Arial', sans-serif; 
+                    font-size: 11px; 
+                    line-height: 1.3; 
+                    color: #333; 
+                    margin: 0; 
+                    padding: 0; 
+                }
+                .container { 
+                    width: 190mm; 
+                    min-height: 277mm; 
+                    margin: 0 auto; 
+                    background: #fff; 
+                    padding: 10mm; 
+                    box-sizing: border-box; 
+                }
+                .header { 
+                    text-align: center; 
+                    margin-bottom: 10px; 
+                }
+                .header img { 
+                    max-width: 60px; 
+                    vertical-align: middle; 
+                }
+                .header h2 { 
+                    font-size: 18px; 
+                    color: #1e40af; 
+                    margin: 5px 0; 
+                }
+                .section { 
+                    margin-bottom: 10px; 
+                }
+                .section h3 { 
+                    font-size: 13px; 
+                    font-weight: bold; 
+                    margin-bottom: 5px; 
+                    color: #1e40af; 
+                }
+                .grid-2 { 
+                    display: grid; 
+                    grid-template-columns: 1fr 1fr; 
+                    gap: 10px; 
+                }
+                .grid-2 p { 
+                    margin: 2px 0; 
+                }
+                table { 
+                    width: 100%; 
+                    border-collapse: collapse; 
+                    margin-bottom: 10px; 
+                    font-size: 10px; 
+                }
+                th, td { 
+                    border: 1px solid #ccc; 
+                    padding: 5px; 
+                    text-align: left; 
+                }
+                th { 
+                    background: #e5e7eb; 
+                    font-weight: bold; 
+                }
+                .text-right { 
+                    text-align: right; 
+                }
+                .text-bold { 
+                    font-weight: bold; 
+                }
+                .footer { 
+                    text-align: center; 
+                    font-size: 9px; 
+                    margin-top: 10px; 
+                    border-top: 1px solid #ccc; 
+                    padding-top: 5px; 
+                }
+                hr { 
+                    border: none; 
+                    border-top: 1px solid #ccc; 
+                    margin: 10px 0; 
+                }
+            </style>
+        </head>
+        <body>
+            <div class="container">
+                <!-- Header -->
+                <div class="header">
+                    <img src="${photo}" alt="Logo GoViet" />
+                    <h2>HÓA ĐƠN THANH TOÁN</h2>
+                    <p><strong>Thời gian lập hóa đơn:</strong> ${currentDate}</p>
                 </div>
-            </section>
-            <section class="flex-1">
-                <h3 class="text-lg font-semibold text-gray-700">Thông tin đơn vị cung cấp</h3>
-                <div class="space-y-0.5">
-                    <p><strong>Đơn vị:</strong> ${provider.companyName}</p>
-                    <p><strong>Địa chỉ:</strong> ${provider.address}</p>
-                    <p><strong>SĐT:</strong> ${provider.phone}</p>
-                    <p><strong>Email:</strong> ${provider.email}</p>
-                </div>
-            </section>
-        </div>
-        <hr class="my-2 border-black" />
+                <hr />
 
-        <!-- Tour Details -->
-        <section class="compact">
-            <h3 class="text-lg font-semibold text-gray-700">Chi tiết đặt tour</h3>
-            <div class="grid grid-cols-2 gap-2">
-                <p><strong>Mã đơn đặt:</strong> ${item.bookingId}</p>
-                <p><strong>Ngày đặt:</strong> ${item.bookingDate}</p>
-                <p><strong>Trạng thái:</strong> ${item.bookingStatus}</p>
-                <p><strong>Mã giao dịch:</strong> ${item.transactionCode}</p>
-                <p><strong>Ngày thanh toán:</strong> ${item.paymentDate}</p>
-                <p><strong>Tài khoản:</strong> ${item.account}</p>
+                <!-- Customer & Provider Info -->
+                <div class="section grid-2">
+                    <div>
+                        <h3>Thông tin khách hàng</h3>
+                        <p><strong>Người đặt:</strong> ${item.customerName || "Không xác định"}</p>
+                        <p><strong>Địa chỉ:</strong> ${item.address || "Không có"}</p>
+                        <p><strong>SĐT:</strong> ${item.phone || "Không có"}</p>
+                        <p><strong>Email:</strong> ${item.email || "Không có"}</p>
+                    </div>
+                    <div>
+                        <h3>Thông tin đơn vị cung cấp</h3>
+                        <p><strong>Đơn vị:</strong> ${provider.companyName}</p>
+                        <p><strong>Địa chỉ:</strong> ${provider.address}</p>
+                        <p><strong>SĐT:</strong> ${provider.phone}</p>
+                        <p><strong>Email:</strong> ${provider.email}</p>
+                    </div>
+                </div>
+                <hr />
+
+                <!-- Tour Details -->
+                <div class="section">
+                    <h3>Chi tiết đặt tour</h3>
+                    <div class="grid-2">
+                        <p><strong>Mã đơn đặt:</strong> ${item.bookingId || "N/A"}</p>
+                        <p><strong>Ngày đặt:</strong> ${item.bookingDate || "Không có"}</p>
+                        <p><strong>Trạng thái:</strong> ${item.bookingStatus || "Chưa xác nhận"}</p>
+                        <p><strong>Mã giao dịch:</strong> ${item.transactionCode || "TX0000"}</p>
+                        <p><strong>Ngày thanh toán:</strong> ${item.paymentDate || "Không có"}</p>
+                        <p><strong>Tài khoản:</strong> ${item.account || "N/A"}</p>
+                    </div>
+                </div>
+                <hr />
+
+                <!-- Additional Info -->
+                <div class="section">
+                    <h3>Thông tin bổ sung</h3>
+                    <p><strong>Yêu cầu đặc biệt:</strong> ${item.specialRequests || "Không có"}</p>
+                    <p><strong>Mã tour:</strong> ${item.tourId || "Không xác định"}</p>
+                    <p><strong>Mã người dùng:</strong> ${item.userId || "Không xác định"}</p>
+                    <p><strong>Mã khuyến mãi:</strong> ${item.promotionId || "Không có"}</p>
+                </div>
+                <hr />
+
+                <!-- Pricing Table -->
+                <div class="section">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Hạng mục</th>
+                                <th>Số lượng</th>
+                                <th>Điểm đến</th>
+                                <th>Đơn giá</th>
+                                <th>Thành tiền</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Người lớn</td>
+                                <td>${item.adults || 0}</td>
+                                <td>${item.title || "Tour không xác định"}</td>
+                                <td>${(item.unitPriceAdult || 0).toLocaleString("vi-VN")} VND</td>
+                                <td>${totalAdult.toLocaleString("vi-VN")} VND</td>
+                            </tr>
+                            <tr>
+                                <td>Trẻ em</td>
+                                <td>${item.children || 0}</td>
+                                <td>${item.title || "Tour không xác định"}</td>
+                                <td>${(item.unitPriceChild || 0).toLocaleString("vi-VN")} VND</td>
+                                <td>${totalChild.toLocaleString("vi-VN")} VND</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Summary -->
+                <div class="section text-right">
+                    <p><strong>Giá gốc:</strong> ${originalPrice.toLocaleString("vi-VN")} VND</p>
+                    <p><strong>Thuế:</strong> ${tax.toLocaleString("vi-VN")} VND ${
+                        tax > 0 ? `(${((tax / originalPrice) * 100).toFixed(2)}%)` : ""
+                    }</p>
+                    <p><strong>Giảm giá:</strong> ${discount.toLocaleString("vi-VN")} VND ${
+                        discount > 0 ? `(${((discount / originalPrice) * 100).toFixed(2)}%)` : ""
+                    }</p>
+                    <p class="text-bold"><strong>Tổng cộng:</strong> ${finalPrice.toLocaleString("vi-VN")} VND</p>
+                </div>
+                <hr />
+
+                <!-- Payment Information -->
+                <div class="section">
+                    <p><strong>Phương thức thanh toán:</strong> ${item.paymentMethodName || "Không có"}</p>
+                    <p><strong>Trạng thái thanh toán:</strong> ${item.paymentStatus || "Chưa thanh toán"}</p>
+                </div>
+                <hr />
+
+                <!-- Footer -->
+                <div class="footer">
+                    <p>Nếu có sai sót, vui lòng liên hệ: 
+                        <a href="mailto:${provider.email}" class="text-blue-600">${provider.email}</a> | 
+                        <a href="tel:${provider.phone}" class="text-blue-600">${provider.phone}</a>
+                    </p>
+                </div>
             </div>
-        </section>
-        <hr class="my-2 border-black" />
-
-        <!-- Pricing Table -->
-        <table class="w-full border border-black border-collapse mt-2">
-            <thead>
-                <tr class="bg-gray-200 text-left">
-                    <th class="border border-black p-1">Hạng mục</th>
-                    <th class="border border-black p-1">Số lượng</th>
-                    <th class="border border-black p-1">Điểm đến</th>
-                    <th class="border border-black p-1">Đơn giá</th>
-                    <th class="border border-black p-1">Thành tiền</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr>
-                    <td class="border border-black p-1">Người lớn</td>
-                    <td class="border border-black p-1">${item.adults}</td>
-                    <td class="border border-black p-1">${item.title}</td>
-                    <td class="border border-black p-1">${item.unitPriceAdult.toLocaleString("vi-VN")} VND</td>
-                    <td class="border border-black p-1">${totalAdult.toLocaleString("vi-VN")} VND</td>
-                </tr>
-                <tr>
-                    <td class="border border-black p-1">Trẻ em</td>
-                    <td class="border border-black p-1">${item.children}</td>
-                    <td class="border border-black p-1">${item.title}</td>
-                    <td class="border border-black p-1">${item.unitPriceChild.toLocaleString("vi-VN")} VND</td>
-                    <td class="border border-black p-1">${totalChild.toLocaleString("vi-VN")} VND</td>
-                </tr>
-            </tbody>
-        </table>
-
-        <!-- Summary -->
-        <div class="text-right mt-2 space-y-0.5">
-            <p><strong>Giá gốc:</strong> ${originalPrice.toLocaleString("vi-VN")} VND</p>
-            <p><strong>Thuế:</strong> ${tax.toLocaleString("vi-VN")} VND</p>
-            <p><strong>Giảm giá:</strong> ${discount.toLocaleString("vi-VN")} VND</p>
-            <p><strong class="text-lg text-blue-700">Tổng cộng:</strong> <span class="text-lg font-bold">${finalPrice.toLocaleString("vi-VN")} VND</span></p>
-        </div>
-        <hr class="my-2 border-black" />
-
-        <!-- Payment Information -->
-        <div class="flex justify-between compact">
-            <p><strong>Phương thức thanh toán:</strong> ${item.paymentMethodName}</p>
-            <p><strong>Trạng thái thanh toán:</strong> ${item.paymentStatus}</p>
-        </div>
-
-        <!-- Footer -->
-        <footer class="text-center text-smaller border-t border-black pt-2 mt-auto">
-            Nếu có sai sót, vui lòng liên hệ: 
-            <a href="mailto:${provider.email}" class="text-blue-600 underline">${provider.email}</a> | 
-            <a href="tel:${provider.phone}" class="text-blue-600 underline">${provider.phone}</a>
-        </footer>
-    </div>
-</body>
-</html>
+        </body>
+        </html>
         `;
 
         printWindow.document.write(html);

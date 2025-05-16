@@ -4,6 +4,12 @@ import Invoice from "./BookingDetailAll";
 import GoBack from "../../components/GoBack/Goback";
 import { getDataBookingTourById } from "../../services/bookingService";
 
+// Hàm định dạng tour_id
+const formatTourId = (tourId) => {
+    if (!tourId || isNaN(tourId)) return "Không xác định";
+    return `Tour${String(tourId).padStart(3, "0")}`;
+};
+
 function BookingDetail() {
     const { id } = useParams();
     const [bookingDetail, setBookingDetail] = useState(null);
@@ -17,7 +23,7 @@ function BookingDetail() {
 
                 if (response.status === 200) {
                     const data = response.data;
-                    // Ánh xạ dữ liệu từ API sang định dạng Invoice mong đợi
+
                     const mappedData = {
                         bookingId: data.booking_id || id || "N/A",
                         adults: Number(data.num_adults) || 0,
@@ -56,9 +62,9 @@ function BookingDetail() {
                         account: "N/A",
                         tax: Number(data.tax) || 0,
                         discount: data.promotion_id ? Math.round(Number(data.total_price) * 0.1) : 0,
-                        title: data.title || "Tour không xác định", // Chỉ giữ title, xóa tourName
+                        title: data.title || "Tour không xác định",
                         specialRequests: data.special_requests || "Không có",
-                        tourId: data.formatted_tour_id || "Không xác định",
+                        tourId: data.formatted_tour_id || formatTourId(data.tour_id),
                         userId: data.user_id || "Không xác định",
                         promotionId: data.promotion_id || "Không có",
                     };
