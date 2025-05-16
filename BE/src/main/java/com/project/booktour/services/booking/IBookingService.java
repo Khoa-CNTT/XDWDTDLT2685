@@ -18,7 +18,7 @@ public interface IBookingService {
 
     Booking updateBooking(Long id, BookingDTO bookingDTO) throws DataNotFoundException;
 
-    void deleteBooking(Long id) throws DataNotFoundException;
+    void cancelBooking(Long id) throws DataNotFoundException;
 
     List<BookingDTO> findByUserId(Long userId) throws DataNotFoundException;
     boolean hasUserBookedTour(Long userId, Long tourId);

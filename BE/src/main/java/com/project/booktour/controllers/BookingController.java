@@ -16,6 +16,8 @@ import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.*;
@@ -147,18 +149,23 @@ public class BookingController {
         }
     }
 
-    @DeleteMapping("/{id}")
-    @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<?> deleteBooking(@Valid @PathVariable Long id) {
+    @PutMapping("/{id}/cancel")
+    @PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
+    public ResponseEntity<?> cancelBooking(@PathVariable Long id) {
         try {
-            bookingService.deleteBooking(id);
-            return ResponseEntity.ok("Booking deleted successfully");
+            bookingService.cancelBooking(id);
+            return ResponseEntity.ok("Booking cancelled successfully");
         } catch (DataNotFoundException e) {
             return ResponseEntity.badRequest().body(e.getMessage());
+        } catch (IllegalStateException e) {
+            // Bắt lỗi huỷ gần ngày tour
+            return ResponseEntity.badRequest().body(e.getMessage());
         } catch (Exception e) {
-            return ResponseEntity.badRequest().body("An error occurred while deleting the booking");
+            e.printStackTrace(); // Log lỗi ra để debug
+            return ResponseEntity.badRequest().body("Có lỗi xảy ra khi huỷ booking");
         }
     }
+
 
 
     @PostMapping("/{bookingId}/confirm-payment-and-booking")

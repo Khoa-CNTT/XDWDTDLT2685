@@ -30,8 +30,10 @@ public class IOAuth2UserService extends DefaultOAuth2UserService {
     private final RoleRepository roleRepository;
     private final JwtTokenUtil jwtTokenUtil;
 
-    public IOAuth2UserService(UserRepository userRepository, SocialAccountRepository socialAccountRepository,
-                              RoleRepository roleRepository, JwtTokenUtil jwtTokenUtil) {
+    public IOAuth2UserService(UserRepository userRepository,
+                              SocialAccountRepository socialAccountRepository,
+                              RoleRepository roleRepository,
+                              JwtTokenUtil jwtTokenUtil) {
         this.userRepository = userRepository;
         this.socialAccountRepository = socialAccountRepository;
         this.roleRepository = roleRepository;
@@ -61,7 +63,7 @@ public class IOAuth2UserService extends DefaultOAuth2UserService {
                             .userName(email.split("@")[0])
                             .password("") // Mật khẩu rỗng cho OAuth2
                             .isActive(true)
-                            .role(roleRepository.findByName("user") // Sử dụng "user" khớp với DB
+                            .role(roleRepository.findByName("user")
                                     .orElseGet(() -> {
                                         LOGGER.warning("Role 'user' không tìm thấy, tạo mới role mặc định.");
                                         return roleRepository.save(Role.builder().name("user").build());
@@ -72,7 +74,7 @@ public class IOAuth2UserService extends DefaultOAuth2UserService {
                     return userRepository.save(newUser);
                 });
 
-        // Kiểm tra và lưu SocialAccount để tránh trùng lặp
+        // Kiểm tra và lưu SocialAccount
         Optional<SocialAccount> existingSocialAccount = socialAccountRepository.findByProviderAndProviderId(provider, providerId);
         SocialAccount socialAccount;
         if (existingSocialAccount.isPresent()) {
@@ -107,6 +109,13 @@ public class IOAuth2UserService extends DefaultOAuth2UserService {
         List<SimpleGrantedAuthority> authorities = Collections.singletonList(
                 new SimpleGrantedAuthority("ROLE_" + user.getRole().getName().toUpperCase())
         );
-        return new CustomOAuth2User(user.getUsername(), authorities, jwtToken, user.getEmail());
+
+        return new CustomOAuth2User(
+                user.getUsername(),
+                authorities,
+                jwtToken,
+                user.getEmail(),
+                user.getRole().getRoleId() // truyền roleId vào
+        );
     }
 }

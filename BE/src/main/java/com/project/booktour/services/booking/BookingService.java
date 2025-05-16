@@ -8,10 +8,12 @@ import com.project.booktour.repositories.CheckoutRepository;
 import com.project.booktour.repositories.PromotionRepository;
 import com.project.booktour.repositories.TourRepository;
 import com.project.booktour.repositories.UserRepository;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
@@ -196,13 +198,25 @@ public class BookingService implements IBookingService {
         return bookingRepository.save(booking);
     }
 
-    @Override
-    public void deleteBooking(Long id) throws DataNotFoundException {
+    @Transactional
+    public void cancelBooking(Long id) throws DataNotFoundException {
         Booking booking = bookingRepository.findById(id)
-                .orElseThrow(() -> new DataNotFoundException("Cannot find booking with id: " + id));
+                .orElseThrow(() -> new DataNotFoundException("Không tìm thấy booking: " + id));
+
+        // Chỉ giữ lại logic nghiệp vụ
+        if (booking.getBookingStatus() != BookingStatus.PENDING &&
+                booking.getBookingStatus() != BookingStatus.CONFIRMED) {
+            throw new IllegalStateException("Chỉ có thể hủy booking ở trạng thái PENDING hoặc CONFIRMED");
+        }
+
+        if (booking.getTour().getStartDate().isBefore(LocalDate.now().plusDays(3))) {
+            throw new IllegalStateException("Không thể hủy booking trong vòng 3 ngày trước khi tour bắt đầu");
+        }
+
+        booking.setBookingStatus(BookingStatus.CANCELLED);
+        booking.setUpdatedAt(LocalDateTime.now());
         bookingRepository.save(booking);
     }
-
     @Override
     public List<BookingDTO> findByUserId(Long userId) throws DataNotFoundException {
         User user = userRepository.findById(userId)
@@ -268,7 +282,6 @@ public class BookingService implements IBookingService {
     public Long countBookingsByTourId(Long tourId) {
         return bookingRepository.countBookingsByTourId(tourId);
     }
-
 
 
 
