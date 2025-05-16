@@ -6,6 +6,7 @@ import PaymentSidebar from '../Payment/PaymentSidebar';
 import HeaderImg from '../HeaderImg/HeaderImg';
 import BookingDetailSibar from './BookingDetailSibar';
 import { getBookingId } from '../../services/booking';
+import BookingMethod from './BookingMethod';
 
 const formatDate = (date) => {
     const d = new Date(date);
@@ -14,6 +15,7 @@ const formatDate = (date) => {
     const year = d.getFullYear();
     return `${day}-${month}-${year}`;
 };
+
 const TourBookingDetail = () => {
     const [startDate, setStartDate] = useState('');
     const [endDate, setEndDate] = useState('');
@@ -22,7 +24,6 @@ const TourBookingDetail = () => {
     const [countAdult, setCountAdult] = useState(0);
     const [countChildren, setCountChildren] = useState(0);
 
-
     const [full_name, setFullName] = useState('');
     const [email, setEmail] = useState('');
     const [phone_number, setPhoneNumber] = useState('');
@@ -30,7 +31,6 @@ const TourBookingDetail = () => {
     const [paymentMethod, setPaymentMethod] = useState('');
     const [title, setTitle] = useState('');
     const [total_price, setTotalPrice] = useState(0);
-    const [bookingStatusLabel, setBookingStatusLabel] = useState('');
 
     useEffect(() => {
         const fetchBookingDetail = async () => {
@@ -53,15 +53,7 @@ const TourBookingDetail = () => {
                 setEndDate(data.end_date || '');
                 setPriceAdult(data.price_adult || 0);
                 setPriceChild(data.price_child || 0);
-
-
-                if (data.booking_status === 'PENDING') {
-                    setPaymentMethod('Văn phòng');
-                    setBookingStatusLabel('Văn phòng');
-                } else {
-                    setPaymentMethod('VNPAY');
-                    setBookingStatusLabel('VNPAY');
-                }
+                setPaymentMethod(data.payment_method || '');
 
             } catch (error) {
                 console.error("Lỗi khi lấy chi tiết booking:", error);
@@ -85,7 +77,7 @@ const TourBookingDetail = () => {
                             address={address} setAddress={setAddress}
                             disabled={true}
                         />
-                        <PaymentMethod
+                        <BookingMethod
                             value={paymentMethod}
                             setPaymentMethod={setPaymentMethod}
                             disabled={true}

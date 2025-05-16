@@ -45,7 +45,7 @@ const PlacesCard = ({ item, booking = true, size = "default", left = false, star
                     </div>
                     <div className='flex items-center'>
                         <FaRegUser />
-                        <span className='ml-1'>{item.quantity}</span>
+                        <span className='ml-1'>{item.availableSlots}</span>
                     </div>
                 </div>
             </div>

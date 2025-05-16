@@ -18,6 +18,18 @@ const Login = () => {
     const [loading, setLoading] = useState(false)
     const navigate = useNavigate();
 
+    useEffect(() => {
+        const token = localStorage.getItem('token');
+        if (token) {
+            navigate('/');
+        }
+        // Xử lý lỗi từ OAuth2 redirect
+        const query = new URLSearchParams(location.search);
+        if (query.get('error')) {
+            toast.error('Đăng nhập Google/Facebook thất bại. Vui lòng thử lại.');
+        }
+    }, [navigate, location]);
+
     const handleSubmit = async (e) => {
         e.preventDefault();
         const newErrors = Validation(user_name, password);
