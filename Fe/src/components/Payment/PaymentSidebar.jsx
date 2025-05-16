@@ -19,26 +19,24 @@ const PaymentSidebar = ({
     const location = useLocation();
     const { item, startDate, endDate } = location.state || {};
     const [loading, setLoading] = useState(false)
-    // console.log("1111", item)
     const navigate = useNavigate();
     const priceAdult = item.price_adult;
     const priceChild = item.price_child;
 
     const total = countAdult * priceAdult + countChildren * priceChild;
     const total_quality = countAdult + countChildren;
+
     const handleSubmit = async (e) => {
         e.preventDefault();
         if (!full_name || !email || !phone_number || !address) {
             toast.warning("Vui lòng nhập đầy đủ thông tin liên hệ");
             return;
         }
-        // kiểm tra số điện thoại
         const isValidPhone = /^0\d{9}$/.test(phone_number) && !/^(\d)\1{9}$/.test(phone_number);
         if (!isValidPhone) {
             toast.error('Số điện thoại không hợp lệ!');
             return;
         }
-        // Kiểm tra đã chọn số lượng vé
         if (countAdult === 0 && countChildren === 0) {
             toast.warning("Vui lòng chọn ít nhất một vé người lớn hoặc trẻ em");
             return;
@@ -49,7 +47,6 @@ const PaymentSidebar = ({
         }
 
         try {
-
             const tour_id = localStorage.getItem('tour_id');
             const user_id = localStorage.getItem('user_id');
             const data = {
@@ -77,7 +74,6 @@ const PaymentSidebar = ({
                     window.location.href = paymentUrl;
                     return;
                 }
-                // Lưu tour_id vào localStorage (nếu chưa có) tạm thời
                 const booked = new Set(JSON.parse(localStorage.getItem('booked_tours') || '[]'));
                 booked.add(tour_id);
                 localStorage.setItem('booked_tours', JSON.stringify([...booked]))
@@ -93,14 +89,14 @@ const PaymentSidebar = ({
             }
         } catch (error) {
             toast.error('Có lỗi xảy ra khi đặt tour!');
-            // console.error('Lỗi hệ thống:', error);
             setLoading(false);
         }
     };
 
     return (
-
         <div className='pt-10'>
+
+
             <div className='w-full h-auto dark:bg-[#101828] dark:text-white border border-gray-200 p-10 rounded-lg shadow-xl bg-white'>
                 <div className='space-y-4'>
                     <div className='flex items-center gap-2'>
@@ -111,11 +107,11 @@ const PaymentSidebar = ({
                     <p className='text-xl font-bold'>{item.title}</p>
                     <div className="space-y-3">
                         <div className="flex items-center gap-2">
-                            <p className="text-lg font-semibold w-36">Ngày khởi hành:</p> {/* thêm w-40 */}
+                            <p className="text-lg font-semibold w-36">Ngày khởi hành:</p>
                             <p className="text-lg ">{startDate}</p>
                         </div>
                         <div className="flex items-center gap-2">
-                            <p className="text-lg font-semibold w-36">Ngày kết thúc:</p> {/* thêm w-40 */}
+                            <p className="text-lg font-semibold w-36">Ngày kết thúc:</p>
                             <p className="text-lg ">{endDate}</p>
                         </div>
                     </div>
