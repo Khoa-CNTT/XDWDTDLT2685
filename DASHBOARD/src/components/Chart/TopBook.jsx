@@ -16,8 +16,6 @@ function TopbookedTour() {
                 if (!res || !res.data || !res.data.tourStats || !Array.isArray(res.data.tourStats)) {
                     throw new Error("Dữ liệu tour không hợp lệ hoặc không tồn tại");
                 }
-
-                // Ánh xạ và sắp xếp tourStats theo bookedSlots giảm dần
                 const formattedData = res.data.tourStats
                     .map((tour) => ({
                         id: tour.tourId,
@@ -53,14 +51,14 @@ function TopbookedTour() {
                 <h2 className="card-title text-sm font-bold">📋 Thông Tin Đặt Tour</h2>
 
                 {error ? (
-                    <div className="text-center text-red-500">{error}</div> // Hiển thị thông báo lỗi
+                    <div className="text-center text-red-500">{error}</div>
                 ) : domesticData.length === 0 ? (
-                    <div className="text-center text-gray-500">Không có dữ liệu tour để hiển thị.</div> // Trường hợp dữ liệu rỗng
+                    <div className="text-center text-gray-500">Không có dữ liệu tour để hiển thị.</div>
                 ) : (
                     <div className="overflow-x-auto">
                         <table className="w-full table-auto border-collapse dark:text-amber-50">
                             <thead>
-                                <tr className="bg-blue-100 text-black">
+                                <tr className="bg-gray-100 dark:bg-slate-800">
                                     <th className="border border-gray-300 px-4 py-2">ID</th>
                                     <th className="border border-gray-300 px-4 py-2">Tên Tour</th>
                                     <th className="border border-gray-300 px-4 py-2">Chỗ Đã Đặt</th>

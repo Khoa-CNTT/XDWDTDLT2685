@@ -10,6 +10,7 @@ import Logout from "../pages/Logout";
 import PrivateRoutes from "../components/PrivateRoutes";
 import ChangePass from "../pages/Admin/ChangePass";
 import NotFound from "../pages/Error";
+import ContactNotifications from "../pages/Contact";
 
 export const routes = [
     {
@@ -38,6 +39,7 @@ export const routes = [
                     { path: ":id", element: <BookingDetail /> },
                 ],
             },
+            { path: "contact", element: <ContactNotifications /> },
             { path: "logout", element: <Logout /> },
             { path: "*", element: <NotFound /> },
         ],

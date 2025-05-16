@@ -30,7 +30,7 @@ function Invoice({ item }) {
         unitPriceChild: Number(item.unitPriceChild) || 0,
         tax: Number(item.tax) || 0,
         discount: Number(item.discount) || 0,
-        title: item.title || "Tour không xác định", // Chỉ giữ title, xóa tourName
+        title: item.title || "Tour không xác định",
         specialRequests: item.specialRequests || "Không có",
         tourId: item.tourId || "Không xác định",
         userId: item.userId || "Không xác định",

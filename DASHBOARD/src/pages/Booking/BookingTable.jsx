@@ -210,7 +210,7 @@ function BookingTourTable({ currentEntries }) {
                                         <td className="action-column border px-4 py-2 text-center">
                                             <div className="relative flex items-center justify-center">
                                                 <button
-                                                    className="text-blue-600 hover:text-blue-800"
+                                                    className="text-[#00c0d1] hover:text-[#019fb5]"
                                                     onClick={() => setDropdownOpen(dropdownOpen === item.booking_id ? null : item.booking_id)}
                                                     disabled={isLoading}
                                                 >
