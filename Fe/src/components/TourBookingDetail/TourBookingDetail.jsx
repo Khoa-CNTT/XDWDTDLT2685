@@ -7,9 +7,21 @@ import HeaderImg from '../HeaderImg/HeaderImg';
 import BookingDetailSibar from './BookingDetailSibar';
 import { getBookingId } from '../../services/booking';
 
+const formatDate = (date) => {
+    const d = new Date(date);
+    const day = String(d.getDate()).padStart(2, '0');
+    const month = String(d.getMonth() + 1).padStart(2, '0');
+    const year = d.getFullYear();
+    return `${day}-${month}-${year}`;
+};
 const TourBookingDetail = () => {
+    const [startDate, setStartDate] = useState('');
+    const [endDate, setEndDate] = useState('');
+    const [priceAdult, setPriceAdult] = useState(0);
+    const [priceChild, setPriceChild] = useState(0);
     const [countAdult, setCountAdult] = useState(0);
     const [countChildren, setCountChildren] = useState(0);
+
 
     const [full_name, setFullName] = useState('');
     const [email, setEmail] = useState('');
@@ -37,6 +49,11 @@ const TourBookingDetail = () => {
                 setPhoneNumber(data.phone_number || '');
                 setCountAdult(data.num_adults || 0);
                 setCountChildren(data.num_children || 0);
+                setStartDate(data.start_date || '');
+                setEndDate(data.end_date || '');
+                setPriceAdult(data.price_adult || 0);
+                setPriceChild(data.price_child || 0);
+
 
                 if (data.booking_status === 'PENDING') {
                     setPaymentMethod('Văn phòng');
@@ -81,6 +98,12 @@ const TourBookingDetail = () => {
                             <BookingDetailSibar
                                 title={title}
                                 total_price={total_price}
+                                start_date={formatDate(startDate)}
+                                end_date={formatDate(endDate)}
+                                price_adult={priceAdult}
+                                price_child={priceChild}
+                                num_adults={countAdult}
+                                num_children={countChildren}
                             />
                         </div>
                     </div>

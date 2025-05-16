@@ -3,11 +3,11 @@ import BlogHeader from './BlogHeader';
 import BlogContentCard from './BlogContentCard';
 import { AiOutlineRight, AiOutlineLeft } from 'react-icons/ai';
 
-const   BlogImg = ({ item }) => {
+const BlogImg = ({ item }) => {
     const [selectedIndex, setSelectedIndex] = useState(0);
     const [selectedImg, setSelectedImg] = useState(item.img[0]);
-    
-    
+
+
     const handlePrev = () => {
         setSelectedIndex(prev => {
             const newIndex = prev === 0 ? item.img.length - 1 : prev - 1;
@@ -30,7 +30,7 @@ const   BlogImg = ({ item }) => {
                 <div className='pt-8'>
                     <div className="relative mx-auto">
                         <img
-                            className=' h-[500px] w-full object-cover transition duration-700'
+                            className=' h-[600px] w-full object-cover max-w-7xl transition duration-700'
                             src={selectedImg} alt="" />
                         <button
                             onClick={handlePrev}
@@ -61,7 +61,7 @@ const   BlogImg = ({ item }) => {
                 <BlogHeader item={item} />
             </div>
             <BlogContentCard item={item} />
-            
+
         </div>
     );
 };

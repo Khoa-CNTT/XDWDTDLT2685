@@ -1,32 +1,32 @@
 import React, { useEffect, useState } from 'react';
-import { BsTicketPerforated } from "react-icons/bs";
-import { useLocation, useNavigate } from 'react-router-dom';
-import { toast } from 'react-toastify';
-import { postBooking } from '../../services/booking';
 import { FaSyncAlt } from 'react-icons/fa';
 
 
-const BookingDetailSibar = ({total_price,title}) => {
+const BookingDetailSibar = ({
+    total_price,
+    title,
+    start_date,
+    end_date,
+    price_adult,
+    price_child,
+    num_adults,
+    num_children }) => {
     const [loading, setLoading] = useState(false)
+
     return (
 
         <div className='pt-10'>
             <div className='w-full h-auto dark:bg-[#101828] dark:text-white border border-gray-200 p-10 rounded-lg shadow-xl bg-white'>
                 <div className='space-y-4'>
-                    <div className='flex items-center gap-2'>
-                        <BsTicketPerforated className='w-6 h-6 ' />
-                        <p className='text-lg'>Mã tour:</p>
-                        <p className='font-semibold'></p>
-                    </div>
                     <p className='text-xl font-bold'>{title}</p>
                     <div className="space-y-3">
                         <div className="flex items-center gap-2">
                             <p className="text-lg font-semibold w-36">Ngày khởi hành:</p> {/* thêm w-40 */}
-                            <p className="text-lg "></p>
+                            <p className="text-lg ">{start_date}</p>
                         </div>
                         <div className="flex items-center gap-2">
                             <p className="text-lg font-semibold w-36">Ngày kết thúc:</p> {/* thêm w-40 */}
-                            <p className="text-lg "></p>
+                            <p className="text-lg ">{end_date}</p>
                         </div>
                     </div>
 
@@ -35,11 +35,11 @@ const BookingDetailSibar = ({total_price,title}) => {
                     <div className='flex flex-col space-y-6'>
                         <div className='flex justify-between text-lg'>
                             <p>Người lớn</p>
-                            <p className='font-semibold'> VND</p>
+                            <p className='font-semibold'>{num_adults} x {price_adult.toLocaleString('vi-VN')}VND</p>
                         </div>
                         <div className='flex justify-between text-lg'>
                             <p>Trẻ Em</p>
-                            <p className='font-semibold'> VND</p>
+                            <p className='font-semibold'>{num_children} x {price_child.toLocaleString('vi-VN')}VND</p>
                         </div>
                         <div className='flex justify-between text-lg'>
                             <p>Giảm giá</p>
