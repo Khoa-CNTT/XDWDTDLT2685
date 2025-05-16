@@ -11,7 +11,8 @@ import lombok.*;
 @Builder
 public class SocialAccount {
     @Id
-    @Column(name = "social_account_id") // Đảm bảo khớp với tên cột trong DB
+    @GeneratedValue(strategy = GenerationType.IDENTITY) // Thêm chiến lược tự động tăng
+    @Column(name = "social_account_id")
     private Long socialAccountId;
 
     @Column(name = "provider", nullable = false, length = 20)

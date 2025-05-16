@@ -21,18 +21,14 @@ import java.util.List;
 public class TourResponse extends BaseResponse {
 
     private Long id;
-
     private String title;
-
     @JsonProperty("price_adult")
     private Double priceAdult;
-
     @JsonProperty("price_child")
     private Double priceChild;
-
     @JsonProperty("img")
     private List<String> images;
-    private int quantity;
+    private int availableSlots; // Thay quantity bằng availableSlots
     private String description;
     private String duration;
     private String destination;
@@ -42,21 +38,17 @@ public class TourResponse extends BaseResponse {
     private List<String> notinclude;
     private LocalDate startDate;
     private LocalDate endDate;
-
     @JsonProperty("reviews")
     private List<ReviewResponse> reviews;
-
     @JsonProperty("average_rating")
-    private Float averageRating; // Số sao trung bình
-
+    private Float averageRating;
     @JsonProperty("total_reviews")
-    private Integer totalReviews; // Tổng số đánh giá
+    private Integer totalReviews;
 
-    public static TourResponse fromTour(Tour tour, ObjectMapper objectMapper, List<String> imageUrls, List<ReviewResponse> reviews, Float averageRating, Integer totalReviews) throws Exception {
+    public static TourResponse fromTour(Tour tour, ObjectMapper objectMapper, List<String> imageUrls, List<ReviewResponse> reviews, Float averageRating, Integer totalReviews, int availableSlots) throws Exception {
         List<ScheduleDTO> itinerary = tour.getItinerary() != null
                 ? objectMapper.readValue(tour.getItinerary(), new TypeReference<List<ScheduleDTO>>() {})
                 : null;
-        // Hardcode giá trị cho include và notinclude
         List<String> includeList = Arrays.asList(
                 "Dịch vụ đón và trả khách",
                 "1 bữa ăn mỗi ngày",
@@ -79,7 +71,7 @@ public class TourResponse extends BaseResponse {
                 .priceAdult(tour.getPriceAdult())
                 .priceChild(tour.getPriceChild())
                 .images(imageUrls)
-                .quantity(tour.getQuantity())
+                .availableSlots(availableSlots) // Sử dụng availableSlots
                 .description(tour.getDescription())
                 .duration(tour.getDuration())
                 .destination(tour.getDestination())
@@ -97,5 +89,4 @@ public class TourResponse extends BaseResponse {
         tourResponse.setUpdatedAt(tour.getUpdatedAt());
         return tourResponse;
     }
-
 }

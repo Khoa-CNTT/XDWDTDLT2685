@@ -70,6 +70,7 @@ public class TourService implements ITourService {
                 .orElseThrow(() -> new DataNotFoundException("Tour not found with id: " + tourId));
     }
 
+
     @Override
     public TourResponse getTourDetails(Long id) throws DataNotFoundException {
         Tour tour = tourRepository.findById(id)
@@ -85,15 +86,16 @@ public class TourService implements ITourService {
             imageUrls = Collections.singletonList("http://localhost:8088/api/v1/tours/images/notfound.jpeg");
         }
 
-        // Sử dụng ReviewService để lấy danh sách đánh giá
         List<ReviewResponse> reviews = reviewService.getReviewListByTour(id);
-
-        // Tính số sao trung bình và tổng số đánh giá
         Float averageRating = reviewRepository.findAverageRatingByTourId(id).orElse(0.0f);
         Integer totalReviews = reviewRepository.countByTourTourId(id);
 
+        // Tính số slot còn trống
+        Integer totalBookedTickets = tourRepository.getTotalBookedTicketsByTourId(id);
+        int availableSlots = tour.getQuantity() - (totalBookedTickets != null ? totalBookedTickets : 0);
+
         try {
-            return TourResponse.fromTour(tour, objectMapper, imageUrls, reviews, averageRating, totalReviews);
+            return TourResponse.fromTour(tour, objectMapper, imageUrls, reviews, averageRating, totalReviews, availableSlots);
         } catch (Exception e) {
             throw new RuntimeException("Không thể phân tích chi tiết tour với id: " + id, e);
         }
@@ -110,8 +112,12 @@ public class TourService implements ITourService {
                     Double avgRating = (Double) result[1];
                     String firstImageUrl = (String) result[2];
 
+                    // Tính số slot còn trống
+                    Integer totalBookedTickets = tourRepository.getTotalBookedTicketsByTourId(tour.getTourId());
+                    int availableSlots = tour.getQuantity() - (totalBookedTickets != null ? totalBookedTickets : 0);
+
                     try {
-                        SimplifiedTourResponse response = SimplifiedTourResponse.fromTour(tour, objectMapper);
+                        SimplifiedTourResponse response = SimplifiedTourResponse.fromTour(tour, objectMapper, availableSlots);
                         response.setStar(avgRating != null ? avgRating.floatValue() : 0.0f);
 
                         if (firstImageUrl != null && !firstImageUrl.isEmpty()) {
@@ -127,7 +133,6 @@ public class TourService implements ITourService {
                     }
                 });
     }
-
     @Override
     public Tour updateTour(Long id, TourDTO tourDTO) throws Exception {
         Tour existingTour = getTourById(id);

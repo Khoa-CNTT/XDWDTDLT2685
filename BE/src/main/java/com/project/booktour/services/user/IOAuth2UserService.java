@@ -2,6 +2,7 @@ package com.project.booktour.services.user;
 
 import com.project.booktour.components.JwtTokenUtil;
 import com.project.booktour.exceptions.InvalidParamException;
+import com.project.booktour.models.Role;
 import com.project.booktour.models.SocialAccount;
 import com.project.booktour.models.User;
 import com.project.booktour.models.CustomOAuth2User;
@@ -17,9 +18,12 @@ import org.springframework.stereotype.Service;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+import java.util.logging.Logger;
 
 @Service
 public class IOAuth2UserService extends DefaultOAuth2UserService {
+
+    private static final Logger LOGGER = Logger.getLogger(IOAuth2UserService.class.getName());
 
     private final UserRepository userRepository;
     private final SocialAccountRepository socialAccountRepository;
@@ -42,6 +46,12 @@ public class IOAuth2UserService extends DefaultOAuth2UserService {
         String email = oAuth2User.getAttribute("email");
         String name = oAuth2User.getAttribute("name");
 
+        LOGGER.info("Processing OAuth2 login: provider=" + provider + ", providerId=" + providerId + ", email=" + email);
+
+        if (email == null || email.isEmpty()) {
+            throw new RuntimeException("Email không được cung cấp bởi " + provider);
+        }
+
         // Tìm hoặc tạo người dùng
         User user = userRepository.findByEmail(email)
                 .orElseGet(() -> {
@@ -49,31 +59,16 @@ public class IOAuth2UserService extends DefaultOAuth2UserService {
                             .email(email)
                             .fullName(name)
                             .userName(email.split("@")[0])
-                            .password("")
+                            .password("") // Mật khẩu rỗng cho OAuth2
                             .isActive(true)
-                            .role(roleRepository.findByName("user") // Dùng chữ thường để match với DB
-                                    .orElseThrow(() -> new RuntimeException("Role user không tìm thấy")))
+                            .role(roleRepository.findByName("user") // Sử dụng "user" khớp với DB
+                                    .orElseGet(() -> {
+                                        LOGGER.warning("Role 'user' không tìm thấy, tạo mới role mặc định.");
+                                        return roleRepository.save(Role.builder().name("user").build());
+                                    }))
                             .build();
 
-                    try {
-                        // Chỉ chuyển đổi khi providerId có thể chuyển thành số
-                        if (provider.equals("google")) {
-                            try {
-                                newUser.setGoogleAccountId(Integer.parseInt(providerId));
-                            } catch (NumberFormatException e) {
-                                System.out.println("Google ID không phải là số: " + providerId);
-                            }
-                        } else if (provider.equals("facebook")) {
-                            try {
-                                newUser.setFacebookAccountId(Integer.parseInt(providerId));
-                            } catch (NumberFormatException e) {
-                                System.out.println("Facebook ID không phải là số: " + providerId);
-                            }
-                        }
-                    } catch (Exception e) {
-                        System.err.println("Lỗi khi xử lý provider ID: " + e.getMessage());
-                    }
-
+                    LOGGER.info("Creating new user: " + newUser.getEmail());
                     return userRepository.save(newUser);
                 });
 
@@ -85,7 +80,7 @@ public class IOAuth2UserService extends DefaultOAuth2UserService {
             socialAccount.setEmail(email);
             socialAccount.setName(name);
             socialAccount.setUser(user);
-            System.out.println("Cập nhật SocialAccount hiện có: " + socialAccount.getProviderId());
+            LOGGER.info("Updating existing SocialAccount: " + socialAccount.getProviderId());
         } else {
             socialAccount = SocialAccount.builder()
                     .provider(provider)
@@ -94,16 +89,18 @@ public class IOAuth2UserService extends DefaultOAuth2UserService {
                     .name(name)
                     .user(user)
                     .build();
-            System.out.println("Tạo mới SocialAccount cho provider: " + provider + ", providerId: " + providerId);
+            LOGGER.info("Creating new SocialAccount: provider=" + provider + ", providerId=" + providerId);
         }
         socialAccountRepository.save(socialAccount);
 
         // Tạo JWT token
-        String jwtToken = null;
+        String jwtToken;
         try {
             jwtToken = jwtTokenUtil.generateToken(user);
+            LOGGER.info("Generated JWT token for user: " + user.getUsername());
         } catch (InvalidParamException e) {
-            throw new RuntimeException(e);
+            LOGGER.severe("Failed to generate JWT token: " + e.getMessage());
+            throw new RuntimeException("Không thể tạo JWT token", e);
         }
 
         // Tạo CustomOAuth2User
