@@ -24,6 +24,19 @@ function TourForm({
 }) {
     const [errors, setErrors] = useState({});
 
+    // Hàm chuyển chuỗi tiền tệ thành số
+    const parsePrice = (price) => {
+        if (!price) return 0;
+        const cleanedPrice = price.replace(/[^0-9]/g, "");
+        return parseFloat(cleanedPrice) || 0;
+    };
+
+    // Hàm chuyển số thành chuỗi định dạng tiền tệ
+    const formatPrice = (number) => {
+        if (!number && number !== 0) return "";
+        return number.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+    };
+
     // Tự động cập nhật khu vực khi điểm đến thay đổi
     useEffect(() => {
         if (data.destination) {
@@ -34,22 +47,51 @@ function TourForm({
         }
     }, [data.destination, data.region, handleChange]);
 
-    // Hàm xử lý thay đổi giá và kiểm tra giá > 1000
+    // Hàm xử lý thay đổi giá
     const handlePriceChange = (e) => {
-        handleChange(e);
         const { name, value } = e.target;
-        if (name === "price_adult" || name === "price_child") {
-            if (value === "" || parseFloat(value) <= 1000) {
-                setErrors((prev) => ({ ...prev, [name]: "Giá phải lớn hơn 1000 VNĐ" }));
-            } else {
-                setErrors((prev) => ({ ...prev, [name]: "" }));
-            }
+        const numericValue = parsePrice(value); // Chuyển chuỗi thành số
+
+        // Cập nhật state
+        handleChange({
+            target: {
+                name,
+                value: numericValue.toString(), // Lưu giá trị số
+            },
+        });
+
+        // Không kiểm tra lỗi ngay lập tức, chỉ cập nhật giá trị
+        setErrors((prev) => ({ ...prev, [name]: "" }));
+    };
+
+    // Hàm xử lý gửi biểu mẫu
+    const handleFormSubmit = (e) => {
+        e.preventDefault();
+        let newErrors = {};
+
+        // Kiểm tra giá người lớn
+        if (data.price_adult && parseFloat(data.price_adult) <= 1000) {
+            newErrors.price_adult = "Giá người lớn phải lớn hơn 1000 VNĐ";
         }
+
+        // Kiểm tra giá trẻ em
+        if (data.price_child && parseFloat(data.price_child) <= 1000) {
+            newErrors.price_child = "Giá trẻ em phải lớn hơn 1000 VNĐ";
+        }
+
+        // Nếu có lỗi, cập nhật state errors
+        if (Object.keys(newErrors).length > 0) {
+            setErrors(newErrors);
+            return;
+        }
+
+        // Gửi biểu mẫu
+        handleSubmit(e);
     };
 
     return (
         <form
-            onSubmit={handleSubmit}
+            onSubmit={handleFormSubmit}
             className="space-y-6"
         >
             {/* Tên tour */}
@@ -144,12 +186,11 @@ function TourForm({
             <div>
                 <label className="block font-medium">Giá người lớn (VNĐ):</label>
                 <input
-                    type="number"
+                    type="text"
                     name="price_adult"
-                    value={data.price_adult || data.priceAdult || ""}
+                    value={formatPrice(data.price_adult) || ""}
                     onChange={handlePriceChange}
                     className="mt-1 w-full rounded-md border border-gray-300 p-2 focus:ring-2 focus:ring-[#00c0d1]"
-                    min="1001"
                     required
                 />
                 {errors.price_adult && <p className="mt-1 text-sm text-red-500">{errors.price_adult}</p>}
@@ -159,12 +200,11 @@ function TourForm({
             <div>
                 <label className="block font-medium">Giá trẻ em (VNĐ):</label>
                 <input
-                    type="number"
+                    type="text"
                     name="price_child"
-                    value={data.price_child || data.priceChild || ""}
+                    value={formatPrice(data.price_child) || ""}
                     onChange={handlePriceChange}
                     className="mt-1 w-full rounded-md border border-gray-300 p-2 focus:ring-2 focus:ring-[#00c0d1]"
-                    min="1001"
                     required
                 />
                 {errors.price_child && <p className="mt-1 text-sm text-red-500">{errors.price_child}</p>}
@@ -237,7 +277,6 @@ function TourForm({
                         onChange={handleImageChange}
                         className="hidden"
                     />
-                    {/* Hiển thị ảnh đã chọn hoặc ảnh hiện tại */}
                     {renderAnh()}
                     {uploadProgress > 0 && uploadProgress < 100 && (
                         <div className="mt-2">

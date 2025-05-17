@@ -2,7 +2,8 @@ import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import Invoice from "./BookingDetailAll";
 import GoBack from "../../components/GoBack/Goback";
-import { getDataBookingTourById } from "../../services/bookingService";
+import { getInvoiceById } from "../../services/bookingService";
+import Swal from "sweetalert2";
 
 // Hàm định dạng tour_id
 const formatTourId = (tourId) => {
@@ -19,9 +20,9 @@ function BookingDetail() {
         setLoading(true);
         const fetchApi = async () => {
             try {
-                const response = await getDataBookingTourById(id);
+                const response = await getInvoiceById(id);
 
-                if (response.status === 200) {
+                if (response.status === 200 && response.data) {
                     const data = response.data;
 
                     const mappedData = {
@@ -29,14 +30,8 @@ function BookingDetail() {
                         adults: Number(data.num_adults) || 0,
                         children: Number(data.num_children) || 0,
                         totalPrice: Number(data.total_price) || 0,
-                        unitPriceAdult:
-                            data.num_adults && Number(data.total_price) > 0
-                                ? Math.round((Number(data.total_price) * 0.7) / Number(data.num_adults))
-                                : 0,
-                        unitPriceChild:
-                            data.num_children && Number(data.total_price) > 0
-                                ? Math.round((Number(data.total_price) * 0.3) / Number(data.num_children))
-                                : 0,
+                        unitPriceAdult: Number(data.price_adults) || 0, // Lấy từ API
+                        unitPriceChild: Number(data.price_child) || 0, // Lấy từ API
                         customerName: data.full_name || "Không xác định",
                         address: data.address || "Không xác định",
                         phone: data.phone_number || "Không xác định",
@@ -47,6 +42,7 @@ function BookingDetail() {
                                   PENDING: "Chưa xác nhận",
                                   CONFIRMED: "Đã xác nhận",
                                   CANCELLED: "Đã hủy",
+                                  COMPLETED: "Hoàn thành",
                               }[data.booking_status] || "Không xác định"
                             : "Không xác định",
                         paymentMethodName: data.payment_method || "Không xác định",
@@ -59,9 +55,9 @@ function BookingDetail() {
                             : "Không xác định",
                         transactionCode: data.transaction_id || `TRANS-${id}`,
                         paymentDate: data.updated_at ? new Date(data.updated_at).toLocaleString("vi-VN") : new Date().toLocaleString("vi-VN"),
-                        account: "N/A",
+                        account: data.account || "N/A",
                         tax: Number(data.tax) || 0,
-                        discount: data.promotion_id ? Math.round(Number(data.total_price) * 0.1) : 0,
+                        discount: Number(data.discount) || 0, // Lấy từ API
                         title: data.title || "Tour không xác định",
                         specialRequests: data.special_requests || "Không có",
                         tourId: data.formatted_tour_id || formatTourId(data.tour_id),
@@ -70,11 +66,28 @@ function BookingDetail() {
                     };
                     setBookingDetail(mappedData);
                 } else {
-                    throw new Error(response.data || "Lỗi khi lấy thông tin booking");
+                    throw new Error(response.data?.message || "Lỗi khi lấy thông tin hóa đơn");
                 }
             } catch (error) {
-                console.error("Error fetching booking detail:", error);
+                console.error("Error fetching invoice detail:", error);
                 setBookingDetail(null);
+                if (error.message === "Yêu cầu xác thực MFA") {
+                    // Đã được xử lý bởi interceptor
+                } else if (error.response?.status === 404) {
+                    Swal.fire({
+                        icon: "error",
+                        title: "Không tìm thấy hóa đơn",
+                        text: "Hóa đơn với ID này không tồn tại.",
+                        confirmButtonText: "OK",
+                    });
+                } else {
+                    Swal.fire({
+                        icon: "error",
+                        title: "Lỗi",
+                        text: error.message || "Không thể tải thông tin hóa đơn",
+                        confirmButtonText: "OK",
+                    });
+                }
             } finally {
                 setLoading(false);
             }
@@ -83,11 +96,21 @@ function BookingDetail() {
     }, [id]);
 
     if (loading) {
-        return <p>Đang tải...</p>;
+        return (
+            <div className="py-10 text-center">
+                <div className="mx-auto h-12 w-12 animate-spin rounded-full border-t-4 border-b-4 border-blue-500"></div>
+                <span className="mt-4 block text-lg text-gray-700 dark:text-gray-200">Đang tải...</span>
+            </div>
+        );
     }
 
     if (!bookingDetail) {
-        return <p>Không tìm thấy!</p>;
+        return (
+            <div className="py-10 text-center">
+                <p className="text-lg text-red-600">Không tìm thấy thông tin hóa đơn!</p>
+                <GoBack />
+            </div>
+        );
     }
 
     return (

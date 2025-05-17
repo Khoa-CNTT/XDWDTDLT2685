@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import GoBack from "../../components/GoBack/Goback";
 
@@ -8,7 +8,7 @@ const initialContactData = [
         name: "Đặng Hữu Quang Huy",
         phone: "01236478945",
         email: "huydang2806@gmail.com",
-        message: "Tôi cần tư vấn tour xịn",
+        message: "Tôi cần gặp nhân viên để tư vấn !",
         checked: false,
     },
     {
@@ -16,20 +16,13 @@ const initialContactData = [
         name: "Đặng Hữu Quang Huy",
         phone: "01236478945",
         email: "huydang2806@gmail.com",
-        message: "Tôi cần tư vấn tour xịn",
+        message: "Tôi muốn nhắn tin cho nhân viên",
         checked: false,
     },
 ];
 
 const ContactNotifications = () => {
-    const [contacts, setContacts] = useState(() => {
-        const savedContacts = localStorage.getItem("contacts");
-        return savedContacts ? JSON.parse(savedContacts) : initialContactData;
-    });
-
-    useEffect(() => {
-        localStorage.setItem("contacts", JSON.stringify(contacts));
-    }, [contacts]);
+    const [contacts, setContacts] = useState(initialContactData);
 
     const toggleCheckbox = (index) => {
         const updatedContacts = [...contacts];

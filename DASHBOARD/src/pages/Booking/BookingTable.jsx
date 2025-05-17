@@ -1,10 +1,10 @@
 import { useEffect, useState } from "react";
-import Swal from "sweetalert2"; // Import Swal
+import Swal from "sweetalert2";
 import icons from "../../util/icon";
 import { Link } from "react-router-dom";
 import VNPAY from "../../assets/Img/images.png";
 import PayOffice from "../../assets/Img/payoffice.png";
-import { confirmPaymentAndBooking } from "../../services/bookingService";
+import { confirmPaymentAndBooking, deleteBooking, cancelBooking } from "../../services/bookingService";
 
 const { IoIosArrowDropdownCircle } = icons;
 
@@ -12,18 +12,8 @@ function BookingTourTable({ currentEntries }) {
     const [dropdownOpen, setDropdownOpen] = useState(null);
     const [bookingData, setBookingData] = useState([]);
     const [isLoading, setIsLoading] = useState(false);
-    const [isAdmin, setIsAdmin] = useState(false);
 
     useEffect(() => {
-        // Kiểm tra token khi component mount
-        const token = localStorage.getItem("token");
-        if (token) {
-            // Giả sử token chứa vai trò ADMIN nếu tồn tại, vì bạn chỉ lưu cho admin
-            setIsAdmin(true);
-        } else {
-            setIsAdmin(false);
-        }
-
         if (currentEntries && Array.isArray(currentEntries)) {
             setBookingData(currentEntries);
         } else {
@@ -78,20 +68,119 @@ function BookingTourTable({ currentEntries }) {
                 text: error.message,
                 confirmButtonText: "Thử lại",
             });
-            if (error.response?.status === 401) {
-                Swal.fire({
-                    icon: "warning",
-                    title: "Phiên đăng nhập hết hạn",
-                    text: "Vui lòng đăng nhập lại.",
-                    confirmButtonText: "Đến trang đăng nhập",
-                }).then(() => {
-                    localStorage.removeItem("token");
-                    window.location.href = "/login";
-                });
-            }
         } finally {
             setIsLoading(false);
         }
+    };
+
+    const handleDeleteBooking = async (bookingId) => {
+        const token = localStorage.getItem("token");
+        if (!token) {
+            Swal.fire({
+                icon: "error",
+                title: "Vui lòng đăng nhập",
+                text: "Bạn cần đăng nhập với tài khoản admin để thực hiện hành động này.",
+                confirmButtonText: "Đến trang đăng nhập",
+            }).then(() => {
+                window.location.href = "/login";
+            });
+            return;
+        }
+
+        Swal.fire({
+            icon: "warning",
+            title: "Xác nhận xóa",
+            text: "Bạn có chắc chắn muốn xóa booking này?",
+            showCancelButton: true,
+            confirmButtonText: "Xóa",
+            cancelButtonText: "Hủy",
+        }).then(async (result) => {
+            if (result.isConfirmed) {
+                setIsLoading(true);
+                try {
+                    const response = await deleteBooking(bookingId);
+                    if (response.status !== 200) {
+                        throw new Error(response.data || "Lỗi khi xóa booking");
+                    }
+
+                    const updatedBookingData = bookingData.filter((b) => b.booking_id !== bookingId);
+                    setBookingData(updatedBookingData);
+                    setDropdownOpen(null);
+
+                    Swal.fire({
+                        icon: "success",
+                        title: "Thành công!",
+                        text: "Booking đã được xóa.",
+                        confirmButtonText: "OK",
+                    });
+                } catch (error) {
+                    console.error("Error deleting booking:", error);
+                    Swal.fire({
+                        icon: "error",
+                        title: "Lỗi khi xóa",
+                        text: error.message,
+                        confirmButtonText: "Thử lại",
+                    });
+                } finally {
+                    setIsLoading(false);
+                }
+            }
+        });
+    };
+
+    const handleCancelBooking = async (bookingId) => {
+        const token = localStorage.getItem("token");
+        if (!token) {
+            Swal.fire({
+                icon: "error",
+                title: "Vui lòng đăng nhập",
+                text: "Bạn cần đăng nhập để thực hiện hành động này.",
+                confirmButtonText: "Đến trang đăng nhập",
+            }).then(() => {
+                window.location.href = "/login";
+            });
+            return;
+        }
+
+        Swal.fire({
+            icon: "warning",
+            title: "Xác nhận hủy",
+            text: "Bạn có chắc chắn muốn hủy booking này?",
+            showCancelButton: true,
+            confirmButtonText: "Hủy Booking",
+            cancelButtonText: "Thoát",
+        }).then(async (result) => {
+            if (result.isConfirmed) {
+                setIsLoading(true);
+                try {
+                    const response = await cancelBooking(bookingId);
+                    if (response.status !== 200) {
+                        throw new Error(response.data || "Lỗi khi hủy booking");
+                    }
+
+                    const updatedBookingData = bookingData.map((b) => (b.booking_id === bookingId ? { ...b, booking_status: "CANCELLED" } : b));
+                    setBookingData(updatedBookingData);
+                    setDropdownOpen(null);
+
+                    Swal.fire({
+                        icon: "success",
+                        title: "Thành công!",
+                        text: "Booking đã được hủy.",
+                        confirmButtonText: "OK",
+                    });
+                } catch (error) {
+                    console.error("Error cancelling booking:", error);
+                    Swal.fire({
+                        icon: "error",
+                        title: "Lỗi khi hủy",
+                        text: error.message,
+                        confirmButtonText: "Thử lại",
+                    });
+                } finally {
+                    setIsLoading(false);
+                }
+            }
+        });
     };
 
     const translateStatus = (status, type) => {
@@ -103,6 +192,8 @@ function BookingTourTable({ currentEntries }) {
                     return "Đã xác nhận";
                 case "CANCELLED":
                     return "Đã hủy";
+                case "COMPLETED":
+                    return "Hoàn thành";
                 default:
                     return status || "Không xác định";
             }
@@ -169,7 +260,11 @@ function BookingTourTable({ currentEntries }) {
                                                         ? "bg-green-500"
                                                         : item.booking_status === "PENDING"
                                                           ? "bg-yellow-500"
-                                                          : "bg-gray-500"
+                                                          : item.booking_status === "COMPLETED"
+                                                            ? "bg-blue-500"
+                                                            : item.booking_status === "CANCELLED"
+                                                              ? "bg-red-500"
+                                                              : "bg-gray-500"
                                                 }`}
                                             >
                                                 {translateStatus(item.booking_status, "booking")}
@@ -218,7 +313,7 @@ function BookingTourTable({ currentEntries }) {
                                                 </button>
                                                 {dropdownOpen === item.booking_id && (
                                                     <div className="absolute top-full right-0 z-10 mt-2 min-w-[140px] rounded border bg-white text-left shadow-md">
-                                                        {item.booking_status === "PENDING" && item.payment_status === "PENDING" && isAdmin && (
+                                                        {item.booking_status === "PENDING" && item.payment_status === "PENDING" && (
                                                             <button
                                                                 className="w-full px-4 py-2 text-left text-sm text-green-600 hover:bg-green-50"
                                                                 onClick={() => handleConfirmBooking(item.booking_id)}
@@ -227,7 +322,25 @@ function BookingTourTable({ currentEntries }) {
                                                                 ✅ Xác nhận
                                                             </button>
                                                         )}
-                                                        <Link to={`/booking/${item.booking_id}`}>
+                                                        {(item.booking_status === "PENDING" || item.booking_status === "CONFIRMED") && (
+                                                            <button
+                                                                className="w-full px-4 py-2 text-left text-sm text-red-600 hover:bg-red-50"
+                                                                onClick={() => handleCancelBooking(item.booking_id)}
+                                                                disabled={isLoading}
+                                                            >
+                                                                🚫 Hủy
+                                                            </button>
+                                                        )}
+                                                        {(item.booking_status === "COMPLETED" || item.booking_status === "CANCELLED") && (
+                                                            <button
+                                                                className="w-full px-4 py-2 text-left text-sm text-red-600 hover:bg-red-50"
+                                                                onClick={() => handleDeleteBooking(item.booking_id)}
+                                                                disabled={isLoading}
+                                                            >
+                                                                🗑️ Xóa
+                                                            </button>
+                                                        )}
+                                                        <Link to={`/invoice/bookings/${item.booking_id}`}>
                                                             <button className="w-full px-4 py-2 text-left text-sm text-blue-600 hover:bg-blue-50">
                                                                 📄 Xem chi tiết
                                                             </button>

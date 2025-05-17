@@ -41,7 +41,7 @@ function Invoice({ item }) {
     const totalAdult = bookingData.adults * bookingData.unitPriceAdult;
     const totalChild = bookingData.children * bookingData.unitPriceChild;
     const originalPrice = totalAdult + totalChild;
-    // const finalPrice = originalPrice + bookingData.tax - bookingData.discount;
+    const finalPrice = originalPrice + bookingData.tax - bookingData.discount;
 
     // Thời gian hiện tại
     const currentDateTime = new Date().toLocaleString("vi-VN");
@@ -62,7 +62,10 @@ function Invoice({ item }) {
             </div>
 
             {/* Invoice Content */}
-            <div className="mx-auto mt-5 rounded-lg bg-gray-50 p-6 shadow-lg dark:bg-slate-950">
+            <div
+                id="invoice-content"
+                className="mx-auto mt-5 rounded-lg bg-gray-50 p-6 shadow-lg dark:bg-slate-950"
+            >
                 <div className="mb-4 flex items-center justify-between">
                     <div className="flex items-center space-x-4">
                         <img
@@ -110,7 +113,7 @@ function Invoice({ item }) {
                             <strong className="text-blue-500 dark:text-blue-300">Trạng thái:</strong>
                             <span
                                 className={`ml-2 font-semibold ${
-                                    bookingData.bookingStatus === "Đã hoàn thành"
+                                    bookingData.bookingStatus === "Hoàn thành"
                                         ? "text-green-600"
                                         : bookingData.bookingStatus === "Đã xác nhận"
                                           ? "text-yellow-600"
@@ -188,7 +191,7 @@ function Invoice({ item }) {
 
                 <div className="mb-6 space-y-1 text-right">
                     <p className="text-sm text-gray-700 dark:text-gray-300">
-                        <span className="font-medium">Giá gốc:</span> {(bookingData.totalPrice || 0).toLocaleString("vi-VN")} VND
+                        <span className="font-medium">Giá gốc:</span> {(originalPrice || 0).toLocaleString("vi-VN")} VND
                     </p>
                     <p className="text-sm text-gray-700 dark:text-gray-300">
                         <span className="font-medium">Thuế:</span> {(bookingData.tax || 0).toLocaleString("vi-VN")} VND{" "}
@@ -202,9 +205,7 @@ function Invoice({ item }) {
                             <span className="text-xs text-gray-500">({((bookingData.discount / originalPrice) * 100).toFixed(2)}%)</span>
                         )}
                     </p>
-                    <p className="text-lg font-bold text-gray-900 dark:text-white">
-                        Tổng cộng: {(bookingData.totalPrice || 0).toLocaleString("vi-VN")} VND
-                    </p>
+                    <p className="text-lg font-bold text-gray-900 dark:text-white">Tổng cộng: {(finalPrice || 0).toLocaleString("vi-VN")} VND</p>
                 </div>
 
                 <div className="mb-6 rounded-md bg-blue-50 p-4 dark:bg-slate-700">

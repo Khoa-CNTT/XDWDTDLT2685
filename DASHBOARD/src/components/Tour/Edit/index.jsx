@@ -13,15 +13,22 @@ function EditTour({ item }) {
     const [files, setFiles] = useState([]);
     const [areImagesChanged, setAreImagesChanged] = useState(false);
 
+    // Hàm chuyển chuỗi tiền tệ thành số
+    const parsePrice = (price) => {
+        if (!price) return 0;
+        if (typeof price === "number") return price;
+        const cleanedPrice = price.replace(/[^0-9]/g, "");
+        return parseFloat(cleanedPrice) || 0;
+    };
+
+    // Hàm chuyển số thành chuỗi định dạng tiền tệ (3.800.000)
+    const formatPrice = (number) => {
+        if (!number && number !== 0) return "";
+        return number.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+    };
+
     useEffect(() => {
         if (item) {
-            const parsePrice = (price) => {
-                if (!price) return 0;
-                if (typeof price === "number") return price;
-                const cleanedPrice = price.replace(/[^0-9]/g, "");
-                return parseFloat(cleanedPrice) || 0;
-            };
-
             const images = Array.isArray(item.img) ? item.img : typeof item.img === "string" && item.img ? [item.img] : [];
 
             setData({
@@ -29,8 +36,8 @@ function EditTour({ item }) {
                 tourId: item.id,
                 startDate: item.startDate ? item.startDate.split("T")[0] : "",
                 endDate: item.endDate ? item.endDate.split("T")[0] : "",
-                priceAdult: parsePrice(item.price_adult),
-                priceChild: parsePrice(item.price_child),
+                price_adult: parsePrice(item.price_adult), // Lưu số: 3800000
+                price_child: parsePrice(item.price_child), // Lưu số: 1600000
                 images,
                 img: images,
             });
@@ -96,9 +103,10 @@ function EditTour({ item }) {
 
         if (name === "availability") {
             updatedData[name] = value === "true";
-        } else if (["priceAdult", "priceChild", "quantity"].includes(name)) {
+        } else if (["price_adult", "price_child"].includes(name)) {
             const cleanedValue = value.replace(/[^0-9]/g, "");
-            updatedData[name] = parseFloat(cleanedValue) || 0;
+            const numericValue = parseFloat(cleanedValue) || 0;
+            updatedData[name] = numericValue; // Lưu số
         } else if (["include", "notinclude"].includes(name)) {
             updatedData[name] = value.split("\n").filter(Boolean);
         } else {
@@ -201,8 +209,8 @@ function EditTour({ item }) {
                     startDate: data.startDate,
                     endDate: data.endDate,
                     duration: data.duration,
-                    price_adult: parseFloat(data.priceAdult) || 0,
-                    price_child: parseFloat(data.priceChild) || 0,
+                    price_adult: parseFloat(data.price_adult) || 0, // Gửi số: 3800000
+                    price_child: parseFloat(data.price_child) || 0, // Gửi số: 1600000
                     quantity: parseInt(data.quantity) || 0,
                     availability: data.availability,
                     itinerary: itinerary.map((item) => ({
@@ -259,60 +267,55 @@ function EditTour({ item }) {
     };
 
     const renderAnh = () => {
-        if (files.length > 0) {
-            return (
-                <div className="mt-2 flex flex-wrap gap-4">
-                    {files.map((file, index) => (
-                        <div
-                            key={index}
-                            className="h-24 w-24 overflow-hidden rounded shadow"
-                        >
-                            <img
-                                src={URL.createObjectURL(file)}
-                                alt={`Ảnh mới ${index + 1}`}
-                                className="h-full w-full object-cover"
-                            />
-                        </div>
-                    ))}
-                </div>
-            );
+        const allImages = [
+            ...(Array.isArray(data.images) ? data.images : []),
+            ...(files.length > 0 ? Array.from(files).map((file) => URL.createObjectURL(file)) : []),
+        ];
+
+        const handleDeleteImage = (index) => {
+            if (index < data.images.length) {
+                const newImages = data.images.filter((_, i) => i !== index);
+                setData((prev) => ({ ...prev, images: newImages, img: newImages }));
+                setAreImagesChanged(true);
+            } else {
+                const fileIndex = index - data.images.length;
+                const newFiles = Array.from(files).filter((_, i) => i !== fileIndex);
+                setFiles(newFiles);
+                setAreImagesChanged(true);
+            }
+        };
+
+        if (allImages.length === 0) {
+            return <p className="text-gray-500">Chưa có ảnh. Vui lòng tải lên ít nhất một ảnh.</p>;
         }
 
-        if (Array.isArray(data.images) && data.images.length > 0) {
-            return (
-                <div className="mt-2 flex flex-wrap gap-4">
-                    {data.images.map((img, index) => (
-                        <div
-                            key={index}
-                            className="relative h-24 w-24 overflow-hidden rounded shadow"
+        return (
+            <div className="mt-2 flex flex-wrap gap-4">
+                {allImages.map((img, index) => (
+                    <div
+                        key={index}
+                        className="relative h-24 w-24 overflow-hidden rounded shadow"
+                    >
+                        <img
+                            src={img}
+                            alt={`Ảnh ${index + 1}`}
+                            className="h-full w-full object-cover"
+                            onError={(e) => {
+                                console.error(`Failed to load image ${img}`);
+                                e.target.src = "https://via.placeholder.com/150?text=Image+Not+Found";
+                            }}
+                        />
+                        <button
+                            type="button"
+                            className="absolute top-0 right-0 flex h-6 w-6 items-center justify-center rounded-full bg-red-500 text-xs text-white"
+                            onClick={() => handleDeleteImage(index)}
                         >
-                            <img
-                                src={img}
-                                alt={`Ảnh hiện tại ${index + 1}`}
-                                className="h-full w-full object-cover"
-                                onError={(e) => {
-                                    console.error(`Failed to load image ${img}`, e);
-                                    e.target.src = "https://via.placeholder.com/150?text=Image+Not+Found";
-                                }}
-                            />
-                            <button
-                                type="button"
-                                className="absolute top-0 right-0 h-7 w-7 items-center rounded-full bg-red-500 p-1 text-white"
-                                onClick={() => {
-                                    const newImages = data.images.filter((_, i) => i !== index);
-                                    setData((prev) => ({ ...prev, images: newImages, img: newImages }));
-                                    setAreImagesChanged(true);
-                                }}
-                            >
-                                X
-                            </button>
-                        </div>
-                    ))}
-                </div>
-            );
-        }
-
-        return <p className="text-gray-500">Chưa có ảnh. Vui lòng tải lên ít nhất một ảnh.</p>;
+                            X
+                        </button>
+                    </div>
+                ))}
+            </div>
+        );
     };
 
     return (

@@ -114,7 +114,7 @@ function ShowBookingTour() {
                                 {...register("name")}
                                 type="text"
                                 placeholder="Tìm kiếm theo tên tour hoặc người dùng"
-                                className="w-full bg-transparent text-slate-900 outline-none placeholder:text-slate-300 dark:text-slate-50 dark:placeholder:text-slate-400"
+                                className="w-full bg-transparent whitespace-nowrap text-slate-900 outline-none placeholder:text-slate-300 dark:text-slate-50 dark:placeholder:text-slate-400"
                             />
                         </div>
                     </form>

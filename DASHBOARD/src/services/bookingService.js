@@ -1,4 +1,4 @@
-import { get, post } from "../util/requestserver";
+import { get, post, put } from "../util/requestserver";
 
 export const getDataBookingTour = async (page, limit = 10, keyword = "") => {
     try {
@@ -19,23 +19,24 @@ export const getDataBookingTour = async (page, limit = 10, keyword = "") => {
     }
 };
 
-// Lấy thông tin booking theo ID
-export const getDataBookingTourById = async (id) => {
+export const getInvoiceById = async (id) => {
     try {
-        const res = await get(`bookings/${id}`);
+        const res = await get("invoices", {
+            params: { bookingId: id },
+        });
+
         return {
             status: res.status,
             data: res.data,
         };
     } catch (error) {
-        console.error(`Lỗi khi lấy thông tin booking với ID ${id}:`, error);
+        console.error(`Lỗi khi lấy thông tin hóa đơn với booking ID ${id}:`, error.response || error);
         return {
             status: error.response?.status || 500,
-            data: error.response?.data || "Đã xảy ra lỗi khi lấy thông tin booking",
+            data: error.response?.data || "Đã xảy ra lỗi khi lấy thông tin hóa đơn",
         };
     }
 };
-
 // Xác nhận thanh toán và cập nhật trạng thái booking sang CONFIRMED
 export const confirmPaymentAndBooking = async (bookingId) => {
     try {
@@ -52,10 +53,21 @@ export const confirmPaymentAndBooking = async (bookingId) => {
         };
     }
 };
+
 // Gửi email hóa đơn kèm PDF
-export const sendInvoiceEmail = async (bookingId) => {
+export const sendInvoiceEmail = async (bookingId, pdfFile) => {
     try {
-        const res = await post(`/bookings/${bookingId}/send-invoice`);
+        const formData = new FormData();
+        formData.append("bookingId", bookingId);
+        if (pdfFile) {
+            formData.append("file", pdfFile);
+        }
+
+        const res = await post("/invoices/send", formData, {
+            headers: {
+                "Content-Type": "multipart/form-data",
+            },
+        });
         return {
             status: res.status,
             data: res.data,
@@ -65,6 +77,38 @@ export const sendInvoiceEmail = async (bookingId) => {
         return {
             status: error.response?.status || 500,
             data: error.response?.data || "Đã xảy ra lỗi khi gửi email hóa đơn",
+        };
+    }
+};
+// Xóa booking theo ID
+export const deleteBooking = async (bookingId) => {
+    try {
+        const res = await delete `bookings/${bookingId}`;
+        return {
+            status: res.status,
+            data: res.data,
+        };
+    } catch (error) {
+        console.error(`Lỗi khi xóa booking với ID ${bookingId}:`, error);
+        return {
+            status: error.response?.status || 500,
+            data: error.response?.data || "Đã xảy ra lỗi khi xóa booking",
+        };
+    }
+};
+// Hủy booking theo ID
+export const cancelBooking = async (bookingId) => {
+    try {
+        const res = await put(`/bookings/${bookingId}/cancel`);
+        return {
+            status: res.status,
+            data: res.data,
+        };
+    } catch (error) {
+        console.error(`Lỗi khi hủy booking với ID ${bookingId}:`, error);
+        return {
+            status: error.response?.status || 500,
+            data: error.response?.data || "Đã xảy ra lỗi khi hủy booking",
         };
     }
 };

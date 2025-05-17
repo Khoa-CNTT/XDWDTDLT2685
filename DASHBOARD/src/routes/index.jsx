@@ -3,7 +3,7 @@ import Booking from "../pages/Booking";
 import Home from "../pages/Home";
 import Customer from "../pages/Users";
 import Tour from "../pages/Tour";
-import BookingDetail from "../pages/Booking/BookingDetail";
+import BookingDetail from "../pages/Invoice/BookingDetail";
 import ShowBookingTour from "../pages/Booking/ShowBooking";
 import Login from "../pages/Login";
 import Logout from "../pages/Logout";
@@ -36,8 +36,12 @@ export const routes = [
                 element: <Booking />,
                 children: [
                     { index: true, element: <ShowBookingTour /> },
-                    { path: ":id", element: <BookingDetail /> },
+                    // Bỏ route /booking/:id vì không còn sử dụng
                 ],
+            },
+            {
+                path: "invoice/bookings/:id", // Thêm route mới
+                element: <BookingDetail />,
             },
             { path: "contact", element: <ContactNotifications /> },
             { path: "logout", element: <Logout /> },
