@@ -6,6 +6,7 @@ import { FaRegUser } from 'react-icons/fa';
 import { Link } from 'react-router-dom';
 import { getAllBookingId } from '../../services/tour';
 import NoPage from '../../pages/NoPage';
+import { FiArrowUpRight } from "react-icons/fi";
 
 const TourHistory = () => {
     const [bookings, setBookings] = useState([]);
@@ -42,16 +43,27 @@ const TourHistory = () => {
                                     className='w-[300px] h-[230px] rounded-xl object-cover'
                                 />
                             </Link>
-                            <div className='w-[120px] absolute top-4 left-[-30px] h-8 px-4 py-2 flex justify-center items-center bg-yellow-400 rounded-2xl shadow-sm'>
+                            {/* <div className='w-[120px] absolute top-4 left-[-30px] h-8 px-4 py-2 flex justify-center items-center bg-yellow-400 rounded-2xl shadow-sm'>
                                 <p className='text-sm font-semibold text-white'>Chờ xác nhận</p>
-                            </div>
-                            {/* <div
-                                className={`w-[120px] absolute top-4 left-[-30px] h-8 px-4 py-2 flex justify-center items-center rounded-2xl shadow-sm 
-        ${item.status === 'PENDING' ? 'bg-yellow-400' : item.status === 'COMPLETED' ? 'bg-green-500' : 'bg-gray-300'}`}>
+                            </div> */}
+
+
+                            <div
+                                className={`w-[120px] absolute top-4 left-[-30px] h-8 px-4 py-2 flex justify-center items-center rounded-2xl shadow-sm
+                                            ${item.booking_status === 'PENDING' ? 'bg-yellow-400' :
+                                        item.booking_status === 'CONFIRMED' ? 'bg-blue-500' :
+                                            item.booking_status === 'COMPLETED' ? 'bg-green-500' : 'bg-gray-300'}`}>
                                 <p className='text-sm font-semibold text-white'>
-                                    {item.status === 'PENDING' ? 'Chờ xác nhận' : item.status === 'COMPLETED' ? 'Đã xác nhận' : 'Không xác định'}
-                                </p> */}
-                            {/* </div> */}
+                                    {
+                                        item.booking_status === 'PENDING' ? 'Chờ xác nhận' :
+                                            item.booking_status === 'CONFIRMED' ? 'Đã xác nhận' :
+                                                item.booking_status === 'COMPLETED' ? 'Hoàn thành' :
+                                                    'Không xác định'}
+                                </p>
+                            </div>
+
+
+
                             <div className='flex flex-col space-y-2'>
                                 <div className='flex items-center gap-6'>
                                     <div className='flex gap-2 opacity-70'>
@@ -88,7 +100,13 @@ const TourHistory = () => {
                                     <div className=' opacity-70'>
                                         <p className='mt-4 text-xl font-bold'>{item.total_price.toLocaleString('vi-VN')}</p>
                                     </div>
-                                    <button className='w-[100px] text-lg rounded-xl h-10 border bg-primary text-white border-gray-200'>Đánh giá</button>
+                                    {/* {!item.booking_status === 'COMPLETED' && ( */}
+                                    <Link to="/tour/{item.id}"
+                                        className='w-[120px] h-10 p-2 flex items-center justify-center gap-1 text-lg rounded-2xl border border-black bg-white text-black font-normal hover:bg-green-600 hover:text-white hover:border-gray-200 '
+                                    >
+                                        Đánh giá <FiArrowUpRight className="w-5 h-5" />
+                                    </Link>
+                                    {/* )} */}
                                 </div>
 
                             </div>

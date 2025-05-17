@@ -17,7 +17,7 @@ const BlogFeedback = ({ item }) => {
                                 <FaUserAlt className="w-20 h-20 text-gray-400" /> 
                             )}
                             <div className='ml-8 space-y-2'>
-                                <h3 className='font-semibold'>{fb.full_name}</h3>
+                                <h3 className='font-semibold'>{fb.user_name}</h3>
                                 <StarDisplay rating={fb.rating} />
                                 <p className='text-lg'>{item.duration}</p>
                                 <p className='text-lg'>{fb.comment}</p>

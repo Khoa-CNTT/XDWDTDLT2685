@@ -25,10 +25,10 @@ const TourFilter = () => {
         sortValue,
         setSortValue,
         tours,
-        resetFilters
+        resetFilters,
+        setStarRating
     } = useTourFilterSort();
     // const [loading, setLoading] = useState(false)
-
 
     return (
         <div className='pt-10'>
@@ -89,6 +89,7 @@ const TourFilter = () => {
                                         type="radio"
                                         className="w-4 h-4"
                                         name="rating"
+                                        onChange={() => setStarRating(rating)}
                                     />
                                     <StarDisplay rating={rating} />
                                 </div>

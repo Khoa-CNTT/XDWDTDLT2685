@@ -80,6 +80,7 @@ const PaymentSidebar = ({
                 setTimeout(() => {
                     toast.success('Đặt tour thành công!');
                     navigate("/tourbooking")
+                    window.scrollTo(0, 0)
                 }, 1000);
             } else {
                 setTimeout(() => {
@@ -99,11 +100,7 @@ const PaymentSidebar = ({
 
             <div className='w-full h-auto dark:bg-[#101828] dark:text-white border border-gray-200 p-10 rounded-lg shadow-xl bg-white'>
                 <div className='space-y-4'>
-                    <div className='flex items-center gap-2'>
-                        <BsTicketPerforated className='w-6 h-6 ' />
-                        <p className='text-lg'>Mã tour:</p>
-                        <p className='font-semibold'>{item.code}</p>
-                    </div>
+
                     <p className='text-xl font-bold'>{item.title}</p>
                     <div className="space-y-3">
                         <div className="flex items-center gap-2">
