@@ -23,9 +23,9 @@ public class TourResponse extends BaseResponse {
     private Long id;
     private String title;
     @JsonProperty("price_adult")
-    private Double priceAdult;
+    private String priceAdult;
     @JsonProperty("price_child")
-    private Double priceChild;
+    private String priceChild;
     @JsonProperty("img")
     private List<String> images;
     private int availableSlots; // Thay quantity bằng availableSlots
@@ -68,8 +68,8 @@ public class TourResponse extends BaseResponse {
         TourResponse tourResponse = TourResponse.builder()
                 .id(tour.getTourId())
                 .title(tour.getTitle())
-                .priceAdult(tour.getPriceAdult())
-                .priceChild(tour.getPriceChild())
+                .priceAdult(String.format("%,.0f VNĐ", tour.getPriceAdult()))
+                .priceChild(String.format("%,.0f VNĐ", tour.getPriceChild()))
                 .images(imageUrls)
                 .availableSlots(availableSlots) // Sử dụng availableSlots
                 .description(tour.getDescription())

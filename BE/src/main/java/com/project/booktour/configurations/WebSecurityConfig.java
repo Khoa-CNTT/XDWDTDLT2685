@@ -18,6 +18,8 @@ import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 
 import static org.springframework.http.HttpMethod.*;
@@ -29,18 +31,19 @@ public class WebSecurityConfig {
     private final JwtTokenFilter jwtTokenFilter;
     private final IOAuth2UserService oAuth2UserService;
 
+
     @Value("${api.prefix}")
     private String apiPrefix;
+
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
                 .csrf(AbstractHttpConfigurer::disable)
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
-                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)) // Không dùng session
+                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .addFilterBefore(jwtTokenFilter, UsernamePasswordAuthenticationFilter.class)
                 .authorizeHttpRequests(requests -> {
                     requests
-                            // Các endpoint công khai
                             .requestMatchers(
                                     String.format("%s/users/register", apiPrefix),
                                     String.format("%s/users/login", apiPrefix),
@@ -97,31 +100,37 @@ public class WebSecurityConfig {
                 )
                 .oauth2Login(oauth2 -> oauth2
                         .userInfoEndpoint(userInfo -> userInfo
-                                .userService(oAuth2UserService) // Sử dụng IOAuth2UserService tùy chỉnh
+                                .userService(oAuth2UserService)
                         )
                         .successHandler((request, response, authentication) -> {
                             CustomOAuth2User oauthUser = (CustomOAuth2User) authentication.getPrincipal();
                             String jwtToken = oauthUser.getJwtToken();
                             String userName = oauthUser.getName();
                             String email = oauthUser.getEmail();
-                            String role = oauthUser.getAuthorities().iterator().next().getAuthority().replace("ROLE_", "");
+                            Long roleId = oauthUser.getRoleId(); // Lấy roleId
 
-                            // Chuyển hướng về frontend với query parameters
+                            // Xử lý trường hợp roleId null
+                            String roleIdStr = roleId != null ? roleId.toString() : "default_role_id";
+
+                            // Chuyển hướng với roleId
                             String redirectUrl = String.format(
-                                    "http://localhost:5173/redirect?token=%s&user_name=%s&email=%s&role=%s",
-                                    jwtToken, userName, email, role
+                                    "http://localhost:5173/redirect?token=%s&user_name=%s&email=%s&roleId=%s",
+                                    URLEncoder.encode(jwtToken, StandardCharsets.UTF_8),
+                                    URLEncoder.encode(userName, StandardCharsets.UTF_8),
+                                    URLEncoder.encode(email, StandardCharsets.UTF_8),
+                                    URLEncoder.encode(roleIdStr, StandardCharsets.UTF_8)
                             );
                             response.sendRedirect(redirectUrl);
                         })
                         .failureHandler((request, response, exception) -> {
-                            // Chuyển hướng về frontend với thông báo lỗi
                             response.sendRedirect("http://localhost:5173/login?error=true");
                         })
                 )
-                .formLogin(form -> form.disable()); // Tắt form login mặc định
+                .formLogin(form -> form.disable());
 
         return http.build();
     }
+
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();

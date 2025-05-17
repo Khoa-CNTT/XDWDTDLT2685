@@ -15,7 +15,7 @@ import java.time.LocalDate;
 @AllArgsConstructor
 @Builder
 public class BookedTourResponse extends BaseResponse {
-
+    private Long tourId;
     private String title;
     private String description;
     private String duration;
@@ -42,6 +42,8 @@ public class BookedTourResponse extends BaseResponse {
 
     @JsonProperty("num_children")
     private int numChildren;
+    @JsonProperty("booking_status")
+    private BookingStatus bookingStatus;
 
     public static BookedTourResponse fromBooking(Booking booking, ObjectMapper objectMapper) throws Exception {
         Tour tour = booking.getTour();
@@ -72,6 +74,7 @@ public class BookedTourResponse extends BaseResponse {
         }
 
         BookedTourResponse response = new BookedTourResponse();
+        response.setTourId(tour.getTourId());
         response.setTitle(tour.getTitle());
         response.setDescription(tour.getDescription());
         response.setDuration(tour.getDuration());
@@ -88,6 +91,7 @@ public class BookedTourResponse extends BaseResponse {
         response.setEndDate(tour.getEndDate());
         response.setDestination(tour.getDestination());
         response.setRating(averageRating);
+        response.setBookingStatus(booking.getBookingStatus());
         response.setBookingId(booking.getBookingId());
         response.setNumAdults(booking.getNumAdults());
         response.setNumChildren(booking.getNumChildren());

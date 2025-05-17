@@ -87,10 +87,9 @@ public class BookingDTO {
     private LocalDate endDate;
 
     @JsonProperty("price_adult")
-    private double priceAdult;
+    private String priceAdult;
 
     @JsonProperty("price_child")
-    private double priceChild;
-    private String code;
+    private String priceChild;
 
 }

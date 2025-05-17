@@ -10,4 +10,5 @@ import lombok.Setter;
 public class AuthResponse {
     private String email;
     private String token;
+    private Long roleId; // Thêm roleId với kiểu Long
 }

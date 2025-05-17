@@ -128,7 +128,7 @@ public class BookingService implements IBookingService {
         Optional<Checkout> checkoutOpt = checkoutRepository.findByBookingBookingId(booking.getBookingId());
         String paymentMethod = checkoutOpt.map(Checkout::getPaymentMethod).orElse(null);
         PaymentStatus paymentStatus = checkoutOpt.map(Checkout::getPaymentStatus).orElse(null);
-
+        Tour tour   = booking.getTour();
         // Kiểm tra và cập nhật trạng thái COMPLETED nếu tour đã kết thúc
         LocalDate currentDate = LocalDate.now();
         if (booking.getBookingStatus() == BookingStatus.CONFIRMED && booking.getTour().getEndDate().isBefore(currentDate)) {
@@ -139,9 +139,9 @@ public class BookingService implements IBookingService {
 
         return BookingDTO.builder()
                 .bookingId(booking.getBookingId())
-                .title(booking.getTour().getTitle())
+                .title(tour.getTitle())
                 .userId(booking.getUser().getUserId())
-                .tourId(booking.getTour().getTourId())
+                .tourId(tour.getTourId())
                 .numAdults(booking.getNumAdults())
                 .numChildren(booking.getNumChildren())
                 .totalPrice(booking.getTotalPrice())
@@ -152,10 +152,10 @@ public class BookingService implements IBookingService {
                 .email(booking.getUser().getEmail())
                 .address(booking.getUser().getAddress())
                 .phoneNumber(booking.getUser().getPhoneNumber())
-                .startDate(booking.getTour().getStartDate())
-                .endDate(booking.getTour().getEndDate())
-                .priceAdult(booking.getTour().getPriceAdult())
-                .priceChild(booking.getTour().getPriceChild())
+                .startDate(tour.getStartDate())
+                .endDate(tour.getEndDate())
+                .priceAdult(String.format("%,.0f VNĐ", tour.getPriceAdult())) // Chuyển sang Long
+                .priceChild(String.format("%,.0f VNĐ", tour.getPriceAdult())) // Chuyển sang Long
                 .createdAt(booking.getCreatedAt())
                 .updatedAt(booking.getUpdatedAt())
                 .paymentMethod(paymentMethod)
@@ -236,11 +236,12 @@ public class BookingService implements IBookingService {
                 booking.setUpdatedAt(LocalDateTime.now());
                 bookingRepository.save(booking);
             }
-
+            Tour tour = booking.getTour();
             return BookingDTO.builder()
-                    .title(booking.getTour().getTitle())
+                    .bookingId(booking.getBookingId())
+                    .title(tour.getTitle())
                     .userId(booking.getUser().getUserId())
-                    .tourId(booking.getTour().getTourId())
+                    .tourId(tour.getTourId())
                     .numAdults(booking.getNumAdults())
                     .numChildren(booking.getNumChildren())
                     .totalPrice(booking.getTotalPrice())
@@ -251,6 +252,10 @@ public class BookingService implements IBookingService {
                     .email(booking.getUser().getEmail())
                     .address(booking.getUser().getAddress())
                     .phoneNumber(booking.getUser().getPhoneNumber())
+                    .startDate(tour.getStartDate())
+                    .endDate(tour.getEndDate())
+                    .priceAdult(String.format("%,.0f VNĐ", tour.getPriceAdult())) // Chuyển sang Long
+                    .priceChild(String.format("%,.0f VNĐ", tour.getPriceChild())) // Chuyển sang Long
                     .createdAt(booking.getCreatedAt())
                     .updatedAt(booking.getUpdatedAt())
                     .paymentMethod(paymentMethod)
