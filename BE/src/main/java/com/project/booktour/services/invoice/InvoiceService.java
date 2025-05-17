@@ -41,38 +41,49 @@ public class InvoiceService implements IInvoiceService {
         return buildInvoiceResponse(booking, invoice);
     }
 
-    @Override
-    public String sendInvoiceToCustomer(Long bookingId, MultipartFile file) {
-        try {
-            // Lấy thông tin booking
-            Booking booking = bookingRepository.findById(bookingId)
-                    .orElseThrow(() -> new RuntimeException("Booking not found"));
 
-            User user = booking.getUser();
-            if (user == null) {
-                throw new RuntimeException("User not found for this booking");
+    @Override
+    public String sendInvoiceToCustomer(Long bookingId, MultipartFile file) throws IOException {
+        try {
+            // Validate input
+            if (bookingId == null) {
+                throw new IllegalArgumentException("Booking ID cannot be null");
             }
 
-            // Xử lý file nếu có
-            File invoiceFile = null;
-            if (file != null && !file.isEmpty()) {
-                invoiceFile = saveUploadedFile(file);
+            // Lấy thông tin booking
+            Booking booking = bookingRepository.findById(bookingId)
+                    .orElseThrow(() -> new RuntimeException("Booking not found with id: " + bookingId));
+
+            User user = booking.getUser();
+            if (user == null || user.getEmail() == null || user.getEmail().isEmpty()) {
+                throw new RuntimeException("User information or email is missing for booking: " + bookingId);
+            }
+
+            // Kiểm tra file đính kèm
+            if (file != null && file.isEmpty()) {
+                throw new IllegalArgumentException("File đính kèm rỗng");
             }
 
             // Tạo nội dung email
             String emailContent = buildEmailContent(booking);
+
+            // Log dữ liệu để debug
+            System.out.println("Sending email to: " + user.getEmail());
+            System.out.println("Subject: Hóa đơn đặt tour #" + bookingId);
+            System.out.println("Attachment: " + (file != null ? file.getOriginalFilename() : "None"));
 
             // Gửi email
             emailService.sendInvoiceEmail(
                     user.getEmail(),
                     "Hóa đơn đặt tour #" + bookingId,
                     emailContent,
-                    invoiceFile
+                    file
             );
 
             return "Invoice sent successfully to " + user.getEmail();
-        } catch (Exception e) {
-            throw new RuntimeException("Failed to send invoice: " + e.getMessage());
+        } catch (RuntimeException e) {
+            e.printStackTrace();
+            throw new IOException("Failed to send invoice: " + e.getMessage(), e);
         }
     }
 
@@ -123,9 +134,9 @@ public class InvoiceService implements IInvoiceService {
                 .bookingId(booking.getBookingId())
                 .numAdults(booking.getNumAdults())
                 .numChildren(booking.getNumChildren())
-                .priceAdults(tour != null ? tour.getPriceAdult() : 0.0)
-                .priceChild(tour != null ? tour.getPriceChild() : 0.0)
-                .totalPrice(booking.getTotalPrice())
+                .priceAdults(String.format("%,.0f VNĐ", tour.getPriceAdult()))
+                .priceChild(String.format("%,.0f VNĐ", tour.getPriceAdult()))
+                .totalPrice(String.format("%,.0f VNĐ",booking.getTotalPrice()))
                 .fullName(booking.getUser() != null ? booking.getUser().getFullName() : null)
                 .address(booking.getUser() != null ? booking.getUser().getAddress() : null)
                 .phoneNumber(booking.getUser() != null ? booking.getUser().getPhoneNumber() : null)

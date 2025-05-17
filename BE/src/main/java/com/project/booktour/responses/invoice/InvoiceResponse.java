@@ -19,13 +19,13 @@ public class InvoiceResponse {
     private Integer numChildren;
 
     @JsonProperty("price_adults")
-    private Double priceAdults;
+    private String priceAdults;
 
     @JsonProperty("price_child")
-    private Double priceChild;
+    private String  priceChild;
 
     @JsonProperty("total_price")
-    private Double totalPrice;
+    private String totalPrice;
 
     @JsonProperty("full_name")
     private String fullName;

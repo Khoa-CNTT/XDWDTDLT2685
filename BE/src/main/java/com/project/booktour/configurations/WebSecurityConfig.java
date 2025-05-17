@@ -42,6 +42,9 @@ public class WebSecurityConfig {
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .addFilterBefore(jwtTokenFilter, UsernamePasswordAuthenticationFilter.class)
+                .securityContext(context -> context
+                        .requireExplicitSave(false) // Giữ context sau khi filter JWT xử lý
+                )
                 .authorizeHttpRequests(requests -> {
                     requests
                             .requestMatchers(
@@ -73,10 +76,10 @@ public class WebSecurityConfig {
                             .requestMatchers(POST, String.format("%s/history/**", apiPrefix)).hasRole("ADMIN")
                             .requestMatchers(PUT, String.format("%s/history/**", apiPrefix)).hasRole("ADMIN")
                             .requestMatchers(DELETE, String.format("%s/history/**", apiPrefix)).hasRole("ADMIN")
-                            .requestMatchers(GET, String.format("%s/invoice/**", apiPrefix)).hasAnyRole("USER", "ADMIN")
-                            .requestMatchers(POST, String.format("%s/invoice/**", apiPrefix)).hasRole("ADMIN")
-                            .requestMatchers(PUT, String.format("%s/invoice/**", apiPrefix)).hasRole("ADMIN")
-                            .requestMatchers(DELETE, String.format("%s/invoice/**", apiPrefix)).hasRole("ADMIN")
+                            .requestMatchers(GET, String.format("%s/invoices/**", apiPrefix)).hasAnyRole("USER", "ADMIN")
+                            .requestMatchers(POST, String.format("%s/invoices/**", apiPrefix)).hasRole("ADMIN")
+                            .requestMatchers(PUT, String.format("%s/invoices/**", apiPrefix)).hasRole("ADMIN")
+                            .requestMatchers(DELETE, String.format("%s/invoices/**", apiPrefix)).hasRole("ADMIN")
                             .requestMatchers(POST, String.format("%s/checkout/**", apiPrefix)).hasRole("USER")
                             .requestMatchers(GET, String.format("%s/checkout/**", apiPrefix)).hasAnyRole("USER", "ADMIN")
                             .requestMatchers(PUT, String.format("%s/checkout/**", apiPrefix)).hasRole("ADMIN")
@@ -94,6 +97,7 @@ public class WebSecurityConfig {
                 .exceptionHandling(ex -> ex
                         .authenticationEntryPoint((request, response, authException) -> {
                             response.setContentType("application/json");
+                            response.setContentType("application/json;charset=UTF-8");
                             response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
                             response.getWriter().write("{\"error\": \"Unauthorized\", \"message\": \"Token không hợp lệ hoặc thiếu\"}");
                         })
