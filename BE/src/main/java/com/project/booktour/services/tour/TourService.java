@@ -90,9 +90,9 @@ public class TourService implements ITourService {
         Float averageRating = reviewRepository.findAverageRatingByTourId(id).orElse(0.0f);
         Integer totalReviews = reviewRepository.countByTourTourId(id);
 
-        // Tính số slot còn trống
+        // Tính số slot còn trống, đảm bảo không âm
         Integer totalBookedTickets = tourRepository.getTotalBookedTicketsByTourId(id);
-        int availableSlots = tour.getQuantity() - (totalBookedTickets != null ? totalBookedTickets : 0);
+        int availableSlots = Math.max(0, tour.getQuantity() - (totalBookedTickets != null ? totalBookedTickets : 0));
 
         try {
             return TourResponse.fromTour(tour, objectMapper, imageUrls, reviews, averageRating, totalReviews, availableSlots);
@@ -112,9 +112,9 @@ public class TourService implements ITourService {
                     Double avgRating = (Double) result[1];
                     String firstImageUrl = (String) result[2];
 
-                    // Tính số slot còn trống
+                    // Tính số slot còn trống, đảm bảo không âm
                     Integer totalBookedTickets = tourRepository.getTotalBookedTicketsByTourId(tour.getTourId());
-                    int availableSlots = tour.getQuantity() - (totalBookedTickets != null ? totalBookedTickets : 0);
+                    int availableSlots = Math.max(0, tour.getQuantity() - (totalBookedTickets != null ? totalBookedTickets : 0));
 
                     try {
                         SimplifiedTourResponse response = SimplifiedTourResponse.fromTour(tour, objectMapper, availableSlots);

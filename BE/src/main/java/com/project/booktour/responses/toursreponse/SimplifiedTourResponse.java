@@ -22,12 +22,14 @@ public class SimplifiedTourResponse extends BaseResponse {
     @JsonProperty("img")
     private String image;
     private int availableSlots; // Thay quantity bằng availableSlots
+    private int quantity;
     private String title;
     private String description;
     private boolean availability;
     private Float star;
     private String destination;
     private LocalDate startDate;
+    private LocalDate endDate;
     @JsonProperty("price_adult")
     private String priceAdult;
     private List<ScheduleDTO> itinerary;
@@ -45,6 +47,7 @@ public class SimplifiedTourResponse extends BaseResponse {
         simplifiedTourResponse.setTitle(tour.getTitle());
         simplifiedTourResponse.setDestination(tour.getDestination());
         simplifiedTourResponse.setAvailableSlots(availableSlots); // Sử dụng availableSlots
+        simplifiedTourResponse.setQuantity(tour.getQuantity());
         simplifiedTourResponse.setDescription(tour.getDescription());
         simplifiedTourResponse.setPriceAdult(String.format("%,.0f VNĐ", tour.getPriceAdult()));
         simplifiedTourResponse.setPriceChild(String.format("%,.0f VNĐ", tour.getPriceChild()));
@@ -54,6 +57,7 @@ public class SimplifiedTourResponse extends BaseResponse {
         simplifiedTourResponse.setCreatedAt(tour.getCreatedAt());
         simplifiedTourResponse.setUpdatedAt(tour.getUpdatedAt());
         simplifiedTourResponse.setStartDate(tour.getStartDate());
+        simplifiedTourResponse.setEndDate(tour.getEndDate());
         simplifiedTourResponse.setRegion(tour.getRegion().toString());
         return simplifiedTourResponse;
     }

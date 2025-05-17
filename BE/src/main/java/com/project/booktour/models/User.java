@@ -45,11 +45,11 @@ public class User extends BaseEntity implements UserDetails {
     @Column(name = "address", length = 255, nullable = false)
     private String address;
 
-    @Column(name = "created_at")
-    private LocalDateTime createdAt;
-
-    @Column(name = "updated_at")
-    private LocalDateTime updatedAt;
+//    @Column(name = "created_at")
+//    private LocalDateTime createdAt;
+//
+//    @Column(name = "updated_at")
+//    private LocalDateTime updatedAt;
 
     @Column(name = "is_active")
     private Boolean isActive = true;

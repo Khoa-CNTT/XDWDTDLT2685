@@ -29,6 +29,7 @@ public class TourResponse extends BaseResponse {
     @JsonProperty("img")
     private List<String> images;
     private int availableSlots; // Thay quantity bằng availableSlots
+    private int quantity;
     private String description;
     private String duration;
     private String destination;
@@ -71,6 +72,7 @@ public class TourResponse extends BaseResponse {
                 .priceAdult(String.format("%,.0f VNĐ", tour.getPriceAdult()))
                 .priceChild(String.format("%,.0f VNĐ", tour.getPriceChild()))
                 .images(imageUrls)
+                .quantity(tour.getQuantity())
                 .availableSlots(availableSlots) // Sử dụng availableSlots
                 .description(tour.getDescription())
                 .duration(tour.getDuration())
