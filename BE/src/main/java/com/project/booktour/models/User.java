@@ -26,25 +26,18 @@ public class User extends BaseEntity implements UserDetails {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "user_id")
     private Long userId;
-
     @Column(name = "full_name" , length = 50, nullable = false)
     private String fullName;
-
     @Column(name = "user_name", length = 50, nullable = false)
     private String userName;
-
     @Column(name = "password", length = 255, nullable = false)
     private String password;
-
     @Column(name = "email", length = 255, nullable = false)
     private String email;
-
     @Column(name = "phone_number", length = 15, nullable = false)
     private String phoneNumber;
-
     @Column(name = "address", length = 255, nullable = false)
     private String address;
-
 //    @Column(name = "created_at")
 //    private LocalDateTime createdAt;
 //

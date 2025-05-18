@@ -36,13 +36,6 @@ public class BookingService implements IBookingService {
     public Booking createBooking(BookingDTO bookingDTO) throws Exception {
         User user = userRepository.findById(bookingDTO.getUserId())
                 .orElseThrow(() -> new DataNotFoundException("Cannot find user with id: " + bookingDTO.getUserId()));
-        if (bookingDTO.getFullName() != null) user.setFullName(bookingDTO.getFullName());
-        if (bookingDTO.getEmail() != null) user.setEmail(bookingDTO.getEmail());
-        if (bookingDTO.getAddress() != null) user.setAddress(bookingDTO.getAddress());
-        if (bookingDTO.getPhoneNumber() != null) user.setPhoneNumber(bookingDTO.getPhoneNumber());
-        user.setUpdatedAt(LocalDateTime.now());
-        userRepository.save(user);
-
         Tour tour = tourRepository.findById(bookingDTO.getTourId())
                 .orElseThrow(() -> new DataNotFoundException("Cannot find tour with id: " + bookingDTO.getTourId()));
 
@@ -58,6 +51,10 @@ public class BookingService implements IBookingService {
         booking.setTotalPrice(bookingDTO.getTotalPrice());
         booking.setBookingStatus(bookingDTO.getBookingStatus());
         booking.setSpecialRequests(bookingDTO.getSpecialRequests());
+        booking.setFullName(bookingDTO.getFullName());
+        booking.setPhoneNumber(bookingDTO.getPhoneNumber());
+        booking.setEmail(bookingDTO.getEmail());
+        booking.setAddress(bookingDTO.getAddress());
         booking.setUser(user);
         booking.setTour(tour);
         booking.setPromotion(promotion);
@@ -108,10 +105,10 @@ public class BookingService implements IBookingService {
                     .bookingStatus(booking.getBookingStatus())
                     .specialRequests(booking.getSpecialRequests())
                     .promotionId(booking.getPromotion() != null ? booking.getPromotion().getPromotionId() : null)
-                    .fullName(booking.getUser().getFullName())
-                    .email(booking.getUser().getEmail())
-                    .address(booking.getUser().getAddress())
-                    .phoneNumber(booking.getUser().getPhoneNumber())
+                    .fullName(booking.getFullName())
+                    .email(booking.getEmail())
+                    .address(booking.getAddress())
+                    .phoneNumber(booking.getPhoneNumber())
                     .createdAt(booking.getCreatedAt())
                     .updatedAt(booking.getUpdatedAt())
                     .paymentMethod(paymentMethod)
@@ -148,10 +145,10 @@ public class BookingService implements IBookingService {
                 .bookingStatus(booking.getBookingStatus())
                 .specialRequests(booking.getSpecialRequests())
                 .promotionId(booking.getPromotion() != null ? booking.getPromotion().getPromotionId() : null)
-                .fullName(booking.getUser().getFullName())
-                .email(booking.getUser().getEmail())
-                .address(booking.getUser().getAddress())
-                .phoneNumber(booking.getUser().getPhoneNumber())
+                .fullName(booking.getFullName())
+                .email(booking.getEmail())
+                .address(booking.getAddress())
+                .phoneNumber(booking.getPhoneNumber())
                 .startDate(tour.getStartDate())
                 .endDate(tour.getEndDate())
                 .priceAdult(String.format("%,.0f VNĐ", tour.getPriceAdult())) // Chuyển sang Long
@@ -170,10 +167,6 @@ public class BookingService implements IBookingService {
         User user = userRepository.findById(bookingDTO.getUserId())
                 .orElseThrow(() -> new DataNotFoundException("Cannot find user with id: " + bookingDTO.getUserId()));
 
-        if (bookingDTO.getFullName() != null) user.setFullName(bookingDTO.getFullName());
-        if (bookingDTO.getEmail() != null) user.setEmail(bookingDTO.getEmail());
-        if (bookingDTO.getAddress() != null) user.setAddress(bookingDTO.getAddress());
-        if (bookingDTO.getPhoneNumber() != null) user.setPhoneNumber(bookingDTO.getPhoneNumber());
         user.setUpdatedAt(LocalDateTime.now());
         userRepository.save(user);
 
@@ -186,6 +179,10 @@ public class BookingService implements IBookingService {
         booking.setNumChildren(bookingDTO.getNumChildren());
         booking.setTotalPrice(bookingDTO.getTotalPrice());
         booking.setSpecialRequests(bookingDTO.getSpecialRequests());
+        booking.setFullName(bookingDTO.getFullName());
+        booking.setPhoneNumber(bookingDTO.getPhoneNumber());
+        booking.setEmail(bookingDTO.getEmail());
+        booking.setAddress(bookingDTO.getAddress());
         booking.setUser(user);
         booking.setTour(tour);
         booking.setPromotion(promotion);
@@ -248,10 +245,10 @@ public class BookingService implements IBookingService {
                     .bookingStatus(booking.getBookingStatus())
                     .specialRequests(booking.getSpecialRequests())
                     .promotionId(booking.getPromotion() != null ? booking.getPromotion().getPromotionId() : null)
-                    .fullName(booking.getUser().getFullName())
-                    .email(booking.getUser().getEmail())
-                    .address(booking.getUser().getAddress())
-                    .phoneNumber(booking.getUser().getPhoneNumber())
+                    .fullName(booking.getFullName())
+                    .email(booking.getEmail())
+                    .address(booking.getAddress())
+                    .phoneNumber(booking.getPhoneNumber())
                     .startDate(tour.getStartDate())
                     .endDate(tour.getEndDate())
                     .priceAdult(String.format("%,.0f VNĐ", tour.getPriceAdult())) // Chuyển sang Long

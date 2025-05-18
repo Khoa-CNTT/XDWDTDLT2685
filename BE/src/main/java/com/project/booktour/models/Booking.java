@@ -1,6 +1,7 @@
 package com.project.booktour.models;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotBlank;
 import lombok.*;
 
 import java.time.LocalDate;
@@ -48,5 +49,20 @@ public class Booking extends BaseEntity {
     private Promotion promotion;
     @OneToMany(mappedBy = "booking", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private List<Checkout> checkouts;
+    @NotBlank(message = "Full name is required")
+    @Column(name = "full_name", length = 50, nullable = false)
+    private String fullName;
+
+    @NotBlank(message = "Address is required")
+    @Column(name = "address", length = 255, nullable = false)
+    private String address;
+
+    @NotBlank(message = "Phone number is required")
+    @Column(name = "phone_number", length = 15, nullable = false)
+    private String phoneNumber;
+
+    @NotBlank(message = "Email is required")
+    @Column(name = "email", length = 255, nullable = false)
+    private String email;
 
 }

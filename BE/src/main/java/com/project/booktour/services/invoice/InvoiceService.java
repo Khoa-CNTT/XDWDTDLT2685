@@ -54,8 +54,7 @@ public class InvoiceService implements IInvoiceService {
             Booking booking = bookingRepository.findById(bookingId)
                     .orElseThrow(() -> new RuntimeException("Booking not found with id: " + bookingId));
 
-            User user = booking.getUser();
-            if (user == null || user.getEmail() == null || user.getEmail().isEmpty()) {
+            if ( booking.getEmail() == null || booking.getEmail().isEmpty()) {
                 throw new RuntimeException("User information or email is missing for booking: " + bookingId);
             }
 
@@ -68,19 +67,19 @@ public class InvoiceService implements IInvoiceService {
             String emailContent = buildEmailContent(booking);
 
             // Log dữ liệu để debug
-            System.out.println("Sending email to: " + user.getEmail());
+            System.out.println("Sending email to: " + booking.getEmail());
             System.out.println("Subject: Hóa đơn đặt tour #" + bookingId);
             System.out.println("Attachment: " + (file != null ? file.getOriginalFilename() : "None"));
 
             // Gửi email
             emailService.sendInvoiceEmail(
-                    user.getEmail(),
+                    booking.getEmail(),
                     "Hóa đơn đặt tour #" + bookingId,
                     emailContent,
                     file
             );
 
-            return "Invoice sent successfully to " + user.getEmail();
+            return "Invoice sent successfully to " + booking.getEmail();
         } catch (RuntimeException e) {
             e.printStackTrace();
             throw new IOException("Failed to send invoice: " + e.getMessage(), e);
@@ -137,10 +136,10 @@ public class InvoiceService implements IInvoiceService {
                 .priceAdults(String.format("%,.0f VNĐ", tour.getPriceAdult()))
                 .priceChild(String.format("%,.0f VNĐ", tour.getPriceAdult()))
                 .totalPrice(String.format("%,.0f VNĐ",booking.getTotalPrice()))
-                .fullName(booking.getUser() != null ? booking.getUser().getFullName() : null)
-                .address(booking.getUser() != null ? booking.getUser().getAddress() : null)
-                .phoneNumber(booking.getUser() != null ? booking.getUser().getPhoneNumber() : null)
-                .email(booking.getUser() != null ? booking.getUser().getEmail() : null)
+                .fullName(booking.getUser() != null ? booking.getFullName() : null)
+                .address(booking.getUser() != null ? booking.getAddress() : null)
+                .phoneNumber(booking.getUser() != null ? booking.getPhoneNumber() : null)
+                .email(booking.getUser() != null ? booking.getEmail() : null)
                 .createdAt(invoice.getCreatedAt())
                 .bookingStatus(booking.getBookingStatus().name())
                 .paymentMethod(checkout != null ? checkout.getPaymentMethod() : null)
@@ -173,8 +172,7 @@ public class InvoiceService implements IInvoiceService {
     }
 
     private String buildEmailContent(Booking booking) {
-        User user = booking.getUser();
-        return "<h3>Xin chào " + (user != null ? user.getFullName() : "Quý khách") + ",</h3>" +
+        return "<h3>Xin chào " + (booking.getFullName() != null ? booking.getFullName() : "Quý khách") + ",</h3>" +
                 "<p>Cảm ơn bạn đã đặt tour với chúng tôi. Dưới đây là thông tin hóa đơn của bạn:</p>" ;
     }
 

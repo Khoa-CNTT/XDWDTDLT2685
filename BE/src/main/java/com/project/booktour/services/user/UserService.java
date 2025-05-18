@@ -30,6 +30,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
+import java.security.SecureRandom;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
@@ -48,6 +49,7 @@ public class UserService implements IUserService {
     private final AuthenticationManager authenticationManager;
     private final TokenRepository tokenRepository;
     private final EmailService emailService;
+    private final SecureRandom random = new SecureRandom();
     private static final String AVATAR_UPLOAD_DIR = "uploads/avatars/";
     private static final String DEFAULT_AVATAR_PATH = "/uploads/avatars/default-avatar.jpg";
 
@@ -124,6 +126,9 @@ public class UserService implements IUserService {
 
         if (updatedUserDTO.getPhoneNumber() != null) {
             existingUser.setPhoneNumber(updatedUserDTO.getPhoneNumber());
+        }
+        if (updatedUserDTO.getFullName() != null) {
+            existingUser.setFullName(updatedUserDTO.getFullName());
         }
         if (updatedUserDTO.getAddress() != null) {
             existingUser.setAddress(updatedUserDTO.getAddress());
@@ -222,6 +227,7 @@ public class UserService implements IUserService {
 
         return UserProfileResponse.builder()
                 .userName(existingUser.getUsername())
+                .fullName(existingUser.getFullName())
                 .phoneNumber(existingUser.getPhoneNumber())
                 .email(existingUser.getEmail())
                 .avatarPath(avatarPath)
@@ -243,15 +249,19 @@ public class UserService implements IUserService {
 
         userRepository.delete(user);
     }
+
     @Override
+    @Transactional
     public void initiateResetPassword(String email) throws DataNotFoundException, IOException {
         User user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new DataNotFoundException("Email không tồn tại"));
 
-        String resetToken = UUID.randomUUID().toString();
+        // Tạo mã 6 số ngẫu nhiên
+        String resetToken = generateRandomCode();
+
         LocalDateTime expiration = LocalDateTime.now().plusMinutes(10);
 
-        // Xoá token cũ
+        // Xóa token cũ
         tokenRepository.deleteAllByUser(user);
 
         // Lưu token mới
@@ -268,11 +278,29 @@ public class UserService implements IUserService {
         // Gửi email
         String content = "<h3>Mã xác nhận đặt lại mật khẩu</h3>" +
                 "<p>Mã của bạn là: <b>" + resetToken + "</b></p>" +
-                "<p>Mã này có hiệu lực trong 10 phút.</p>";
+                "<p>Mã này có hiệu lực trong 10 phút.</p>" +
+                "<p>Vui lòng nhập mã này để đặt lại mật khẩu. Nếu bạn không yêu cầu, vui lòng bỏ qua email này.</p>";
 
         emailService.sendInvoiceEmail(email, "Yêu cầu đặt lại mật khẩu", content, null);
     }
-    @Override
+
+    private String generateRandomCode() {
+        // Tạo số ngẫu nhiên từ 100000 đến 999999
+        int code = 100000 + random.nextInt(900000);
+        String resetToken = String.valueOf(code);
+
+        // Kiểm tra xem mã đã tồn tại chưa
+        while (tokenRepository.existsByToken(resetToken)) {
+            code = 100000 + random.nextInt(900000);
+            resetToken = String.valueOf(code);
+        }
+
+        return resetToken;
+    }
+
+
+
+   @Override
     public void resetPasswordWithToken(String tokenStr, String newPassword) throws DataNotFoundException {
         Token token = tokenRepository.findByToken(tokenStr)
                 .orElseThrow(() -> new DataNotFoundException("Token không hợp lệ."));

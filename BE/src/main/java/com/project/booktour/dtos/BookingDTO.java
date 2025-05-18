@@ -55,15 +55,21 @@ public class BookingDTO {
     @JsonProperty("promotion_id")
     private Long promotionId;
 
+    @NotBlank(message = "Full name is required")
     @JsonProperty("full_name")
     private String fullName;
 
+    @NotBlank(message = "Email is required")
+    @Email(message = "Email must be valid")
     @JsonProperty("email")
     private String email;
 
+    @NotBlank(message = "Address is required")
     @JsonProperty("address")
     private String address;
 
+    @NotBlank(message = "Phone number is required")
+    @Pattern(regexp = "^\\+?[0-9]{10,15}$", message = "Phone number must be valid (10-15 digits)")
     @JsonProperty("phone_number")
     private String phoneNumber;
 
