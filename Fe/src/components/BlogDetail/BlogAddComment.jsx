@@ -11,17 +11,17 @@ const BlogAddComment = () => {
     const tour_id = localStorage.getItem('tour_id');
     const user_id = localStorage.getItem('user_id');
 
-    useEffect(() => {
-        const bookedTours = JSON.parse(localStorage.getItem('booked_tours') || '[]');
-        setHasBooked(bookedTours.includes(tour_id)); // Kiểm tra xem tour_id có trong danh sách đặt tour không
-    }, [tour_id]);
+    // useEffect(() => {
+    //     const bookedTours = JSON.parse(localStorage.getItem('booked_tours') || '[]');
+    //     setHasBooked(bookedTours.includes(tour_id)); // Kiểm tra xem tour_id có trong danh sách đặt tour không
+    // }, [tour_id]);
 
     const handleCommentSubmit = async (e) => {
         e.preventDefault();
-        if (!hasBooked) {
-            toast.warning("Bạn cần đặt tour trước khi gửi đánh giá");
-            return;
-        }
+        // if (!hasBooked) {
+        //     toast.warning("Bạn cần đặt tour trước khi gửi đánh giá");
+        //     return;
+        // }
         if (!comment || !rating) {
             toast.warning('Vui lòng nhập đầy đủ thông tin đánh giá.');
             return;

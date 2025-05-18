@@ -5,7 +5,6 @@ import { toast } from 'react-toastify';
 import { postBooking } from '../../services/booking';
 import { FaSyncAlt } from 'react-icons/fa';
 
-
 const PaymentSidebar = ({
     agreed,
     countAdult,
@@ -20,8 +19,15 @@ const PaymentSidebar = ({
     const { item, startDate, endDate } = location.state || {};
     const [loading, setLoading] = useState(false)
     const navigate = useNavigate();
-    const priceAdult = item.price_adult;
-    const priceChild = item.price_child;
+
+    // Hàm chuyển chuỗi giá tiền sang số
+    const cleanPrice = (priceStr) => {
+        if (!priceStr) return 0;
+        return Number(priceStr.replace(/[^0-9]/g, '')) || 0;
+    };
+
+    const priceAdult = cleanPrice(item?.price_adult);
+    const priceChild = cleanPrice(item?.price_child);
 
     const total = countAdult * priceAdult + countChildren * priceChild;
     const total_quality = countAdult + countChildren;
@@ -32,15 +38,18 @@ const PaymentSidebar = ({
             toast.warning("Vui lòng nhập đầy đủ thông tin liên hệ");
             return;
         }
+
         const isValidPhone = /^0\d{9}$/.test(phone_number) && !/^(\d)\1{9}$/.test(phone_number);
         if (!isValidPhone) {
             toast.error('Số điện thoại không hợp lệ!');
             return;
         }
+
         if (countAdult === 0 && countChildren === 0) {
             toast.warning("Vui lòng chọn ít nhất một vé người lớn hoặc trẻ em");
             return;
         }
+
         if (!paymentMethod) {
             toast.warning("Vui lòng chọn phương thức thanh toán");
             return;
@@ -63,10 +72,11 @@ const PaymentSidebar = ({
                 address: address,
                 phone_number: phone_number
             };
+
             console.log("Sending data:", data);
             setLoading(true);
             const res = await postBooking(data);
-            console.log("res", res)
+            console.log("res", res);
 
             if (res.status === 200) {
                 const { paymentUrl } = res.data;
@@ -74,13 +84,18 @@ const PaymentSidebar = ({
                     window.location.href = paymentUrl;
                     return;
                 }
-                const booked = new Set(JSON.parse(localStorage.getItem('booked_tours') || '[]'));
-                booked.add(tour_id);
-                localStorage.setItem('booked_tours', JSON.stringify([...booked]))
+
+                // Lấy mảng hiện tại từ localStorage, hoặc tạo mới mảng rỗng
+                const bookedTours = JSON.parse(localStorage.getItem('booked_tours') || '[]');
+                // Thêm tour_id mới vào mảng (có thể trùng lặp)
+                bookedTours.push(tour_id);
+                // Lưu lại mảng vào localStorage
+                localStorage.setItem('booked_tours', JSON.stringify(bookedTours));
+
                 setTimeout(() => {
                     toast.success('Đặt tour thành công!');
-                    navigate("/tourbooking")
-                    window.scrollTo(0, 0)
+                    navigate("/tourbooking");
+                    window.scrollTo(0, 0);
                 }, 1000);
             } else {
                 setTimeout(() => {
@@ -96,12 +111,9 @@ const PaymentSidebar = ({
 
     return (
         <div className='pt-10'>
-
-
             <div className='w-full h-auto dark:bg-[#101828] dark:text-white border border-gray-200 p-10 rounded-lg shadow-xl bg-white'>
                 <div className='space-y-4'>
-
-                    <p className='text-xl font-bold'>{item.title}</p>
+                    <p className='text-xl font-bold'>{item?.title}</p>
                     <div className="space-y-3">
                         <div className="flex items-center gap-2">
                             <p className="text-lg font-semibold w-36">Ngày khởi hành:</p>

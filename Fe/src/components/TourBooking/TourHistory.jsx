@@ -11,21 +11,30 @@ import { FiArrowUpRight } from "react-icons/fi";
 const TourHistory = () => {
     const [bookings, setBookings] = useState([]);
 
+    const fetchData = async () => {
+        try {
+            const userId = localStorage.getItem("user_id");
+            const res = await getAllBookingId(userId);
+            const data = Array.isArray(res.data) ? res.data : [];
+            const validBookings = data.filter(item =>
+                ['PENDING', 'CONFIRMED', 'COMPLETED'].includes(item.booking_status)
+            );
+            setBookings(validBookings);
+        } catch (error) {
+            console.error("Lỗi khi lấy dữ liệu tour:", error);
+            setBookings([]);
+        }
+    };
+    
+
     useEffect(() => {
-        const fetchData = async () => {
-            try {
-                const userId = localStorage.getItem("user_id");
-                const res = await getAllBookingId(userId);
-                setBookings(res.data);
-            } catch (error) {
-                console.error("Lỗi khi lấy dữ liệu tour:", error);
-            }
-        };
         fetchData();
     }, []);
-    if (bookings.length === 0) {
+
+    if (!Array.isArray(bookings) || bookings.length === 0) {
         return <NoPage redirectTo="/tour" />;
     }
+
     return (
         <div className='pt-10'>
             <div className='container space-y-10'>
@@ -35,6 +44,7 @@ const TourHistory = () => {
                             <Link to={`/tourbookingdetail/${item.booking_id}`}>
                                 <img
                                     onClick={() => {
+                                        localStorage.setItem('tour_id', item.tourId);
                                         localStorage.setItem('booking_id', item.booking_id);
                                         window.scrollTo(0, 0);
                                     }}
@@ -43,14 +53,10 @@ const TourHistory = () => {
                                     className='w-[300px] h-[230px] rounded-xl object-cover'
                                 />
                             </Link>
-                            {/* <div className='w-[120px] absolute top-4 left-[-30px] h-8 px-4 py-2 flex justify-center items-center bg-yellow-400 rounded-2xl shadow-sm'>
-                                <p className='text-sm font-semibold text-white'>Chờ xác nhận</p>
-                            </div> */}
-
 
                             <div
                                 className={`w-[120px] absolute top-4 left-[-30px] h-8 px-4 py-2 flex justify-center items-center rounded-2xl shadow-sm
-                                            ${item.booking_status === 'PENDING' ? 'bg-yellow-400' :
+                                    ${item.booking_status === 'PENDING' ? 'bg-yellow-400' :
                                         item.booking_status === 'CONFIRMED' ? 'bg-blue-500' :
                                             item.booking_status === 'COMPLETED' ? 'bg-green-500' : 'bg-gray-300'}`}>
                                 <p className='text-sm font-semibold text-white'>
@@ -61,8 +67,6 @@ const TourHistory = () => {
                                                     'Không xác định'}
                                 </p>
                             </div>
-
-
 
                             <div className='flex flex-col space-y-2'>
                                 <div className='flex items-center gap-6'>
@@ -75,7 +79,7 @@ const TourHistory = () => {
                                     </div>
                                 </div>
                                 <Link
-                                    to={`/tourbookingdetail/${item.bookingId}`}
+                                    to={`/tourbookingdetail/${item.booking_id}`}
                                     className='text-xl cursor-pointer hover:underline'>
                                     {item.title}
                                 </Link>
@@ -91,24 +95,27 @@ const TourHistory = () => {
                                     </div>
                                     <div className='flex items-center'>
                                         <FaRegUser />
-
                                         <span className='ml-1'>{item.num_adults + item.num_children}</span>
                                     </div>
                                 </div>
                                 <hr className='border-gray-300' />
                                 <div className='flex items-center justify-between'>
-                                    <div className=' opacity-70'>
+                                    <div className='opacity-70'>
                                         <p className='mt-4 text-xl font-bold'>{item.total_price.toLocaleString('vi-VN')}</p>
                                     </div>
-                                    {/* {!item.booking_status === 'COMPLETED' && ( */}
-                                    <Link to="/tour/{item.id}"
-                                        className='w-[120px] h-10 p-2 flex items-center justify-center gap-1 text-lg rounded-2xl border border-black bg-white text-black font-normal hover:bg-green-600 hover:text-white hover:border-gray-200 '
-                                    >
-                                        Đánh giá <FiArrowUpRight className="w-5 h-5" />
-                                    </Link>
-                                    {/* )} */}
+                                    {item.booking_status === 'COMPLETED' && (
+                                        <Link to={`/tours/${item.tourId}`}
+                                            onClick={() => {
+                                                localStorage.setItem('booking_id', item.booking_id);
+                                                localStorage.setItem('tour_id', item.tourId);
+                                                window.scrollTo(0, 0);
+                                            }}
+                                            className='w-[120px] h-10 p-2 flex items-center justify-center gap-1 text-lg rounded-2xl border border-black bg-white text-black font-normal hover:bg-green-600 hover:text-white hover:border-gray-200 '
+                                        >
+                                            Đánh giá <FiArrowUpRight className="w-5 h-5" />
+                                        </Link>
+                                    )}
                                 </div>
-
                             </div>
                         </div>
                     </div>

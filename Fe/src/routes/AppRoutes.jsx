@@ -64,7 +64,7 @@ const AppRoutes = () => {
                     </Route>
                     <Route path='/login' element={<Login />}></Route>
                     <Route path='/signup' element={<Signup />}></Route>
-                    <Route path="/oauth2/redirect" element={<RedirectPage />} />
+                    <Route path="/redirect" element={<RedirectPage />} />
                 </Routes>
             </BrowserRouter>
         </>
