@@ -14,16 +14,18 @@ const RedirectPage = () => {
         const email = query.get('email');
         const role = query.get('role');
 
-        if (token && user_name && email && role) {
+        if (token && user_name) {
             setToken(token);
             localStorage.setItem('user_name', user_name);
-            localStorage.setItem('email', email);
-            // Giả sử role_id: USER=1, ADMIN=2
-            const roleId = role.toUpperCase() === 'ADMIN' ? '2' : '1';
+            if (email) localStorage.setItem('email', email);
+
+            // Nếu role có thì xử lý, không thì mặc định là USER (1)
+            const roleId = role?.toUpperCase() === 'ADMIN' ? '2' : '1';
             setRole(roleId);
             localStorage.setItem('role_id', roleId);
-            toast.success(`Đăng nhập ${role.toLowerCase() === 'admin' ? 'admin' : 'thành công'}!`);
-            navigate(role.toUpperCase() === 'ADMIN' ? '/admin' : '/', { replace: true });
+
+            toast.success(`Đăng nhập ${roleId === '2' ? 'admin' : 'thành công'}!`);
+            navigate(roleId === '2' ? '/admin' : '/', { replace: true });
         } else {
             toast.error('Đăng nhập thất bại: Thiếu thông tin xác thực');
             navigate('/login', { replace: true });

@@ -9,7 +9,6 @@ const PaymentTour = () => {
     const [agreed, setAgreed] = useState(false);
     const [countAdult, setCountAdult] = useState(0);
     const [countChildren, setCountChildren] = useState(0);
-
     // thông tin người dùng
     const [full_name, setFullName] = useState('');
     const [email, setEmail] = useState('');
