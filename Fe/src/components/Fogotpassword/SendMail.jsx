@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { AiOutlineArrowLeft } from "react-icons/ai";
 import { useNavigate } from 'react-router-dom';
 
-const Fogotpassword = () => {
+const SendMail = () => {
     const navigate = useNavigate();
     const [email, setEmail] = useState('');
 
@@ -24,7 +24,7 @@ const Fogotpassword = () => {
                             className='p-3 dark:text-[#101828] w-full max-w-[500px] border border-gray-400 rounded-lg'
                             placeholder='Vui lòng nhập email của bạn đã đăng ký...'
                         />
-                        <button className='w-full max-w-[500px] p-3  bg-orange-500 text-white rounded-lg '>
+                        <button onClick={()=>navigate("/verify-Code")} className='w-full max-w-[500px] p-3  bg-orange-500 text-white rounded-lg '>
                             Gửi yêu cầu
                         </button>
                     </div>
@@ -34,4 +34,4 @@ const Fogotpassword = () => {
     );
 };
 
-export default Fogotpassword;
+export default SendMail;
