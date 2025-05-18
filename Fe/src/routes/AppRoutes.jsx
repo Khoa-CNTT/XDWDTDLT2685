@@ -22,6 +22,7 @@ import RedirectPage from '../pages/auth/Login/RedirectPage';
 import AdminLayout from '../layout/AdminLayout';
 import TourBookingDetail from '../components/TourBookingDetail/TourBookingDetail';
 import VnPayCallback from '../components/Payment/VnpayCallback';
+import Fogotpassword from '../components/Fogotpassword/Fogotpassword';
 
 const AppRoutes = () => {
     return (
@@ -51,14 +52,15 @@ const AppRoutes = () => {
                         <Route path='/changepassword' element={<ProfileChangePassword />}></Route>
                         <Route path='*' element={<NoPage />}></Route>
                         <Route path='/search' element={<Search />}></Route>
-                        <Route path='/tourbookingdetail/:id' element={<TourBookingDetail />}></Route>
+                        <Route path='/tourbookingdetail/:id' element={<TourBookingDetail />} />
                         <Route path="/vnpay-payment-callback" element={<VnPayCallback />} />
+                        <Route path='/forgotpassword' element={<Fogotpassword />} />
 
                     </Route>
                     <Route path='/admin' element={
                         <PrivateRoute role={2}>
                             <AdminLayout />
-                            
+
                         </PrivateRoute>}>
 
                     </Route>

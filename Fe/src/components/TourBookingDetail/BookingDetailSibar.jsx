@@ -30,24 +30,6 @@ const BookingDetailSibar = ({
                     navigate("/tourbooking");
                     window.scrollTo(0, 0);
                 }, 1000);
-
-                // // Lấy booked_tours từ localStorage
-                // const bookedTours = JSON.parse(localStorage.getItem('booked_tours') || '[]');
-                // console.log('Tour ID cần huỷ:', tourId);
-                // console.log('Trước khi xoá:', bookedTours);
-
-                // const updatedBookedTours = [...bookedTours];
-
-                // // Tìm index cuối cùng của tourId trong mảng
-                // const index = updatedBookedTours.map(String).lastIndexOf(String(tourId));
-
-                // if (index !== -1) {
-                //     updatedBookedTours.splice(index, 1);
-                // }
-
-                // console.log('Sau khi xoá:', updatedBookedTours);
-
-                // localStorage.setItem('booked_tours', JSON.stringify(updatedBookedTours));
             } else {
                 setTimeout(() => {
                     toast.warning('Hủy tour không thành công!');
