@@ -141,7 +141,12 @@ const Login = () => {
                                     )}
                                 </button>
                             </div>
-                            <p className='mt-3 font-medium cursor-pointer text-right text-blue-600 text-leftg max-w-[500px]'>Quên mật khẩu?</p>
+                            <Link
+                                onClick={() => window.scrollTo(0, 0)}
+                                to="/forgotpassword"
+                                className='mt-3 font-medium cursor-pointer text-right text-blue-600 text-leftg max-w-[500px]'>
+                                Quên mật khẩu?
+                            </Link>
                         </form>
                         <div className='grid items-center max-w-[500px] justify-center grid-cols-3 p-5 text-gray-500 '>
                             <hr className='-mr-10 border-gray-400' />

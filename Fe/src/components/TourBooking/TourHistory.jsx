@@ -64,7 +64,7 @@ const TourHistory = () => {
                                         item.booking_status === 'PENDING' ? 'Chờ xác nhận' :
                                             item.booking_status === 'CONFIRMED' ? 'Đã xác nhận' :
                                                 item.booking_status === 'COMPLETED' ? 'Hoàn thành' :
-                                                    'Không xác định'}
+                                                    'Đã hủy'}
                                 </p>
                             </div>
 
