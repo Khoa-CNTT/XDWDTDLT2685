@@ -6,10 +6,13 @@ import com.project.booktour.dtos.UserDTO;
 import com.project.booktour.exceptions.DataNotFoundException;
 import com.project.booktour.models.User;
 import com.project.booktour.responses.usersresponse.UserProfileResponse;
+import jakarta.mail.MessagingException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
+
+import java.io.IOException;
 
 @Service
 public interface IUserService {
@@ -25,4 +28,7 @@ public interface IUserService {
 
     void blockOrEnable(Long userId, Boolean active) throws DataNotFoundException;
     void deleteUser(Long id) throws DataNotFoundException;
+    void initiateResetPassword(String email) throws MessagingException, DataNotFoundException, IOException;
+    void resetPasswordWithToken(String token, String newPassword) throws DataNotFoundException;
+
 }

@@ -169,4 +169,31 @@ public class UserController {
             return ResponseEntity.badRequest().body("Error deleting user: " + e.getMessage());
         }
     }
+    @PostMapping("/forgot-password")
+    public ResponseEntity<?> forgotPassword(@RequestParam("email") String email) {
+        try {
+            userService.initiateResetPassword(email);
+            return ResponseEntity.ok("Reset password email sent successfully.");
+        } catch (DataNotFoundException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Email không tồn tại.");
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body("Đã xảy ra lỗi: " + e.getMessage());
+        }
+    }
+    @PostMapping("/reset-password")
+    public ResponseEntity<?> resetPassword(
+            @RequestParam("token") String token,
+            @RequestParam("newPassword") String newPassword
+    ) {
+        try {
+            userService.resetPasswordWithToken(token, newPassword);
+            return ResponseEntity.ok("Password reset successfully.");
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body("Không thể đặt lại mật khẩu: " + e.getMessage());
+        }
+    }
+
+
 }
+
+

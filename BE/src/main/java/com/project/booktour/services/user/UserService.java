@@ -11,6 +11,7 @@ import com.project.booktour.repositories.RoleRepository;
 import com.project.booktour.repositories.TokenRepository;
 import com.project.booktour.repositories.UserRepository;
 import com.project.booktour.responses.usersresponse.UserProfileResponse;
+import com.project.booktour.services.EmailService;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.apache.tika.Tika;
@@ -29,6 +30,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -45,6 +47,7 @@ public class UserService implements IUserService {
     private final JwtTokenUtil jwtTokenUtil;
     private final AuthenticationManager authenticationManager;
     private final TokenRepository tokenRepository;
+    private final EmailService emailService;
     private static final String AVATAR_UPLOAD_DIR = "uploads/avatars/";
     private static final String DEFAULT_AVATAR_PATH = "/uploads/avatars/default-avatar.jpg";
 
@@ -240,4 +243,53 @@ public class UserService implements IUserService {
 
         userRepository.delete(user);
     }
+    @Override
+    public void initiateResetPassword(String email) throws DataNotFoundException, IOException {
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new DataNotFoundException("Email không tồn tại"));
+
+        String resetToken = UUID.randomUUID().toString();
+        LocalDateTime expiration = LocalDateTime.now().plusMinutes(10);
+
+        // Xoá token cũ
+        tokenRepository.deleteAllByUser(user);
+
+        // Lưu token mới
+        Token tokenEntity = Token.builder()
+                .token(resetToken)
+                .tokenType("RESET_PASSWORD")
+                .expirationDate(expiration)
+                .revoked(false)
+                .expired(false)
+                .user(user)
+                .build();
+        tokenRepository.save(tokenEntity);
+
+        // Gửi email
+        String content = "<h3>Mã xác nhận đặt lại mật khẩu</h3>" +
+                "<p>Mã của bạn là: <b>" + resetToken + "</b></p>" +
+                "<p>Mã này có hiệu lực trong 10 phút.</p>";
+
+        emailService.sendInvoiceEmail(email, "Yêu cầu đặt lại mật khẩu", content, null);
+    }
+    @Override
+    public void resetPasswordWithToken(String tokenStr, String newPassword) throws DataNotFoundException {
+        Token token = tokenRepository.findByToken(tokenStr)
+                .orElseThrow(() -> new DataNotFoundException("Token không hợp lệ."));
+
+        if (token.isExpired() || token.isRevoked() || token.getExpirationDate().isBefore(LocalDateTime.now())) {
+            throw new RuntimeException("Token đã hết hạn hoặc không hợp lệ.");
+        }
+
+        User user = token.getUser();
+        user.setPassword(passwordEncoder.encode(newPassword));
+        userRepository.save(user);
+
+        // Thu hồi token
+        token.setRevoked(true);
+        token.setExpired(true);
+        tokenRepository.save(token);
+    }
+
+
 }

@@ -41,12 +41,17 @@ public class EmailService {
             throw new RuntimeException("Lỗi gửi email: " + e.getMessage(), e);
         }
     }
-//    public void sendResetCodeEmail(String to, String subject, String resetCode) throws MessagingException {
-//        String content = "<h3>Mã xác nhận đặt lại mật khẩu</h3>" +
-//                "<p>Mã xác nhận của bạn là: <strong>" + resetCode + "</strong></p>" +
-//                "<p>Mã này có hiệu lực trong 10 phút. Vui lòng không chia sẻ mã này với bất kỳ ai.</p>" +
-//                "<p>Nếu bạn không yêu cầu đặt lại mật khẩu, vui lòng bỏ qua email này.</p>";
-//
-//        sendInvoiceEmail(to, subject, content, null);
-//    }
+    public void sendResetCodeEmail(String to, String subject, String resetCode) {
+        String content = "<h3>Mã xác nhận đặt lại mật khẩu</h3>" +
+                "<p>Mã xác nhận của bạn là: <strong>" + resetCode + "</strong></p>" +
+                "<p>Mã này có hiệu lực trong 10 phút. Vui lòng không chia sẻ mã này với bất kỳ ai.</p>" +
+                "<p>Nếu bạn không yêu cầu đặt lại mật khẩu, vui lòng bỏ qua email này.</p>";
+
+        try {
+            sendInvoiceEmail(to, subject, content, null);
+        } catch (IOException e) {
+            throw new RuntimeException("Lỗi khi gửi email reset mật khẩu: " + e.getMessage(), e);
+        }
+    }
+
 }
