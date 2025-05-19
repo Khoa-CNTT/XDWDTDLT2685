@@ -5,6 +5,8 @@ import { FaSyncAlt } from 'react-icons/fa';
 
 const ProfileInformation = ({ profile, selectedFile }) => {
     const [user_name, setUserName] = useState('');
+    const [full_name, setFull_name] = useState('');
+
     const [phone_number, setPhoneNumber] = useState('');
     const [email, setEmail] = useState('');
     const [address, setAddress] = useState('');
@@ -34,6 +36,7 @@ const ProfileInformation = ({ profile, selectedFile }) => {
 
         const noInfoChanged =
             (user_name === (profile?.user_name || '')) &&
+            (full_name === (profile?.full_name || '')) &&
             (phone_number === (profile?.phone_number || '')) &&
             (email === (profile?.email || '')) &&
             (address === (profile?.address || '')) &&
@@ -77,30 +80,18 @@ const ProfileInformation = ({ profile, selectedFile }) => {
                 <h1 className='px-4 py-6 text-lg font-semibold bg-gray-100 dark:text-[#101828]'>Thông tin tài khoản</h1>
                 <form onSubmit={handleSubmit} className='items-center mt-3'>
                     <div className='flex flex-col px-6 space-y-5'>
+                        {/* tên tài khoản */}
                         <div>
                             <div className='flex items-center gap-3 mb-2'>
                                 <label className='font-semibold'>Tên tài khoản</label>
                                 <p className='text-red-500 '>*Không thể thay đổi</p>
                             </div>
-
                             <input
                                 type='text'
                                 value={user_name}
                                 disabled
                                 onChange={(e) => setUserName(e.target.value)}
                                 className='w-[700px] dark:text-[#101828] h-auto p-3 border border-gray-400 rounded-lg'
-                                placeholder='Tên của bạn...'
-                            />
-                        </div>
-
-                        <div>
-                            <label className='flex flex-col mb-2 font-semibold'>Số điện thoại</label>
-                            <input
-                                type='number'
-                                value={phone_number}
-                                onChange={(e) => setPhoneNumber(e.target.value)}
-                                className='h-auto w-[700px] dark:text-[#101828] p-3 border border-gray-400 rounded-lg'
-                                placeholder='Số điện thoại...'
                             />
                         </div>
 
@@ -117,8 +108,29 @@ const ProfileInformation = ({ profile, selectedFile }) => {
                                 onChange={(e) => setEmail(e.target.value)}
 
                                 className='w-[700px] dark:text-[#101828] p-3 border border-gray-400 rounded-lg'
-                                placeholder='Nhập email...'
                             />
+                        </div>
+                        <div className='flex items-center gap-10'>
+                            <div>
+                                <label className='flex flex-col mb-2 font-semibold'>Họ và tên</label>
+                                <input
+                                    type='text'
+                                    value={full_name}
+                                    onChange={(e) => setFull_name(e.target.value)}
+                                    className='w-[330px] dark:text-[#101828] p-3 border border-gray-400 rounded-lg'
+                                    placeholder='Họ và tên của bạn...'
+                                />
+                            </div>
+                            <div>
+                                <label className='flex flex-col mb-2 font-semibold'>Số điện thoại</label>
+                                <input
+                                    type='number'
+                                    value={phone_number}
+                                    onChange={(e) => setPhoneNumber(e.target.value)}
+                                    className='h-auto w-[330px] dark:text-[#101828] p-3 border border-gray-400 rounded-lg'
+                                    placeholder='Số điện thoại...'
+                                />
+                            </div>
                         </div>
 
                         <div>

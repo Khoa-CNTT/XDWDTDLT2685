@@ -50,6 +50,7 @@ import {
     FaFilePdf,
     FaPrint,
     FaFileCsv,
+    FaFileUpload,
 } from "react-icons/fa";
 import { RiLockPasswordFill } from "react-icons/ri";
 import { BiSolidChevronsRight } from "react-icons/bi";
@@ -108,5 +109,6 @@ const icons = {
     IoIosUnlock,
     IoIosLock,
     MdContactSupport,
+    FaFileUpload,
 };
 export default icons;

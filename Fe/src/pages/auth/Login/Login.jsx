@@ -143,7 +143,7 @@ const Login = () => {
                             </div>
                             <Link
                                 onClick={() => window.scrollTo(0, 0)}
-                                to="/forgotpassword"
+                                to="/forgot-password"
                                 className='mt-3 font-medium cursor-pointer text-right text-blue-600 text-leftg max-w-[500px]'>
                                 Quên mật khẩu?
                             </Link>

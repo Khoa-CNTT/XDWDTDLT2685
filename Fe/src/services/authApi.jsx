@@ -12,4 +12,14 @@ const signupApi = ({ user_name, email, password, confirm_password, roleId }) => 
         }
     );
 }
-export { loginApi, signupApi };
+// gửi email quên mật Khẩu
+const forgotPassword = (email) => {
+    return axios.post("users/forgot-password", { email });
+};
+
+// gửi mã xác nhận
+const verifyCode = (token, newPassword) => {
+    return axios.post("users/reset-password", { token, newPassword });
+};
+export { loginApi, signupApi, forgotPassword, verifyCode };
+

@@ -24,6 +24,7 @@ function ShowTour() {
         try {
             setIsLoading(true); // Bắt đầu loading
             const res = await getDataTour(page, limit);
+            console.log(res);
 
             if (res.status !== 200) throw new Error(res.data?.error || "Lỗi không xác định");
 
@@ -32,7 +33,9 @@ function ShowTour() {
             const updatedData = dataArray.map((tour) => {
                 const startDate = tour.startDate ? new Date(tour.startDate) : null;
                 const today = new Date();
-                const isAvailable = startDate && startDate >= today ? tour.availability : false;
+                const availableSlots = tour.availableSlots ?? 0;
+                const isAvailable = startDate && startDate >= today && availableSlots > 0;
+
                 return { ...tour, availability: isAvailable };
             });
 

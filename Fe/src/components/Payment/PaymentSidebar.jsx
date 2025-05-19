@@ -19,6 +19,7 @@ const PaymentSidebar = ({
     const { item, startDate, endDate } = location.state || {};
     const [loading, setLoading] = useState(false)
     const navigate = useNavigate();
+    // console.log("item", item);
 
     // Hàm chuyển chuỗi giá tiền sang số
     const cleanPrice = (priceStr) => {
@@ -44,7 +45,10 @@ const PaymentSidebar = ({
             toast.error('Số điện thoại không hợp lệ!');
             return;
         }
-
+        if (item?.availableSlots === 0) {
+            toast.warning("Số lượng vượt quá giới hạn");
+            return;
+        }
         if (countAdult === 0 && countChildren === 0) {
             toast.warning("Vui lòng chọn ít nhất một vé người lớn hoặc trẻ em");
             return;
