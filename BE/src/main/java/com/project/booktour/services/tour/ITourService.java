@@ -5,6 +5,7 @@ import com.project.booktour.dtos.TourDTO;
 import com.project.booktour.dtos.TourImageDTO;
 import com.project.booktour.exceptions.DataNotFoundException;
 import com.project.booktour.exceptions.InvalidParamException;
+import com.project.booktour.models.BookingStatus;
 import com.project.booktour.models.Review;
 import com.project.booktour.models.Tour;
 import com.project.booktour.models.TourImage;
@@ -42,6 +43,6 @@ public interface ITourService {
 
     List<TourImage> updateTourImages(Long tourId, List<TourImageDTO> tourImageDTOs) throws Exception;
 
-    List<BookedTourResponse>  getBookedToursByUserId(Long userId);
+    List<BookedTourResponse>  getBookedToursByUserId(Long userId , BookingStatus bookingStatus);
     List<TopBookedTourResponse> getTopBookedTours();
 }

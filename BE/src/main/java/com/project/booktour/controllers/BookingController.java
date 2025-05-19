@@ -13,6 +13,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -172,43 +173,45 @@ public class BookingController {
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<?> confirmPaymentAndBooking(@PathVariable Long bookingId) {
         try {
-            // Kiểm tra checkout
+            // Kiểm tra thông tin checkout theo bookingId
             Optional<Checkout> checkoutOpt = checkoutRepository.findByBookingBookingId(bookingId);
             if (!checkoutOpt.isPresent()) {
-                return ResponseEntity.badRequest().body("Checkout not found");
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Không tìm thấy thông tin thanh toán (checkout)");
             }
 
             Checkout checkout = checkoutOpt.get();
             if (checkout.getPaymentStatus() != PaymentStatus.PENDING) {
-                return ResponseEntity.badRequest().body("Payment is already completed or cannot be confirmed");
+                return ResponseEntity.status(HttpStatus.CONFLICT).body("Thanh toán đã được xử lý hoặc không thể xác nhận");
             }
 
-            // Kiểm tra booking
+            // Kiểm tra booking có tồn tại không
             Optional<Booking> bookingOpt = bookingService.findById(bookingId);
             if (!bookingOpt.isPresent()) {
-                return ResponseEntity.badRequest().body("Cannot find booking with id: " + bookingId);
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Không tìm thấy booking với ID: " + bookingId);
             }
 
             Booking booking = bookingOpt.get();
             if (booking.getBookingStatus() != BookingStatus.PENDING) {
-                return ResponseEntity.badRequest().body("Booking is already confirmed or cannot be confirmed");
+                return ResponseEntity.status(HttpStatus.CONFLICT).body("Booking đã được xác nhận hoặc không thể xác nhận lại");
             }
 
-            // Cập nhật trạng thái thanh toán
+            // Cập nhật trạng thái thanh toán và booking
             checkout.setPaymentStatus(PaymentStatus.COMPLETED);
             checkoutRepository.save(checkout);
 
-            // Cập nhật trạng thái booking
             booking.setBookingStatus(BookingStatus.CONFIRMED);
             bookingService.updateBooking(booking.getBookingId(), convertToDTO(booking));
 
-            return ResponseEntity.ok("Payment and booking confirmed successfully");
+            return ResponseEntity.ok("Xác nhận thanh toán và booking thành công");
         } catch (DataNotFoundException e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
         } catch (Exception e) {
-            return ResponseEntity.badRequest().body("An error occurred while confirming payment and booking");
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("Đã xảy ra lỗi trong quá trình xác nhận thanh toán và booking");
         }
     }
+
 
     // Helper method to convert Booking to BookingDTO for update
     private BookingDTO convertToDTO(Booking booking) {

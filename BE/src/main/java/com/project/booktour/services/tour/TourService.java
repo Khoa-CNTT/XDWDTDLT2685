@@ -248,15 +248,22 @@ public class TourService implements ITourService {
 
         return savedTour.getTourImages();
     }
-    public List<BookedTourResponse> getBookedToursByUserId(Long userId) {
-        List<Booking> bookings = bookingService.findBookingsByUserId(userId);
+
+
+
+    @Override
+    public List<BookedTourResponse> getBookedToursByUserId(Long userId, BookingStatus status) {
+        List<Booking> bookings = (status == null)
+                ? bookingService.findBookingsByUserId(userId)
+                : bookingService.findBookingsByUserIdAndStatus(userId, status);
+
         if (bookings.isEmpty()) {
             return Collections.emptyList();
         }
 
         // Sắp xếp bookings theo createdAt giảm dần (mới nhất trước)
         return bookings.stream()
-                .sorted((b1, b2) -> b2.getCreatedAt().compareTo(b1.getCreatedAt())) // Sắp xếp theo createdAt
+                .sorted((b1, b2) -> b2.getCreatedAt().compareTo(b1.getCreatedAt()))
                 .map(booking -> {
                     try {
                         return BookedTourResponse.fromBooking(booking, objectMapper);
@@ -278,4 +285,6 @@ public class TourService implements ITourService {
                 .map(TopBookedTourResponse::fromTour)
                 .collect(Collectors.toList());
     }
+
+
 }

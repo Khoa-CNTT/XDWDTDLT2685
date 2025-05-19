@@ -4,10 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.project.booktour.dtos.TourDTO;
 import com.project.booktour.dtos.TourImageDTO;
 import com.project.booktour.exceptions.DataNotFoundException;
-import com.project.booktour.models.Booking;
-import com.project.booktour.models.Region;
-import com.project.booktour.models.Tour;
-import com.project.booktour.models.TourImage;
+import com.project.booktour.models.*;
 import com.project.booktour.responses.toursreponse.*;
 import com.project.booktour.services.booking.IBookingService;
 import com.project.booktour.services.tour.ITourService;
@@ -47,10 +44,13 @@ public class TourController {
     private static final Logger logger = LoggerFactory.getLogger(TourController.class);
     private final ITourService tourService;
     // Phương thức lấy danh sách tour đã đặt theo userId
+
     @GetMapping("/user/{user_id}")
-    public ResponseEntity<?> getBookedTours(@Valid @PathVariable("user_id") Long userId) {
+    public ResponseEntity<?> getBookedTours(
+            @Valid @PathVariable("user_id") Long userId,
+            @RequestParam(value = "booking_status", required = false) BookingStatus status) {
         try {
-            List<BookedTourResponse> bookedTours = tourService.getBookedToursByUserId(userId);
+            List<BookedTourResponse> bookedTours = tourService.getBookedToursByUserId(userId, status);
             if (bookedTours.isEmpty()) {
                 return ResponseEntity.ok("Không tìm thấy tour nào đã đặt cho user này.");
             }

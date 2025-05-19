@@ -286,5 +286,8 @@ public class BookingService implements IBookingService {
     }
 
 
+    public List<Booking> findBookingsByUserIdAndStatus(Long userId, BookingStatus status) {
+        return bookingRepository.findByUserUserIdAndBookingStatus(userId, status);
+    }
 
 }

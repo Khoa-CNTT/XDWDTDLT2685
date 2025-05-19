@@ -40,40 +40,45 @@ public class ReviewService implements IReviewService {
 
     @Override
     public Review createReview(ReviewDTO reviewDTO) throws Exception {
-        // Kiểm tra xem người dùng có booking cho tour này không
-        if (!bookingService.hasUserBookedTour(reviewDTO.getUserId(), reviewDTO.getTourId())) {
+        Long userId = reviewDTO.getUserId();
+        Long tourId = reviewDTO.getTourId();
+
+        // Lấy tour để kiểm tra endDate
+        Tour tour = tourRepository.findById(tourId)
+                .orElseThrow(() -> new DataNotFoundException("Không tìm thấy tour với ID: " + tourId));
+
+        // Lấy danh sách booking
+        List<Booking> bookings = bookingRepository.findByUserUserIdAndTourTourId(userId, tourId);
+        if (bookings.isEmpty()) {
             throw new UnauthorizedException("Bạn chưa đặt tour này và không thể đánh giá.");
         }
 
-        // Lấy tour để kiểm tra endDate
-        Tour tour = tourRepository.findById(reviewDTO.getTourId())
-                .orElseThrow(() -> new DataNotFoundException("Không tìm thấy tour với ID: " + reviewDTO.getTourId()));
-
-        // Kiểm tra và cập nhật trạng thái booking nếu tour đã kết thúc
-        List<Booking> bookings = bookingRepository.findByUserUserIdAndTourTourId(reviewDTO.getUserId(), reviewDTO.getTourId());
-        boolean hasCompletedTour = false;
+        // Đếm số booking đã hoàn thành
+        int completedBookings = 0;
         for (Booking booking : bookings) {
             if (booking.getBookingStatus() == BookingStatus.CONFIRMED && tour.getEndDate().isBefore(LocalDate.now())) {
                 booking.setBookingStatus(BookingStatus.COMPLETED);
                 booking.setUpdatedAt(LocalDateTime.now());
                 bookingRepository.save(booking);
-                hasCompletedTour = true;
+                completedBookings++;
             } else if (booking.getBookingStatus() == BookingStatus.COMPLETED) {
-                hasCompletedTour = true;
+                completedBookings++;
             }
         }
 
-        if (!hasCompletedTour) {
+        if (completedBookings == 0) {
             throw new UnauthorizedException("Bạn chỉ có thể đánh giá sau khi hoàn thành tour.");
         }
 
-        // Kiểm tra xem người dùng đã đánh giá tour này chưa
-        if (reviewRepository.existsByUserUserIdAndTourTourId(reviewDTO.getUserId(), reviewDTO.getTourId())) {
-            throw new InvalidParamException("Bạn đã đánh giá tour này trước đó.");
+        // Lấy số lượng review đã đánh giá tour này
+        int existingReviews = reviewRepository.findByTourTourIdAndUserUserId(tourId, userId).size();
+
+        if (existingReviews >= completedBookings) {
+            throw new InvalidParamException("Bạn đã đánh giá đủ số lần theo số tour đã hoàn thành.");
         }
 
-        User user = userRepository.findById(reviewDTO.getUserId())
-                .orElseThrow(() -> new DataNotFoundException("Không tìm thấy người dùng với ID: " + reviewDTO.getUserId()));
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new DataNotFoundException("Không tìm thấy người dùng với ID: " + userId));
 
         Review review = Review.builder()
                 .tour(tour)
@@ -84,6 +89,7 @@ public class ReviewService implements IReviewService {
 
         return reviewRepository.save(review);
     }
+
 
     @Override
     public void updateReview(Long reviewId, ReviewDTO reviewDTO) throws Exception {
