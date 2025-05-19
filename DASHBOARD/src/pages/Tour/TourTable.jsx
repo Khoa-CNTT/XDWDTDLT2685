@@ -13,7 +13,7 @@ function TourTable({ currentEntries }) {
                         <th className="border px-4 py-2">Tên</th>
                         <th className="border px-4 py-2">Thời gian</th>
                         <th className="border px-4 py-2">Mô tả</th>
-                        <th className="border px-4 py-2">Số lượng</th>
+                        <th className="border px-4 py-2">Số lượng </th>
                         <th className="border px-4 py-2">Giá người lớn</th>
                         <th className="border px-4 py-2">Giá trẻ em</th>
                         <th className="border px-4 py-2">Điểm đến</th>
@@ -33,7 +33,7 @@ function TourTable({ currentEntries }) {
                             <td className="border px-4 py-2">{item.title || "N/A"}</td>
                             <td className="border px-4 py-2">{item.duration || "N/A"}</td>
                             <td className="border px-4 py-2">{item.description || "N/A"}</td>
-                            <td className="border px-4 py-2">{item.quantity || 0}</td>
+                            <td className="border px-4 py-2">{item.quantity || "N/A"} </td>
                             <td className="border px-4 py-2">{item.price_adult || "N/A"}</td>
                             <td className="border px-4 py-2">{item.price_child || "N/A"}</td>
                             <td className="border px-4 py-2">{item.destination || "N/A"}</td>

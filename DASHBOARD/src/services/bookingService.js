@@ -58,12 +58,11 @@ export const confirmPaymentAndBooking = async (bookingId) => {
 export const sendInvoiceEmail = async (bookingId, pdfFile) => {
     try {
         const formData = new FormData();
-        formData.append("bookingId", bookingId);
         if (pdfFile) {
             formData.append("file", pdfFile);
         }
 
-        const res = await post("/invoices/send", formData, {
+        const res = await post(`/invoices/send/${bookingId}`, formData, {
             headers: {
                 "Content-Type": "multipart/form-data",
             },

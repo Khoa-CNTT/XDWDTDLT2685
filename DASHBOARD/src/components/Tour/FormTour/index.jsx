@@ -70,13 +70,13 @@ function TourForm({
         let newErrors = {};
 
         // Kiểm tra giá người lớn
-        if (data.price_adult && parseFloat(data.price_adult) <= 1000) {
-            newErrors.price_adult = "Giá người lớn phải lớn hơn 1000 VNĐ";
+        if (data.price_adult && parseFloat(data.price_adult) <= 1000000) {
+            newErrors.price_adult = "Giá người lớn phải lớn hơn 1000000 VNĐ";
         }
 
         // Kiểm tra giá trẻ em
-        if (data.price_child && parseFloat(data.price_child) <= 1000) {
-            newErrors.price_child = "Giá trẻ em phải lớn hơn 1000 VNĐ";
+        if (data.price_child && parseFloat(data.price_child) <= 500000) {
+            newErrors.price_child = "Giá trẻ em phải lớn hơn 500000 VNĐ";
         }
 
         // Nếu có lỗi, cập nhật state errors

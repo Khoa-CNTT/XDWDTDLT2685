@@ -325,7 +325,7 @@ export const handlePrintReport = (item, type) => {
         <head>
             <meta charset="UTF-8">
             <meta name="viewport" content="width=device-width, initial-scale=1.0">
-            <title>Hóa đơn - GoViet</title>
+            <title>Hóa đơn #${item.bookingId} - GoViet</title>
             <style>
                 @page { 
                     size: A4; 
@@ -333,7 +333,7 @@ export const handlePrintReport = (item, type) => {
                 }
                 body { 
                     font-family: 'Arial', sans-serif; 
-                    font-size: 11px; 
+                    font-size: 14px; 
                     line-height: 1.3; 
                     color: #333; 
                     margin: 0; 
@@ -364,7 +364,7 @@ export const handlePrintReport = (item, type) => {
                     margin-bottom: 10px; 
                 }
                 .section h3 { 
-                    font-size: 13px; 
+                    font-size: 14px; 
                     font-weight: bold; 
                     margin-bottom: 5px; 
                     color: #1e40af; 
@@ -381,7 +381,7 @@ export const handlePrintReport = (item, type) => {
                     width: 100%; 
                     border-collapse: collapse; 
                     margin-bottom: 10px; 
-                    font-size: 10px; 
+                    font-size: 14px; 
                 }
                 th, td { 
                     border: 1px solid #ccc; 
@@ -400,10 +400,11 @@ export const handlePrintReport = (item, type) => {
                 }
                 .footer { 
                     text-align: center; 
-                    font-size: 9px; 
+                    font-size: 13px; 
                     margin-top: 10px; 
                     border-top: 1px solid #ccc; 
                     padding-top: 5px; 
+
                 }
                 hr { 
                     border: none; 
@@ -463,6 +464,7 @@ export const handlePrintReport = (item, type) => {
                     <p><strong>Mã người dùng:</strong> ${item.userId || "Không xác định"}</p>
                     <p><strong>Mã khuyến mãi:</strong> ${item.promotionId || "Không có"}</p>
                 </div>
+                    
                 <hr />
 
                 <!-- Pricing Table -->
@@ -518,10 +520,10 @@ export const handlePrintReport = (item, type) => {
 
                 <!-- Footer -->
                 <div class="footer">
-                    <p>Nếu có sai sót, vui lòng liên hệ: 
+                    <h3>Nếu có sai sót, vui lòng liên hệ: 
                         <a href="mailto:${provider.email}" class="text-blue-600">${provider.email}</a> | 
                         <a href="tel:${provider.phone}" class="text-blue-600">${provider.phone}</a>
-                    </p>
+                    </h3>
                 </div>
             </div>
         </body>
