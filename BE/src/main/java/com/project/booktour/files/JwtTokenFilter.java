@@ -134,7 +134,10 @@ public class JwtTokenFilter extends OncePerRequestFilter {
                 Pair.of(apiPrefix + "/health/n8n", "GET"),
                 Pair.of(apiPrefix + "/payment/vnpay-payment-callback", "GET"),
                 Pair.of("/login", "GET"),
-                Pair.of("/error", "GET")
+                Pair.of("/error", "GET"),
+                Pair.of("/favicon.ico", "GET")
+
+
         );
         String requestPath = request.getServletPath();
         String requestMethod = request.getMethod();

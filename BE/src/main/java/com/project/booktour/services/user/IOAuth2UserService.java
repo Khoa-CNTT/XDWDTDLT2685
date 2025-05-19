@@ -115,7 +115,8 @@ public class IOAuth2UserService extends DefaultOAuth2UserService {
                 authorities,
                 jwtToken,
                 user.getEmail(),
-                user.getRole().getRoleId() // truyền roleId vào
+                user.getRole().getRoleId(),
+                user.getUserId() // Truyền userId
         );
     }
 }

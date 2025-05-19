@@ -53,10 +53,16 @@ public class WebSecurityConfig {
                                     String.format("%s/users/forgot-password", apiPrefix),
                                     String.format("%s/users/reset-password", apiPrefix),
                                     String.format("%s/tours/**", apiPrefix),
+                                    "/favicon.ico",
                                     "/login/oauth2/code/*",
-                                    String.format("%s/health/n8n", apiPrefix),
                                     String.format("%s/payment/vnpay-payment-callback", apiPrefix),
                                     String.format("%s/users/avatars/**", apiPrefix)
+                            ).permitAll()
+                            .requestMatchers(
+                                    String.format("%s/chat", apiPrefix),
+                                    String.format("%s/events", apiPrefix),
+                                    String.format("%s/receive-message", apiPrefix),
+                                    String.format("%s/health/n8n", apiPrefix)
                             ).permitAll()
                             .requestMatchers(GET, String.format("%s/tours/**", apiPrefix)).permitAll()
                             .requestMatchers(POST, String.format("%s/tours/**", apiPrefix)).hasRole("ADMIN")
@@ -113,21 +119,25 @@ public class WebSecurityConfig {
                             String jwtToken = oauthUser.getJwtToken();
                             String userName = oauthUser.getName();
                             String email = oauthUser.getEmail();
-                            Long roleId = oauthUser.getRoleId(); // Lấy roleId
+                            Long roleId = oauthUser.getRoleId();
+                            Long userId = oauthUser.getUserId(); // Lấy userId
 
                             // Xử lý trường hợp roleId null
                             String roleIdStr = roleId != null ? roleId.toString() : "default_role_id";
+                            String userIdStr = userId != null ? userId.toString() : "default_user_id"; // Xử lý trường hợp userId null
 
-                            // Chuyển hướng với roleId
+                            // Chuyển hướng với roleId và userId
                             String redirectUrl = String.format(
-                                    "http://localhost:5173/redirect?token=%s&user_name=%s&email=%s&roleId=%s",
+                                    "http://localhost:5173/redirect?token=%s&user_name=%s&email=%s&roleId=%s&userId=%s",
                                     URLEncoder.encode(jwtToken, StandardCharsets.UTF_8),
                                     URLEncoder.encode(userName, StandardCharsets.UTF_8),
                                     URLEncoder.encode(email, StandardCharsets.UTF_8),
-                                    URLEncoder.encode(roleIdStr, StandardCharsets.UTF_8)
+                                    URLEncoder.encode(roleIdStr, StandardCharsets.UTF_8),
+                                    URLEncoder.encode(userIdStr, StandardCharsets.UTF_8)
                             );
                             response.sendRedirect(redirectUrl);
                         })
+
                         .failureHandler((request, response, exception) -> {
                             response.sendRedirect("http://localhost:5173/login?error=true");
                         })
@@ -140,7 +150,9 @@ public class WebSecurityConfig {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOrigins(List.of("http://localhost:5173", "http://localhost:3000", "https://phongnguyeeen.app.n8n.cloud"));
+        configuration.setAllowedOrigins(List.of("http://localhost:5173", "http://localhost:3000", "https://attackseawaysss.app.n8n.cloud"));
+        // Thêm các header cần thiết cho SSE
+        configuration.setExposedHeaders(List.of("Content-Type", "Cache-Control", "Connection", "Transfer-Encoding"));
         configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
         configuration.setAllowedHeaders(List.of("*"));
         configuration.setAllowCredentials(true);

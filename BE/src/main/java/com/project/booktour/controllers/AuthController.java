@@ -14,7 +14,7 @@ public class AuthController {
 
     @GetMapping("/success")
     public ResponseEntity<?> loginSuccess(@AuthenticationPrincipal CustomOAuth2User oAuth2User) {
-        return ResponseEntity.ok(new AuthResponse(oAuth2User.getEmail(), oAuth2User.getJwtToken(), oAuth2User.getRoleId()));
+        return ResponseEntity.ok(new AuthResponse(oAuth2User.getEmail(), oAuth2User.getJwtToken(), oAuth2User.getRoleId(), oAuth2User.getUserId()));
     }
 
     @GetMapping("/failure")
