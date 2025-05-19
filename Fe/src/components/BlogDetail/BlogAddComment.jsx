@@ -7,21 +7,14 @@ import { FiArrowUpRight } from "react-icons/fi";
 const BlogAddComment = () => {
     const [comment, setComment] = useState("");
     const [rating, setRating] = useState(0);
-    const [hasBooked, setHasBooked] = useState(false);
     const tour_id = localStorage.getItem('tour_id');
     const user_id = localStorage.getItem('user_id');
 
-    // useEffect(() => {
-    //     const bookedTours = JSON.parse(localStorage.getItem('booked_tours') || '[]');
-    //     setHasBooked(bookedTours.includes(tour_id)); // Kiểm tra xem tour_id có trong danh sách đặt tour không
-    // }, [tour_id]);
+    
 
     const handleCommentSubmit = async (e) => {
         e.preventDefault();
-        // if (!hasBooked) {
-        //     toast.warning("Bạn cần đặt tour trước khi gửi đánh giá");
-        //     return;
-        // }
+      
         if (!comment || !rating) {
             toast.warning('Vui lòng nhập đầy đủ thông tin đánh giá.');
             return;
@@ -31,6 +24,7 @@ const BlogAddComment = () => {
             const data = {
                 tour_id: tour_id,
                 user_id: user_id,
+                booking_id: localStorage.getItem('booking_id'),
                 comment: comment,
                 rating: rating,
             };
@@ -45,7 +39,7 @@ const BlogAddComment = () => {
                 toast.warning('Có lỗi xảy ra khi gửi đánh giá.');
             }
         } catch (error) {
-            toast.warning('Bạn đã đánh giá tour này rồi. Vui lòng đặt lại tour nếu muốn đánh giá tiếp.');
+            toast.warning('Bạn đã đánh giá tour này rồi hoặc chưa đặt tour.Vui lòng đặt tour để đánh giá.');
             console.error('Error submitting review:', error);
         }
     };

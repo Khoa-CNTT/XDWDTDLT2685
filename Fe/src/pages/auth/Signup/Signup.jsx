@@ -171,14 +171,6 @@ const Signup = () => {
                             <hr className='-ml-10 border-gray-400' />
                         </div>
                         <div className='flex items-center justify-between'>
-                            <div className='flex'>
-                                <a href="#!" className="p-2 mr-5 border border-gray-400 border-solid rounded-lg">
-                                    <FcGoogle className="w-8 h-8" />
-                                </a>
-                                <a href="#!" className="p-2 mr-5 border border-gray-400 border-solid rounded-lg">
-                                    <FaFacebookF className='w-8 h-8 text-blue-700' />
-                                </a>
-                            </div>
                             <div className='mr-[50px]'>
                                 <Link onClick={() => window.scrollTo(0, 0)} to="/login" className='px-5 py-2 text-white transition-all rounded-full duration-600 bg-gradient-to-r from-primary to-secondary hover:bg-gradient-to-r hover:from-secondary hover:bg-primary'>Đăng nhập</Link>
                             </div>

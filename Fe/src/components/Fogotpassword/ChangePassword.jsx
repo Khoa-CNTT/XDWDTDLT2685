@@ -21,7 +21,7 @@ const ChangePassword = () => {
                 <div className='w-[600px] mx-auto bg-white dark:bg-[#101828] dark:text-white border border-gray-200 p-8 rounded-lg shadow-xl'>
                     <div className='flex items-center gap-[140px] mb-6'>
                         <AiOutlineArrowLeft onClick={() => navigate('/verify-Code')} className='w-8 h-8 text-orange-500 cursor-pointer' />
-                        <p className='text-2xl font-medium text-center'>Nhập mã xác nhận</p>
+                        <p className='text-2xl font-medium text-center'>Nhập mật khẩu mới</p>
                     </div>
                     <div className='space-y-6'>
                         <div className='relative mt-3'>
