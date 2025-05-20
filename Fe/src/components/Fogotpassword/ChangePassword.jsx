@@ -2,23 +2,60 @@ import React, { useState } from 'react';
 import { AiOutlineArrowLeft } from 'react-icons/ai';
 import { PiEye, PiEyeSlash } from 'react-icons/pi';
 import { useNavigate } from 'react-router-dom';
+import { changePassword } from '../../services/authApi';
+import { toast } from 'react-toastify';
+import { FaSyncAlt } from 'react-icons/fa';
+
 
 const ChangePassword = () => {
-    const [code, setCode] = useState('');
     const [newPassword, setNewPassword] = useState('');
     const [confirmPassword, setConfirmPassword] = useState('');
     const [isShowPassword, setIsShowPassword] = useState(false);
     const [isShowConfirmPassword, setIsShowConfirmPassword] = useState(false);
+    const [loading, setLoading] = useState(false)
+
     const navigate = useNavigate();
-    const handleSubmit = () => {
+    const handleSubmit = async () => {
+        const token = localStorage.getItem('code');
 
+        if (!newPassword || !confirmPassword) {
+            toast.warning('Vui lòng nhập đầy đủ thông tin');
+            return;
+        }
+        if (newPassword.length < 6) {
+            toast.warning("Mật khẩu ít nhất 6 ký tự");
+            return;
+        }
 
+        if (newPassword !== confirmPassword) {
+            toast.error('Mật khẩu xác nhận không khớp');
+            return;
+        }
+
+        try {
+            setLoading(true)
+            const res = await changePassword(token, newPassword);
+            if (res.status === 200) {
+                setTimeout(() => {
+                    toast.success('Thay đổi mật khẩu thành công');
+                    navigate('/login');
+                }, 1500);
+            } else {
+                setTimeout(() => {
+                    toast.error('Thay đổi mật khẩu thất bại');
+                }, 1500);
+            }
+        } catch (error) {
+            toast.error('Có lỗi xảy ra khi thay đổi mật khẩu');
+            setLoading(false)
+        }
     };
 
+
     return (
-        <div className='pt-[150px]'>
+        <div className='pt-[150px] bg-white dark:bg-[#101828]'>
             <div className='container'>
-                <div className='w-[600px] mx-auto bg-white dark:bg-[#101828] dark:text-white border border-gray-200 p-8 rounded-lg shadow-xl'>
+                <div className='w-[600px] mx-auto  dark:text-white border border-gray-200 p-8 rounded-lg shadow-xl'>
                     <div className='flex items-center gap-[140px] mb-6'>
                         <AiOutlineArrowLeft onClick={() => navigate('/verify-Code')} className='w-8 h-8 text-orange-500 cursor-pointer' />
                         <p className='text-2xl font-medium text-center'>Nhập mật khẩu mới</p>
@@ -61,10 +98,18 @@ const ChangePassword = () => {
                         </div>
 
                         <button
+                            type='submit'
                             onClick={handleSubmit}
-                            className='w-full p-3 mt-3 text-white bg-orange-500 rounded-lg'
+                            disabled={loading}
+                            className='flex items-center justify-center w-full p-3 text-white bg-orange-500 rounded-lg '
                         >
-                            Xác nhận thay đổi
+                            {loading ? (
+                                <>
+                                    <FaSyncAlt className='w-5 h-5 text-white animate-spin' />
+                                </>
+                            ) : (
+                                "Xác nhận thay đổi"
+                            )}
                         </button>
                     </div>
                 </div>

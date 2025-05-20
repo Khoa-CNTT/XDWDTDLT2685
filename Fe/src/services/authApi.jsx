@@ -22,22 +22,23 @@ const forgotPassword = (email) => {
         });
 };
 // gửi mã xác nhận
-const verifyCode = (token, newPassword) => {
-    return axios.post("users/reset-password", { token, newPassword }, {
+const getCode = (token) => {
+    return axios.get("users/verify-reset-token", {
+        params: { token },
         headers: {
             "Content-Type": "application/x-www-form-urlencoded",
         },
     });
-}
+};
 // thay đổi pass
-// const changePassword = (newPassword) => {
-//     return axios.post("users/reset-password", { newPassword },
-//         {
-//             headers: {
-//                 "Content-Type": "application/x-www-form-urlencoded",
-//             },
-//         }
-//     );
-// };
-export { loginApi, signupApi, forgotPassword, verifyCode };
+const changePassword = (token, newPassword) => {
+    return axios.post("users/reset-password", { token, newPassword },
+        {
+            headers: {
+                "Content-Type": "application/x-www-form-urlencoded",
+            },
+        }
+    );
+};
+export { loginApi, signupApi, forgotPassword, getCode,changePassword };
 
