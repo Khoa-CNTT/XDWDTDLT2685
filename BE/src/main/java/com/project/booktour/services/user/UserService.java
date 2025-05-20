@@ -297,10 +297,17 @@ public class UserService implements IUserService {
 
         return resetToken;
     }
+    @Override
+    public void verifyResetToken(String tokenStr) throws DataNotFoundException {
+        Token token = tokenRepository.findByToken(tokenStr)
+                .orElseThrow(() -> new DataNotFoundException("Token không hợp lệ."));
 
+        if (token.isExpired() || token.isRevoked() || token.getExpirationDate().isBefore(LocalDateTime.now())) {
+            throw new RuntimeException("Token đã hết hạn hoặc không hợp lệ.");
+        }
+    }
 
-
-   @Override
+    @Override
     public void resetPasswordWithToken(String tokenStr, String newPassword) throws DataNotFoundException {
         Token token = tokenRepository.findByToken(tokenStr)
                 .orElseThrow(() -> new DataNotFoundException("Token không hợp lệ."));

@@ -35,14 +35,23 @@ public class BookingService implements IBookingService {
     @Override
     public Booking createBooking(BookingDTO bookingDTO) throws Exception {
         User user = userRepository.findById(bookingDTO.getUserId())
-                .orElseThrow(() -> new DataNotFoundException("Cannot find user with id: " + bookingDTO.getUserId()));
+                .orElseThrow(() -> new DataNotFoundException("Không tìm thấy người dùng với id: " + bookingDTO.getUserId()));
         Tour tour = tourRepository.findById(bookingDTO.getTourId())
-                .orElseThrow(() -> new DataNotFoundException("Cannot find tour with id: " + bookingDTO.getTourId()));
+                .orElseThrow(() -> new DataNotFoundException("Không tìm thấy tour với id: " + bookingDTO.getTourId()));
+
+        // Kiểm tra số slot còn lại
+        Integer totalBookedTickets = tourRepository.getTotalBookedTicketsByTourId(bookingDTO.getTourId());
+        Integer requestedTickets = bookingDTO.getNumAdults() + bookingDTO.getNumChildren();
+        Integer availableSlots = tour.getQuantity() - totalBookedTickets;
+
+        if (availableSlots < requestedTickets) {
+            throw new Exception("Không đủ slot trống cho tour này. Số slot còn lại: " + availableSlots);
+        }
 
         Promotion promotion = null;
         if (bookingDTO.getPromotionId() != null) {
             promotion = promotionRepository.findById(bookingDTO.getPromotionId())
-                    .orElseThrow(() -> new DataNotFoundException("Cannot find promotion with id: " + bookingDTO.getPromotionId()));
+                    .orElseThrow(() -> new DataNotFoundException("Không tìm thấy khuyến mãi với id: " + bookingDTO.getPromotionId()));
         }
 
         Booking booking = new Booking();
@@ -63,7 +72,7 @@ public class BookingService implements IBookingService {
         Checkout checkout = Checkout.builder()
                 .booking(savedBooking)
                 .paymentMethod(bookingDTO.getPaymentMethod() != null ? bookingDTO.getPaymentMethod() : "OFFICE")
-                .paymentDetails(bookingDTO.getPaymentMethod() != null && bookingDTO.getPaymentMethod().equalsIgnoreCase("VNPAY") ? "Initiated VNPAY payment" : "Payment to be processed at office")
+                .paymentDetails(bookingDTO.getPaymentMethod() != null && bookingDTO.getPaymentMethod().equalsIgnoreCase("VNPAY") ? "Khởi tạo thanh toán VNPAY" : "Thanh toán tại văn phòng")
                 .amount(bookingDTO.getTotalPrice())
                 .paymentStatus(PaymentStatus.PENDING)
                 .transactionId("BOOK-" + savedBooking.getBookingId())
@@ -151,8 +160,8 @@ public class BookingService implements IBookingService {
                 .phoneNumber(booking.getPhoneNumber())
                 .startDate(tour.getStartDate())
                 .endDate(tour.getEndDate())
-                .priceAdult(String.format("%,.0f VNĐ", tour.getPriceAdult())) // Chuyển sang Long
-                .priceChild(String.format("%,.0f VNĐ", tour.getPriceAdult())) // Chuyển sang Long
+                .priceAdult(String.format("%,.0f VNĐ", tour.getPriceAdult()))
+                .priceChild(String.format("%,.0f VNĐ", tour.getPriceAdult()))
                 .createdAt(booking.getCreatedAt())
                 .updatedAt(booking.getUpdatedAt())
                 .paymentMethod(paymentMethod)
@@ -162,39 +171,57 @@ public class BookingService implements IBookingService {
 
     @Override
     public Booking updateBooking(Long id, BookingDTO bookingDTO) throws DataNotFoundException {
+        if (bookingDTO == null) {
+            throw new IllegalArgumentException("BookingDTO cannot be null");
+        }
+
         Booking booking = bookingRepository.findById(id)
                 .orElseThrow(() -> new DataNotFoundException("Cannot find booking with id: " + id));
+        System.out.println("Updating booking with ID: " + id);
+
         User user = userRepository.findById(bookingDTO.getUserId())
                 .orElseThrow(() -> new DataNotFoundException("Cannot find user with id: " + bookingDTO.getUserId()));
-
         user.setUpdatedAt(LocalDateTime.now());
         userRepository.save(user);
+        System.out.println("User updated with ID: " + bookingDTO.getUserId());
 
         Tour tour = tourRepository.findById(bookingDTO.getTourId())
                 .orElseThrow(() -> new DataNotFoundException("Cannot find tour with id: " + bookingDTO.getTourId()));
         Promotion promotion = bookingDTO.getPromotionId() != null ? promotionRepository.findById(bookingDTO.getPromotionId())
                 .orElseThrow(() -> new DataNotFoundException("Cannot find promotion with id: " + bookingDTO.getPromotionId())) : null;
 
-        booking.setNumAdults(bookingDTO.getNumAdults());
-        booking.setNumChildren(bookingDTO.getNumChildren());
-        booking.setTotalPrice(bookingDTO.getTotalPrice());
-        booking.setSpecialRequests(bookingDTO.getSpecialRequests());
-        booking.setFullName(bookingDTO.getFullName());
-        booking.setPhoneNumber(bookingDTO.getPhoneNumber());
-        booking.setEmail(bookingDTO.getEmail());
-        booking.setAddress(bookingDTO.getAddress());
+        // Cập nhật các trường, kiểm tra null với Integer
+        booking.setNumAdults(bookingDTO.getNumAdults() != null ? bookingDTO.getNumAdults() : booking.getNumAdults());
+        booking.setNumChildren(bookingDTO.getNumChildren() != null ? bookingDTO.getNumChildren() : booking.getNumChildren());
+        booking.setTotalPrice(bookingDTO.getTotalPrice() != null ? bookingDTO.getTotalPrice() : booking.getTotalPrice());
+        booking.setSpecialRequests(bookingDTO.getSpecialRequests() != null ? bookingDTO.getSpecialRequests() : booking.getSpecialRequests());
+        booking.setFullName(bookingDTO.getFullName() != null ? bookingDTO.getFullName() : booking.getFullName());
+        booking.setPhoneNumber(bookingDTO.getPhoneNumber() != null ? bookingDTO.getPhoneNumber() : booking.getPhoneNumber());
+        booking.setEmail(bookingDTO.getEmail() != null ? bookingDTO.getEmail() : booking.getEmail());
+        booking.setAddress(bookingDTO.getAddress() != null ? bookingDTO.getAddress() : booking.getAddress());
         booking.setUser(user);
         booking.setTour(tour);
         booking.setPromotion(promotion);
 
-        if (bookingDTO.getBookingStatus() != null && booking.getBookingStatus() == BookingStatus.PENDING
-                && bookingDTO.getBookingStatus() == BookingStatus.CONFIRMED) {
-            booking.setBookingStatus(BookingStatus.CONFIRMED);
+        // Cập nhật trạng thái booking với kiểm tra hợp lệ
+        if (bookingDTO.getBookingStatus() != null) {
+            try {
+                BookingStatus newStatus = BookingStatus.valueOf(bookingDTO.getBookingStatus().toString());
+                if (booking.getBookingStatus() == BookingStatus.PENDING && newStatus == BookingStatus.CONFIRMED) {
+                    booking.setBookingStatus(BookingStatus.CONFIRMED);
+                }
+            } catch (IllegalArgumentException e) {
+                throw new IllegalArgumentException("Invalid booking status: " + bookingDTO.getBookingStatus());
+            }
         }
 
-        return bookingRepository.save(booking);
-    }
+        booking.setUpdatedAt(LocalDateTime.now());
+        System.out.println("Saving booking with ID: " + id);
 
+        Booking savedBooking = bookingRepository.save(booking);
+        System.out.println("Booking saved successfully with ID: " + savedBooking.getBookingId());
+        return savedBooking;
+    }
     @Transactional
     public void cancelBooking(Long id) throws DataNotFoundException {
         Booking booking = bookingRepository.findById(id)

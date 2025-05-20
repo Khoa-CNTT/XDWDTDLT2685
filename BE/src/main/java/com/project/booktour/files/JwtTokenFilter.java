@@ -123,6 +123,7 @@ public class JwtTokenFilter extends OncePerRequestFilter {
                 Pair.of(apiPrefix + "/users/avatars/**", "GET"),
                 Pair.of(apiPrefix + "/users/forgot-password", "POST"),
                 Pair.of(apiPrefix + "/users/reset-password", "POST"),
+                Pair.of(apiPrefix + "/users/verify-reset-token", "GET"),
                 Pair.of(apiPrefix + "/tours/images/**", "GET"),
                 Pair.of(apiPrefix + "/reviews/**", "GET"),
                 Pair.of("/login/oauth2/code/*", "GET"),

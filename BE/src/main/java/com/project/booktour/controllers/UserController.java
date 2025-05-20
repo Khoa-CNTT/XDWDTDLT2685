@@ -192,6 +192,15 @@ public class UserController {
             return ResponseEntity.badRequest().body("Không thể đặt lại mật khẩu: " + e.getMessage());
         }
     }
+    @GetMapping("/verify-reset-token")
+    public ResponseEntity<?> verifyResetToken(@RequestParam("token") String token) {
+        try {
+            userService.verifyResetToken(token);
+            return ResponseEntity.ok("Token hợp lệ.");
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body("Token không hợp lệ: " + e.getMessage());
+        }
+    }
 
 
 }

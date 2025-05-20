@@ -172,8 +172,18 @@ public class InvoiceService implements IInvoiceService {
     }
 
     private String buildEmailContent(Booking booking) {
+        // Format dates for better readability, e.g., "dd/MM/yyyy"
+        String startDate = booking.getTour() != null && booking.getTour().getStartDate() != null
+                ? booking.getTour().getStartDate().format(java.time.format.DateTimeFormatter.ofPattern("dd/MM/yyyy"))
+                : "N/A";
+        String endDate = booking.getTour() != null && booking.getTour().getEndDate() != null
+                ? booking.getTour().getEndDate().format(java.time.format.DateTimeFormatter.ofPattern("dd/MM/yyyy"))
+                : "N/A";
+
         return "<h3>Xin chào " + (booking.getFullName() != null ? booking.getFullName() : "Quý khách") + ",</h3>" +
-                "<p>Cảm ơn bạn đã đặt tour với chúng tôi. Dưới đây là thông tin hóa đơn của bạn:</p>" ;
+                "<p>Cảm ơn bạn đã đặt tour với chúng tôi. Dưới đây là thông tin hóa đơn của bạn:</p>" +
+                "<p><strong>Ngày bắt đầu:</strong> " + startDate + "</p>" +
+                "<p><strong>Ngày kết thúc:</strong> " + endDate + "</p>";
     }
 
     private String truncate(String value, int length) {

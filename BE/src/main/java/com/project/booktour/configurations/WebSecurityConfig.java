@@ -52,6 +52,7 @@ public class WebSecurityConfig {
                                     String.format("%s/users/login", apiPrefix),
                                     String.format("%s/users/forgot-password", apiPrefix),
                                     String.format("%s/users/reset-password", apiPrefix),
+                                    String.format("%s/users/verify-reset-token", apiPrefix),
                                     String.format("%s/tours/**", apiPrefix),
                                     "/favicon.ico",
                                     "/login/oauth2/code/*",

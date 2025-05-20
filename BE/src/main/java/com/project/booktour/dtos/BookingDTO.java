@@ -1,4 +1,4 @@
- package com.project.booktour.dtos;
+package com.project.booktour.dtos;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.project.booktour.models.BookingStatus;
@@ -16,30 +16,28 @@ import java.time.LocalDateTime;
 @Builder
 public class BookingDTO {
     @JsonProperty("booking_id")
-    private Long bookingId; // Thêm bookingId
+    private Long bookingId;
 
     @Min(value = 1, message = "User ID must be greater than 0")
     @JsonProperty("user_id")
     private Long userId;
 
     @JsonProperty("tour_id")
-    private Long tourId; // Thay đổi thành String để lưu dạng "Tour001"
-
-
+    private Long tourId;
 
     @JsonProperty("formatted_tour_id")
     private String formattedTourId;
 
     @JsonProperty("title")
-    private String title; // Thêm title
+    private String title;
 
     @Min(value = 0, message = "Number of adults must be at least 0")
     @JsonProperty("num_adults")
-    private int numAdults;
+    private Integer    numAdults; // Thay int bằng Integer
 
     @Min(value = 0, message = "Number of children must be at least 0")
     @JsonProperty("num_children")
-    private int numChildren;
+    private Integer    numChildren; // Thay int bằng Integer
 
     @Min(value = 0, message = "Total price must be at least 0")
     @JsonProperty("total_price")
@@ -86,6 +84,7 @@ public class BookingDTO {
 
     @JsonProperty("payment_status")
     private String paymentStatus;
+
     @JsonProperty("start_date")
     private LocalDate startDate;
 
@@ -97,5 +96,4 @@ public class BookingDTO {
 
     @JsonProperty("price_child")
     private String priceChild;
-
 }

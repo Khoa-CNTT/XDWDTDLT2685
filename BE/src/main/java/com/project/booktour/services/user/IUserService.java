@@ -30,5 +30,6 @@ public interface IUserService {
     void deleteUser(Long id) throws DataNotFoundException;
     void initiateResetPassword(String email) throws MessagingException, DataNotFoundException, IOException;
     void resetPasswordWithToken(String token, String newPassword) throws DataNotFoundException;
+    void verifyResetToken(String tokenStr) throws DataNotFoundException;
 
 }
