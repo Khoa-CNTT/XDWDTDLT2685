@@ -8,7 +8,7 @@ import { getAllBookingId } from '../../services/tour';
 import NoPage from '../../pages/NoPage';
 import { FiArrowUpRight } from "react-icons/fi";
 
-const TourHistory = () => {
+const TourHistory = ({ bookings: filteredBookings }) => {
     const [bookings, setBookings] = useState([]);
 
     const fetchData = async () => {
@@ -17,7 +17,7 @@ const TourHistory = () => {
             const res = await getAllBookingId(userId);
             const data = Array.isArray(res.data) ? res.data : [];
             const validBookings = data.filter(item =>
-                ['PENDING', 'CONFIRMED', 'COMPLETED'].includes(item.booking_status)
+                ['PENDING', 'CONFIRMED', 'COMPLETED',"CANCELLED"].includes(item.booking_status)
             );
             setBookings(validBookings);
         } catch (error) {
@@ -25,20 +25,23 @@ const TourHistory = () => {
             setBookings([]);
         }
     };
-    
 
     useEffect(() => {
-        fetchData();
-    }, []);
+        if (!filteredBookings) {
+            fetchData();
+        }
+    }, [filteredBookings]);
 
-    if (!Array.isArray(bookings) || bookings.length === 0) {
+    const displayBookings = filteredBookings || bookings;
+
+    if (!Array.isArray(displayBookings) || displayBookings.length === 0) {
         return <NoPage redirectTo="/tour" />;
     }
 
     return (
         <div className='pt-10'>
             <div className='container space-y-10'>
-                {bookings.map((item, index) => (
+                {displayBookings.map((item, index) => (
                     <div key={index} className='w-full bg-gray-100 p-6 h-[300px] rounded-lg shadow-xl'>
                         <div className='relative flex space-x-10'>
                             <Link to={`/tourbookingdetail/${item.booking_id}`}>
@@ -46,6 +49,7 @@ const TourHistory = () => {
                                     onClick={() => {
                                         localStorage.setItem('tour_id', item.tourId);
                                         localStorage.setItem('booking_id', item.booking_id);
+                                        
                                         window.scrollTo(0, 0);
                                     }}
                                     src={item.image}
@@ -58,7 +62,7 @@ const TourHistory = () => {
                                 className={`w-[120px] absolute top-4 left-[-30px] h-8 px-4 py-2 flex justify-center items-center rounded-2xl shadow-sm
                                     ${item.booking_status === 'PENDING' ? 'bg-yellow-400' :
                                         item.booking_status === 'CONFIRMED' ? 'bg-blue-500' :
-                                            item.booking_status === 'COMPLETED' ? 'bg-green-500' : 'bg-gray-300'}`}>
+                                            item.booking_status === 'COMPLETED' ? 'bg-green-500' : 'bg-red-500'}`}>
                                 <p className='text-sm font-semibold text-white'>
                                     {
                                         item.booking_status === 'PENDING' ? 'Chờ xác nhận' :

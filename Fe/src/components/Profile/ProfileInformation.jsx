@@ -1,3 +1,4 @@
+// ProfileInformation.js
 import React, { useEffect, useState } from 'react';
 import { toast } from 'react-toastify';
 import { putChangeInformation, putProfileImg } from '../../services/profile';
@@ -6,17 +7,15 @@ import { FaSyncAlt } from 'react-icons/fa';
 const ProfileInformation = ({ profile, selectedFile }) => {
     const [user_name, setUserName] = useState('');
     const [full_name, setFull_name] = useState('');
-
     const [phone_number, setPhoneNumber] = useState('');
     const [email, setEmail] = useState('');
     const [address, setAddress] = useState('');
-    const [loading, setLoading] = useState(false)
+    const [loading, setLoading] = useState(false);
 
-
-    // Gán dữ liệu profile vào state khi profile thay đổi
     useEffect(() => {
         if (profile) {
             setUserName(profile.user_name || '');
+            setFull_name(profile.full_name || '');  // <-- thêm dòng này để set full_name
             setPhoneNumber(profile.phone_number || '');
             setEmail(profile.email || '');
             setAddress(profile.address || '');
@@ -28,11 +27,11 @@ const ProfileInformation = ({ profile, selectedFile }) => {
         const userId = localStorage.getItem('user_id');
         const data = {
             user_name,
+            full_name,
             phone_number,
             email,
             address,
         };
-
 
         const noInfoChanged =
             (user_name === (profile?.user_name || '')) &&
@@ -46,6 +45,7 @@ const ProfileInformation = ({ profile, selectedFile }) => {
             toast.warning('Không có thay đổi nào!');
             return;
         }
+
         const phoneChanged = phone_number !== (profile?.phone_number || '');
         const isValidPhone = /^[0-9]{10}$/.test(phone_number) && !/^(\d)\1{9}$/.test(phone_number);
         if (phoneChanged && !isValidPhone) {
@@ -54,7 +54,7 @@ const ProfileInformation = ({ profile, selectedFile }) => {
         }
 
         try {
-            setLoading(true)
+            setLoading(true);
             const res = await putChangeInformation(userId, data);
             if (selectedFile) {
                 const formData = new FormData();
@@ -64,15 +64,14 @@ const ProfileInformation = ({ profile, selectedFile }) => {
             if (res.status === 200) {
                 setTimeout(() => {
                     toast.success('Cập nhật thông tin thành công!');
-                    setLoading(false)
+                    setLoading(false);
                 }, 1000);
             }
         } catch (error) {
             toast.error('Cập nhật không thành công');
-
+            setLoading(false);
         }
     };
-
 
     return (
         <div>
@@ -106,10 +105,10 @@ const ProfileInformation = ({ profile, selectedFile }) => {
                                 value={email}
                                 disabled
                                 onChange={(e) => setEmail(e.target.value)}
-
                                 className='w-[700px] dark:text-[#101828] p-3 border border-gray-400 rounded-lg'
                             />
                         </div>
+
                         <div className='flex items-center gap-10'>
                             <div>
                                 <label className='flex flex-col mb-2 font-semibold'>Họ và tên</label>
@@ -147,9 +146,7 @@ const ProfileInformation = ({ profile, selectedFile }) => {
                         <div className='p-2 cursor-pointer border text-center text-white border-gray-200 w-[200px] bg-primary rounded-lg'>
                             <button type='submit' className='font-semibold'>
                                 {loading ? (
-                                    <>
-                                        <FaSyncAlt className='w-5 h-5 text-white animate-spin' />
-                                    </>
+                                    <FaSyncAlt className='w-5 h-5 text-white animate-spin' />
                                 ) : (
                                     "Lưu Thông Tin"
                                 )}

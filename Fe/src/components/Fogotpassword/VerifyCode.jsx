@@ -2,6 +2,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import { AiOutlineArrowLeft } from 'react-icons/ai';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
+import { verifyCode } from '../../services/authApi';
 
 const VerifyCode = () => {
     const [code, setCode] = useState(['', '', '', '', '', '']);
@@ -39,15 +40,25 @@ const VerifyCode = () => {
         }
     };
 
-    const handleSubmit = () => {
+    const handleSubmit = async () => {
         const finalCode = code.join('');
         if (finalCode.length === 6) {
-            console.log('Mã xác nhận:', finalCode);
-            navigate('/change-password');
+            try {
+                const res = await verifyCode(finalCode);
+                if (res.status === 200) {
+                    localStorage.setItem('resetToken', finalCode);
+                    navigate('/change-password');
+                } else {
+                    toast.error('Mã xác nhận không hợp lệ');
+                }
+            } catch (error) {
+                toast.error('Mã xác nhận không hợp lệ');
+            }
         } else {
             toast.warning('Vui lòng nhập đầy đủ 6 số');
         }
     };
+
 
     return (
         <div className='pt-[150px] dark:bg-[#101828] dark:text-white'>

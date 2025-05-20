@@ -24,7 +24,7 @@ const SendMail = () => {
             console.log(res);
             if (res.status == 200) {
                 toast.success("Đã gửi email, vui lòng kiểm tra hộp thư!");
-                navigate('/verify');
+                navigate('/verify-Code');
             } else {
                 toast.error("email không tồn tại");
             }

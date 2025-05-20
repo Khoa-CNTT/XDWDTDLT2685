@@ -188,6 +188,7 @@ const Navbar = () => {
                                                     <li>
                                                         <NavLink
                                                             to="/tourbooking"
+                                                            onClick={() => window.scrollTo(0, 0)}
                                                             className={({ isActive }) =>
                                                                 ` w-full p-2 text-base font-normal rounded-md hover:bg-primary/50 flex items-center gap-2 ${isActive ? "active" : ""}`
                                                             }

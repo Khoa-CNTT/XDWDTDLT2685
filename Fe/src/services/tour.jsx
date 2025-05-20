@@ -58,3 +58,17 @@ export const getAllBookingId = (id) => {
 export const getPopular = () => {
     return axios.get("tours/top-booked");
 };
+
+// lọc trạng thái
+export const getBookingtour = async (id, booking_status) => {
+    const token = localStorage.getItem("token");
+    const params = {};
+    if (booking_status) params.booking_status = booking_status;
+
+    return axios.get(`tours/user/${id}`, {
+        params,
+        headers: {
+            Authorization: `Bearer ${token}`
+        }
+    });
+};

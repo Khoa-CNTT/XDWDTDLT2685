@@ -118,7 +118,7 @@ const Login = () => {
                                     placeholder='Mật khẩu...'
                                 />
                                 {errors?.password && <div className='mt-2 text-sm text-rose-500'>{errors.password}</div>}
-                                <div className='absolute top-[48px] right-[80px] cursor-pointer'>
+                                <div className='absolute top-[48px] right-[100px] cursor-pointer'>
                                     {isShowPassword ? (
                                         <PiEye className='w-6 h-6 dark:text-[#101828]' onClick={() => setIsShowPassword(false)} />
                                     ) : (
