@@ -7,7 +7,7 @@ const TourBookingList = () => {
     const { selected, setSelected, booking} = useFilterTourBooking(); // hook cần xử lý theo trạng thái thay vì vùng
 
     return (
-        <div className='pt-10 dark:bg-[#101828] dark:text-white'>
+        <div className='pt-10 dark:bg-[#101828] '>
             <div className='flex flex-col justify-center'>
                 <div className="inline-flex items-center justify-center p-3 bg-white border border-gray-300 rounded-full dark:bg-[#101828] dark:border-white shadow-sm w-fit mx-auto">
                     {statuses.map((status) => (

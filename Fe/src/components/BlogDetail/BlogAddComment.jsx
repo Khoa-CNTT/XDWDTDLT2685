@@ -58,7 +58,7 @@ const BlogAddComment = () => {
                         <h1 className='text-xl '>Để lại phản hồi</h1>
                         <p>Nội dung</p>
                         <textarea
-                            className='w-full h-[150px] px-6 rounded-lg'
+                            className='w-full h-[150px] dark:text-black px-6 rounded-lg'
                             value={comment}
                             onChange={(e) => setComment(e.target.value)}
                         />

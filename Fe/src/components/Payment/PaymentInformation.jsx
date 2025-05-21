@@ -18,7 +18,7 @@ const PaymentInformation = ({ full_name, setFullName, email, setEmail, phone_num
                                 <input type='full_name' name="text"
                                     value={full_name}
                                     onChange={(e) => setFullName(e.target.value)}
-                                    className='h-auto p-3  border border-gray-400 rounded-lg w-[300px]'
+                                    className='h-auto p-3  border dark:text-black border-gray-400 rounded-lg w-[300px]'
                                     placeholder='Tên của bạn...'
                                     disabled={disabled}
 
@@ -33,7 +33,7 @@ const PaymentInformation = ({ full_name, setFullName, email, setEmail, phone_num
                                 <input type='email' name="text"
                                     value={email}
                                     onChange={(e) => setEmail(e.target.value)}
-                                    className=' p-3 border border-gray-400 rounded-lg w-[300px]'
+                                    className=' p-3 border dark:text-black border-gray-400 rounded-lg w-[300px]'
                                     placeholder='Nhập email liên hệ...'
                                     disabled={disabled}
 
@@ -51,7 +51,7 @@ const PaymentInformation = ({ full_name, setFullName, email, setEmail, phone_num
                                 <input type='number' name="text"
                                     value={phone_number}
                                     onChange={(e) => setPhoneNumber(e.target.value)}
-                                    className='h-auto p-3  border border-gray-400 rounded-lg w-[300px]'
+                                    className='h-auto p-3  border dark:text-black border-gray-400 rounded-lg w-[300px]'
                                     placeholder='Nhập số điện thoại liên hệ...'
                                     disabled={disabled}
 
@@ -66,7 +66,7 @@ const PaymentInformation = ({ full_name, setFullName, email, setEmail, phone_num
                                 <input type='address' name="text"
                                     value={address}
                                     onChange={(e) => setAddress(e.target.value)}
-                                    className=' p-3 border border-gray-400 rounded-lg w-[300px]'
+                                    className=' p-3 border dark:text-black border-gray-400 rounded-lg w-[300px]'
                                     placeholder='Nhập địa chỉ liên hệ...'
                                     disabled={disabled}
 

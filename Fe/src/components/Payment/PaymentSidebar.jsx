@@ -45,6 +45,11 @@ const PaymentSidebar = ({
             toast.error('Số điện thoại không hợp lệ!');
             return;
         }
+        const isValidEmail = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+        if (!isValidEmail) {
+            toast.error('Email không hợp lệ!');
+            return;
+        }
         if (item?.availableSlots === 0) {
             toast.warning("Số lượng vượt quá giới hạn");
             return;

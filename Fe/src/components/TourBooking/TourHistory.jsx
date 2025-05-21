@@ -35,7 +35,7 @@ const TourHistory = ({ bookings: filteredBookings }) => {
     const displayBookings = filteredBookings || bookings;
 
     if (!Array.isArray(displayBookings) || displayBookings.length === 0) {
-        return <NoPage redirectTo="/tour" />;
+        return <NoPage redirectTo="/tourbooking" />;
     }
 
     return (

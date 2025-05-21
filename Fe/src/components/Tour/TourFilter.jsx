@@ -4,6 +4,7 @@ import Sort from '../Sort/Sort';
 import Places from '../Places/Places';
 import useTourFilterSort from '../../hooks/useTourFilterSort';
 import NoPage from '../../pages/NoPage';
+import StarRating from '../Star/StarRating';
 
 const region = ["Miền Bắc", "Miền Trung", "Miền Nam"];
 const prices = [
@@ -26,9 +27,9 @@ const TourFilter = () => {
         setSortValue,
         tours,
         resetFilters,
-        setStarRating
+        selectedStar,
+        setSelectedStar
     } = useTourFilterSort();
-    // const [loading, setLoading] = useState(false)
 
     return (
         <div className='pt-10'>
@@ -88,8 +89,9 @@ const TourFilter = () => {
                                     <input
                                         type="radio"
                                         className="w-4 h-4"
+                                        checked={selectedStar === rating}
                                         name="rating"
-                                        onChange={() => setStarRating(rating)}
+                                        onChange={() => setSelectedStar(rating)}
                                     />
                                     <StarDisplay rating={rating} />
                                 </div>
@@ -121,7 +123,7 @@ const TourFilter = () => {
                 <div className=''>
                     <Sort sortValue={sortValue} setSortValue={setSortValue} />
                     {tours.length === 0 ? (
-                        <NoPage onReset={resetFilters} />
+                        <NoPage />
                     ) : (
                         <Places
                             hideTitle={false}

@@ -57,10 +57,10 @@ const AboutUs = () => {
                             </div>
                         </div>
                         <div className="relative flex items-center gap-2 mt-10 group">
-                            <div className="p-2 border text-center border-gray-200 w-[200px] rounded-full transition-all duration-300 group-hover:shadow-lg group-hover:bg-gray-200">
-                                <Link className="font-semibold">Khám phá Tour</Link>
+                            <div className="p-2 border text-center border-gray-200 w-[200px] rounded-full transition-all duration-300 group-hover:shadow-lg group-hover:bg-gray-200 hover:text-black">
+                                <Link to="/tours" onClick={() => window.scrollTo(0, 0)} className="font-semibold">Khám phá Tour</Link>
                             </div>
-                            <FaArrowRightLong className="absolute left-[26%] top-[15px]  transition-all duration-300 group-hover:scale-110 group-hover:translate-x-1" />
+                            <FaArrowRightLong className="absolute left-[26%] top-[15px]  transition-all duration-300 group-hover:scale-110 group-hover:translate-x-1 hover:text-black" />
                         </div>
 
 

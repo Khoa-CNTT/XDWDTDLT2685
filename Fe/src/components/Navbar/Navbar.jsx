@@ -31,6 +31,7 @@ const Navbar = () => {
         localStorage.removeItem("avatar");
         localStorage.removeItem("tour_id");
         localStorage.removeItem("role");
+        localStorage.removeItem("booking_id")
         toast.success("Đăng xuất thành công!");
         navigate("/login")
     }
@@ -169,7 +170,7 @@ const Navbar = () => {
                                     <span>
                                         <FaCaretDown className="transition-all duration-200 group-hover:rotate-180:" />
                                     </span>
-                                    <div className="absolute -left-2 z-[9999] hidden w-[200px] top-[59px] rounded-md bg-white p-2 text-black group-hover:block shadow-xl ">
+                                    <div className="absolute -left-2 z-[9999] hidden w-[200px] top-[58px] rounded-md bg-white p-2 text-black group-hover:block shadow-xl ">
                                         <ul className="space-y-3">
                                             {token ? (
                                                 <>

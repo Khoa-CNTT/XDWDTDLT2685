@@ -33,7 +33,7 @@ const ContactInfo = () => {
                                         <input type='name' name="text"
                                             value={name}
                                             onChange={(e) => setName(e.target.value)}
-                                            className='h-auto p-3  border border-gray-400 rounded-lg w-[250px]'
+                                            className='h-auto p-3 dark:text-black border border-gray-400 rounded-lg w-[250px]'
                                             placeholder='Tên của bạn...'
                                         />
                                     </div>
@@ -44,11 +44,11 @@ const ContactInfo = () => {
                                             <span className='text-red-500'>*</span>
                                         </div>
                                         <input
-                                            type="tel"
+                                            type="number"
                                             pattern="[0-9]{10,11}"
                                             value={sdt}
                                             onChange={(e) => setSdt(e.target.value)}
-                                            className='h-auto w-[250px] p-3  border border-gray-400 rounded-lg'
+                                            className='h-auto dark:text-black w-[250px] p-3  border border-gray-400 rounded-lg'
                                             placeholder='số điện thoại...'
                                             required
                                         />
@@ -62,7 +62,7 @@ const ContactInfo = () => {
                                     <input type='email' name="text"
                                         value={email}
                                         onChange={(e) => setEmail(e.target.value)}
-                                        className='w-full p-3 border border-gray-400 rounded-lg'
+                                        className='w-full p-3 border border-gray-400 rounded-lg dark:text-black'
                                         placeholder='Nhập email...'
                                     />
                                 </div>
@@ -74,7 +74,7 @@ const ContactInfo = () => {
                                     <textarea type='textarea' name="text"
                                         value={description}
                                         onChange={(e) => setDescription(e.target.value)}
-                                        className='w-full p-3 border border-gray-400 rounded-lg h-[150px]'
+                                        className='w-full dark:text-black p-3 border border-gray-400 rounded-lg h-[150px]'
                                         placeholder='Nội dung...'
                                     />
                                 </div>

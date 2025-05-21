@@ -1,9 +1,14 @@
 import React from 'react';
 import Places from '../Places/Places';
 import useSearch from '../../hooks/useSearch';
+import NoPage from '../../pages/NoPage';
 
 const SearchTour = () => {
   const { tours } = useSearch();
+
+  if (!tours || tours.length === 0) {
+    return <NoPage />;
+  }
 
   return (
     <div>
