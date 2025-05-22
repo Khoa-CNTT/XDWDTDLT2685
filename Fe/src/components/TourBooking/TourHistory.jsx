@@ -17,7 +17,7 @@ const TourHistory = ({ bookings: filteredBookings }) => {
             const res = await getAllBookingId(userId);
             const data = Array.isArray(res.data) ? res.data : [];
             const validBookings = data.filter(item =>
-                ['PENDING', 'CONFIRMED', 'COMPLETED',"CANCELLED"].includes(item.booking_status)
+                ['PENDING', 'CONFIRMED', 'COMPLETED', "CANCELLED"].includes(item.booking_status)
             );
             setBookings(validBookings);
         } catch (error) {
@@ -49,7 +49,7 @@ const TourHistory = ({ bookings: filteredBookings }) => {
                                     onClick={() => {
                                         localStorage.setItem('tour_id', item.tourId);
                                         localStorage.setItem('booking_id', item.booking_id);
-                                        
+
                                         window.scrollTo(0, 0);
                                     }}
                                     src={item.image}
@@ -88,9 +88,8 @@ const TourHistory = ({ bookings: filteredBookings }) => {
                                     {item.title}
                                 </Link>
                                 <p className='text-lg font-semibold'>Điểm Nhấn:</p>
-                                <p className='text-base opacity-70 line-clamp-2'>
-                                    <span>{item.description.split('|')[0].split(' ')[0]}</span>{' '}
-                                    {item.description.split('|')[0].split(' ').slice(1).join(' ')}
+                                <p className='text-base opacity-70 line-clamp-2 max-w-[600px]'>
+                                    {item.description.split('|')[0].trim()}
                                 </p>
                                 <div className='flex items-center justify-between'>
                                     <div className='flex items-center gap-1'>

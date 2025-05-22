@@ -14,7 +14,7 @@ const BlogContentCard = ({ item }) => {
             <h1 className='text-3xl font-semibold'>Khám phá Tours</h1>
                 <div className='flex gap-5 mt-5'>
                     <div className='w-3/4'>
-                        <h1 className='mt-2 text-xl font-semibold'>Điếm nhấn</h1>
+                        <h1 className='mt-2 text-xl font-semibold'>Điểm nhấn</h1>
                         <div className='items-center mt-2 space-y-2 text-lg'>
                             <div className='items-center mt-2 space-y-2 text-lg'>
                                 {item.description.split('|').map((part, index) => (
