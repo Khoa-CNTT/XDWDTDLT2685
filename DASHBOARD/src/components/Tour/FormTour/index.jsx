@@ -1,5 +1,6 @@
-import React, { useEffect, useState } from "react";
-import { centralProvinces, dataRegion, destinations, northProvinces, southProvinces } from "../../../context/TourContext";
+/* eslint-disable no-unused-vars */
+import React, { useState } from "react";
+import { centralProvinces, dataRegion, northProvinces, southProvinces } from "../../../context/TourContext";
 
 // Hàm lấy khu vực dựa trên điểm đến
 function getRegionFromDestination(destination) {
@@ -12,7 +13,7 @@ function getRegionFromDestination(destination) {
 function TourForm({
     data,
     itinerary,
-    handleChange,
+    handleChange, // Original handleChange prop
     handleItineraryChange,
     handleSubmit,
     closeModal,
@@ -37,30 +38,18 @@ function TourForm({
         return number.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
     };
 
-    // Tự động cập nhật khu vực khi điểm đến thay đổi
-    useEffect(() => {
-        if (data.destination) {
-            const region = getRegionFromDestination(data.destination);
-            if (region && region !== data.region) {
-                handleChange({ target: { name: "region", value: region } });
-            }
-        }
-    }, [data.destination, data.region, handleChange]);
-
     // Hàm xử lý thay đổi giá
     const handlePriceChange = (e) => {
         const { name, value } = e.target;
-        const numericValue = parsePrice(value); // Chuyển chuỗi thành số
+        const numericValue = parsePrice(value);
 
-        // Cập nhật state
         handleChange({
             target: {
                 name,
-                value: numericValue.toString(), // Lưu giá trị số
+                value: numericValue.toString(),
             },
         });
 
-        // Không kiểm tra lỗi ngay lập tức, chỉ cập nhật giá trị
         setErrors((prev) => ({ ...prev, [name]: "" }));
     };
 
@@ -69,24 +58,58 @@ function TourForm({
         e.preventDefault();
         let newErrors = {};
 
-        // Kiểm tra giá người lớn
         if (data.price_adult && parseFloat(data.price_adult) <= 1000000) {
             newErrors.price_adult = "Giá người lớn phải lớn hơn 1000000 VNĐ";
         }
 
-        // Kiểm tra giá trẻ em
         if (data.price_child && parseFloat(data.price_child) <= 500000) {
             newErrors.price_child = "Giá trẻ em phải lớn hơn 500000 VNĐ";
         }
 
-        // Nếu có lỗi, cập nhật state errors
         if (Object.keys(newErrors).length > 0) {
             setErrors(newErrors);
             return;
         }
 
-        // Gửi biểu mẫu
         handleSubmit(e);
+    };
+
+    // Hàm xử lý riêng cho trường Mô tả
+    const handleDescriptionChange = (e) => {
+        const { name, value } = e.target;
+        let newDescription = value;
+
+        // Các từ khóa cần xử lý
+        const keywords = ["Lưu trú:", "Ẩm thực:", "Hoạt động khác:"];
+
+        keywords.forEach((keyword) => {
+            // Bước 1: Bình thường hóa - Loại bỏ dấu "|" hoặc xuống dòng không cần thiết trước từ khóa
+            // Regex này tìm: (khoảng trắng hoặc xuống dòng tùy chọn) + (dấu "|" tùy chọn với khoảng trắng xung quanh) + (xuống dòng tùy chọn) + từ khóa
+            // và thay thế bằng chính từ khóa đó, loại bỏ phần tiền tố không mong muốn.
+            const normalizeRegex = new RegExp(`(?:\\s*\\|\\s*|\\s*\\n+\\s*)(${keyword.replace(":", "\\:")})`, "g");
+            newDescription = newDescription.replace(normalizeRegex, `$1`);
+        });
+
+        keywords.forEach((keyword) => {
+            // Bước 2: Thêm " | " vào trước từ khóa
+            // Regex này tìm từ khóa và thay thế bằng " | " + từ khóa.
+            // Điều này sẽ được áp dụng sau khi đã bình thường hóa.
+            const addSeparatorRegex = new RegExp(`(${keyword.replace(":", "\\:")})`, "g");
+            newDescription = newDescription.replace(addSeparatorRegex, " | $1");
+        });
+
+        // Loại bỏ dấu " | " thừa ở đầu chuỗi nếu có (ví dụ: nếu mô tả bắt đầu bằng một trong các từ khóa)
+        if (newDescription.startsWith(" | ")) {
+            newDescription = newDescription.substring(3); // Bỏ " | "
+        }
+
+        // Gọi hàm handleChange gốc với giá trị đã được cập nhật
+        handleChange({
+            target: {
+                name: name,
+                value: newDescription,
+            },
+        });
     };
 
     return (
@@ -101,32 +124,23 @@ function TourForm({
                     type="text"
                     name="title"
                     value={data.title || ""}
-                    onChange={handleChange}
+                    onChange={handleChange} // Sử dụng handleChange gốc
                     className="mt-1 w-full rounded-md border border-gray-300 p-2 focus:ring-2 focus:ring-[#00c0d1]"
                     required
                 />
             </div>
 
-            {/* Điểm đến */}
             <div>
                 <label className="block font-medium">Điểm đến:</label>
-                <select
+                <input
+                    type="text"
                     name="destination"
                     value={data.destination || ""}
-                    onChange={handleChange}
-                    className="mt-1 w-full rounded-md border border-gray-300 p-3 focus:ring-2 focus:ring-[#00c0d1]"
+                    onChange={handleChange} // Sử dụng handleChange gốc
+                    className="mt-1 w-full rounded-md border border-gray-300 p-2 focus:ring-2 focus:ring-[#00c0d1]"
+                    placeholder="Nhập điểm đến"
                     required
-                >
-                    <option value="">Chọn điểm đến</option>
-                    {destinations.map((item, index) => (
-                        <option
-                            key={index}
-                            value={item.value}
-                        >
-                            {item.label}
-                        </option>
-                    ))}
-                </select>
+                />
             </div>
 
             {/* Thời gian (readonly, tính tự động) */}
@@ -136,7 +150,7 @@ function TourForm({
                     type="text"
                     name="duration"
                     value={data.duration || ""}
-                    onChange={handleChange}
+                    onChange={handleChange} // Sử dụng handleChange gốc
                     className="mt-1 w-full cursor-not-allowed rounded-md border border-gray-300 bg-gray-100 p-2 text-gray-600 focus:ring-0"
                     placeholder="Thời gian sẽ tự động tính toán từ ngày bắt đầu và kết thúc"
                     required
@@ -144,15 +158,26 @@ function TourForm({
                 />
             </div>
 
-            {/* Khu vực (hiển thị dạng read-only) */}
+            {/* Khu vực (dạng chọn) */}
             <div>
                 <label className="block font-medium">Khu vực:</label>
-                <input
-                    type="text"
-                    value={data.region ? dataRegion.find((r) => r.value === data.region)?.displayName : "Chưa chọn"}
-                    className="mt-1 w-full rounded-md border border-gray-300 bg-gray-100 p-2 text-gray-600"
-                    readOnly
-                />
+                <select
+                    name="region"
+                    value={data.region || ""}
+                    onChange={handleChange} // Sử dụng handleChange gốc
+                    className="mt-1 w-full rounded-md border border-gray-300 p-3 focus:ring-2 focus:ring-[#00c0d1]"
+                    required
+                >
+                    <option value="">Chọn khu vực</option>
+                    {dataRegion.map((region, index) => (
+                        <option
+                            key={index}
+                            value={region.value}
+                        >
+                            {region.displayName}
+                        </option>
+                    ))}
+                </select>
             </div>
 
             {/* Mô tả tour */}
@@ -161,7 +186,7 @@ function TourForm({
                 <textarea
                     name="description"
                     value={data.description || ""}
-                    onChange={handleChange}
+                    onChange={handleDescriptionChange} // Sử dụng hàm xử lý riêng cho mô tả
                     className="mt-1 w-full rounded-md border border-gray-300 p-2 focus:ring-2 focus:ring-[#00c0d1]"
                     rows="4"
                     required
@@ -175,7 +200,7 @@ function TourForm({
                     type="number"
                     name="quantity"
                     value={data.quantity ?? ""}
-                    onChange={handleChange}
+                    onChange={handleChange} // Sử dụng handleChange gốc
                     className="mt-1 w-full rounded-md border border-gray-300 p-2 focus:ring-2 focus:ring-[#00c0d1]"
                     min="0"
                     required
@@ -189,7 +214,7 @@ function TourForm({
                     type="text"
                     name="price_adult"
                     value={formatPrice(data.price_adult) || ""}
-                    onChange={handlePriceChange}
+                    onChange={handlePriceChange} // Sử dụng handlePriceChange
                     className="mt-1 w-full rounded-md border border-gray-300 p-2 focus:ring-2 focus:ring-[#00c0d1]"
                     required
                 />
@@ -203,7 +228,7 @@ function TourForm({
                     type="text"
                     name="price_child"
                     value={formatPrice(data.price_child) || ""}
-                    onChange={handlePriceChange}
+                    onChange={handlePriceChange} // Sử dụng handlePriceChange
                     className="mt-1 w-full rounded-md border border-gray-300 p-2 focus:ring-2 focus:ring-[#00c0d1]"
                     required
                 />
@@ -216,7 +241,7 @@ function TourForm({
                 <select
                     name="availability"
                     value={data.availability ? "true" : "false"}
-                    onChange={(e) => handleChange({ target: { name: "availability", value: e.target.value === "true" } })}
+                    onChange={(e) => handleChange({ target: { name: "availability", value: e.target.value === "true" } })} // Sử dụng handleChange gốc
                     className="mt-1 w-full rounded-md border border-gray-300 p-2 focus:ring-2 focus:ring-[#00c0d1]"
                 >
                     <option value="true">Còn trống</option>
@@ -231,7 +256,7 @@ function TourForm({
                     type="date"
                     name="startDate"
                     value={data.startDate || ""}
-                    onChange={handleChange}
+                    onChange={handleChange} // Sử dụng handleChange gốc
                     min={new Date().toISOString().split("T")[0]}
                     className="mt-1 w-full rounded-md border border-gray-300 p-2 focus:ring-2 focus:ring-[#00c0d1]"
                     required
@@ -245,7 +270,7 @@ function TourForm({
                     type="date"
                     name="endDate"
                     value={data.endDate || ""}
-                    onChange={handleChange}
+                    onChange={handleChange} // Sử dụng handleChange gốc
                     min={data.startDate || new Date().toISOString().split("T")[0]}
                     className="mt-1 w-full rounded-md border border-gray-300 p-2 focus:ring-2 focus:ring-[#00c0d1]"
                     required
@@ -274,7 +299,7 @@ function TourForm({
                         name="images"
                         accept="image/*"
                         multiple
-                        onChange={handleImageChange}
+                        onChange={handleImageChange} // Prop riêng cho ảnh
                         className="hidden"
                     />
                     {renderAnh()}

@@ -86,12 +86,31 @@ function TourRecent() {
                                         <td className="border border-gray-300 px-4 py-2 whitespace-nowrap">{tour.price.toLocaleString("vi-VN")}</td>
                                         <td
                                             className={`border border-gray-300 px-4 py-2 whitespace-nowrap ${
-                                                tour.status === "PENDING" ? "text-red-500" : "text-green-500"
+                                                tour.status === "PENDING"
+                                                    ? "text-red-500"
+                                                    : tour.status === "CONFIRMED"
+                                                      ? "text-green-500"
+                                                      : tour.status === "CANCELLED"
+                                                        ? "text-red-500"
+                                                        : "text-gray-500"
                                             }`}
                                         >
-                                            {tour.status === "PENDING" ? "Chưa xác nhận" : tour.status}
+                                            {tour.status === "PENDING"
+                                                ? "Chờ xác nhận"
+                                                : tour.status === "CONFIRMED"
+                                                  ? "Đã xác nhận"
+                                                  : tour.status === "CANCELLED"
+                                                    ? "Đã hủy"
+                                                    : tour.status}
                                         </td>
-                                        <td className="max-w-[100px] truncate border border-gray-300 px-4 py-2">{tour.payment_method}</td>
+
+                                        <td className="max-w-[100px] truncate border border-gray-300 px-4 py-2">
+                                            {tour.payment_method === "OFFICE"
+                                                ? "Văn phòng"
+                                                : tour.payment_method === "VNPAY"
+                                                  ? "VNPAY"
+                                                  : tour.payment_method}
+                                        </td>
                                         <td className="max-w-[100px] truncate border border-gray-300 px-4 py-2">{tour.region}</td>
                                         <td className="border border-gray-300 px-4 py-2 whitespace-nowrap">
                                             {tour.booking_date ? new Date(tour.booking_date).toLocaleDateString("vi-VN") : "N/A"}

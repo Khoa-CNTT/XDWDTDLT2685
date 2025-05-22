@@ -513,7 +513,16 @@ export const handlePrintReport = (item, type) => {
 
                 <!-- Payment Information -->
                 <div class="section">
-                    <p><strong>Phương thức thanh toán:</strong> ${item.paymentMethodName || "Không có"}</p>
+                    <p><strong>Phương thức thanh toán:</strong>
+                  
+                     ${
+                         item.paymentMethodName === "OFFICE"
+                             ? "Thanh toán tại văn phòng"
+                             : item.paymentMethodName === "VNPAY"
+                               ? "VNPAY"
+                               : item.paymentMethodName || "Không có"
+                     }
+                    </p>
                     <p><strong>Trạng thái thanh toán:</strong> ${item.paymentStatus || "Chưa thanh toán"}</p>
                 </div>
                 <hr />

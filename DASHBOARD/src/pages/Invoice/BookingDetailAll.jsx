@@ -210,7 +210,12 @@ function Invoice({ item }) {
 
                 <div className="mb-6 rounded-md bg-blue-50 p-4 dark:bg-slate-700">
                     <p className="text-sm">
-                        <strong className="text-blue-700 dark:text-blue-300">Phương thức thanh toán:</strong> {bookingData.paymentMethodName}
+                        <strong className="text-blue-700 dark:text-blue-300">Phương thức thanh toán:</strong>
+                        {bookingData.paymentMethodName === "OFFICE"
+                            ? "Thanh toán tại văn phòng"
+                            : bookingData.paymentMethodName === "VNPAY"
+                              ? "VNPAY"
+                              : bookingData.paymentMethodName || "Không có"}
                     </p>
                     <p className="text-sm">
                         <strong className="text-blue-700 dark:text-blue-300">Trạng thái thanh toán:</strong>

@@ -12,6 +12,8 @@ function TopbookedTour() {
         const fetchApi = async () => {
             try {
                 const res = await getDashboardData();
+                console.log(res);
+
                 // Kiểm tra response và tourStats
                 if (!res || !res.data || !res.data.tourStats || !Array.isArray(res.data.tourStats)) {
                     throw new Error("Dữ liệu tour không hợp lệ hoặc không tồn tại");
@@ -22,6 +24,7 @@ function TopbookedTour() {
                         name: tour.tourName,
                         bookedSlots: tour.bookedSlots || 0,
                         availableSlots: tour.availableSlots || 0,
+                        bookingCount: tour.bookingCount || 0,
                         price: tour.price ? tour.price.toLocaleString("vi-VN") : "N/A",
                         rating: tour.rating || 0,
                         duration: tour.duration || "Không xác định",
@@ -61,7 +64,8 @@ function TopbookedTour() {
                                 <tr className="bg-gray-100 dark:bg-slate-800">
                                     <th className="border border-gray-300 px-4 py-2">ID</th>
                                     <th className="border border-gray-300 px-4 py-2">Tên Tour</th>
-                                    <th className="border border-gray-300 px-4 py-2">Chỗ Đã Đặt</th>
+                                    <th className="border border-gray-300 px-4 py-2">Lượt Booking</th>
+                                    <th className="border border-gray-300 px-4 py-2">Chỗ đã đặt </th>
                                     <th className="border border-gray-300 px-4 py-2">Chỗ Trống</th>
                                     <th className="border border-gray-300 px-4 py-2">Giá (VND)</th>
                                     <th className="border border-gray-300 px-4 py-2">Đánh Giá</th>
@@ -76,6 +80,7 @@ function TopbookedTour() {
                                     >
                                         <td className="border border-gray-300 px-4 py-2">{tour.id}</td>
                                         <td className="border border-gray-300 px-4 py-2">{tour.name}</td>
+                                        <td className="border border-gray-300 px-4 py-2">{tour.bookingCount}</td>
                                         <td className="border border-gray-300 px-4 py-2">{tour.bookedSlots}</td>
                                         <td className="border border-gray-300 px-4 py-2">{tour.availableSlots}</td>
                                         <td className="border border-gray-300 px-4 py-2">{tour.price}</td>
