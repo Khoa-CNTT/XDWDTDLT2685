@@ -14,12 +14,31 @@ const signupApi = ({ user_name, email, password, confirm_password, roleId }) => 
 }
 // gửi email quên mật Khẩu
 const forgotPassword = (email) => {
-    return axios.post("users/forgot-password", { email });
+    return axios.post("users/forgot-password", { email },
+        {
+            headers: {
+                "Content-Type": "application/x-www-form-urlencoded",
+            },
+        });
 };
-
 // gửi mã xác nhận
-const verifyCode = (token, newPassword) => {
-    return axios.post("users/reset-password", { token, newPassword });
+const getCode = (token) => {
+    return axios.get("users/verify-reset-token", {
+        params: { token },
+        headers: {
+            "Content-Type": "application/x-www-form-urlencoded",
+        },
+    });
 };
-export { loginApi, signupApi, forgotPassword, verifyCode };
+// thay đổi pass
+const changePassword = (token, newPassword) => {
+    return axios.post("users/reset-password", { token, newPassword },
+        {
+            headers: {
+                "Content-Type": "application/x-www-form-urlencoded",
+            },
+        }
+    );
+};
+export { loginApi, signupApi, forgotPassword, getCode,changePassword };
 

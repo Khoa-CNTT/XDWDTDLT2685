@@ -69,7 +69,7 @@ const ContactUs = () => {
                                 <p className='mt-3 text-xl font-semibold'>Hãy liên hệ chúng tôi</p>
                                 <div className='flex items-center gap-2 mt-2'>
                                     <FiPhone className='w-5 h-5' />
-                                    <p>+000 (123) 4588</p>
+                                    <p>+0362137238</p>
                                 </div>
                             </div>
                         </div>

@@ -6,7 +6,7 @@ import { FaSyncAlt } from 'react-icons/fa';
 
 const BookingDetailSibar = ({
     tourId, // Đây là tour_id
-    total_price,
+    total_price, // lấy từ truyền prop bên componet cha
     title,
     start_date,
     end_date,
@@ -14,10 +14,14 @@ const BookingDetailSibar = ({
     price_child,
     num_adults,
     num_children,
-    setBookings
+    booking_status,
 }) => {
+    console.log("Trạng thái booking từ API:", booking_status); // LOG RA ĐÂY
+
     const navigate = useNavigate();
     const [loading, setLoading] = useState(false);
+    
+
     const bookingId = localStorage.getItem('booking_id');
 
     const handleCancel = async () => {
@@ -83,7 +87,12 @@ const BookingDetailSibar = ({
                     <div className="relative">
                         <button
                             onClick={handleCancel}
-                            className="w-full p-2 text-lg font-semibold text-white bg-orange-500 rounded-lg"
+                            disabled={booking_status === 'COMPLETED' || booking_status === 'CANCELLED'}
+                            className={`w-full p-2 text-lg font-semibold text-white rounded-lg 
+        ${booking_status === 'COMPLETED' || booking_status === 'CANCELLED'
+                                    ? 'bg-gray-400 cursor-not-allowed'
+                                    : 'bg-orange-500'}
+    `}
                         >
                             {loading ? (
                                 <div className="flex items-center justify-center gap-2">

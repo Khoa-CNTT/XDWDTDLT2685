@@ -83,103 +83,128 @@ const Signup = () => {
     return (
         <>
             <Navbar />
-            <div className='pt-[100px] dark:bg-[#101828] dark:text-white'>
-                <section className='flex container items-center sm:flex-row flex-col sm:h-[500px] md:h-[700px] gap-5 w-full'>
-                    <div className='w-1/2'>
-                        <img className='object-cover h-[450px]' src={LoginImg} alt="Login" />
+            <div className='pt-[140px] dark:bg-[#101828] mb-4 dark:text-white'>
+                <section className="container flex flex-col items-center w-full gap-5 px-4 md:flex-row sm:px-6 md:px-10 lg:px-20">
+                    <div className="flex justify-center w-full md:w-1/2">
+                        <img
+                            className="object-cover h-[200px] sm:h-[300px] md:h-[450px] w-full max-w-xs sm:max-w-sm md:max-w-full"
+                            src={LoginImg}
+                            alt="Login"
+                        />
                     </div>
-                    <div className='w-1/2'>
-                        <div className='max-w-[900px] text-left'>
-                            <h1 className='text-2xl font-bold text-black dark:text-white'>Đăng ký</h1>
-                            <p className='mt-2 text-gray-500 -text-lg max-w-[550px]'>Bạn có thể đăng nhập tài khoản của mình để sử dụng dịch vụ của chúng tôi.</p>
+
+                    <div className="w-full md:w-1/2">
+                        <div className="max-w-full sm:max-w-[500px] mx-auto text-left">
+                            <h1 className="text-xl font-bold text-black sm:text-2xl dark:text-white">Đăng ký</h1>
+                            <p className="mt-2 text-sm text-gray-500 sm:text-base dark:text-gray-300">
+                                Bạn có thể đăng nhập tài khoản của mình để sử dụng dịch vụ của chúng tôi.
+                            </p>
                         </div>
-                        <form onSubmit={handleSubmit} className='items-center mt-3 '>
-                            <div className='mt-3'>
-                                <label className='flex flex-col mb-2 text-gray-500 dark:text-white'>Họ và tên</label>
-                                <input type='text' name="user_name"
+
+                        <form onSubmit={handleSubmit} className="mt-3 max-w-full sm:max-w-[500px] mx-auto">
+                            {/* Input: Họ và tên */}
+                            <div className="mt-3">
+                                <label className="block mb-2 text-sm text-gray-500 dark:text-white">Họ và tên</label>
+                                <input
+                                    type="text"
+                                    name="user_name"
                                     value={user_name}
                                     onChange={(e) => setUserName(e.target.value)}
-                                    className='p-3 w-full dark:text-[#101828] max-w-[500px] h-auto mx-auto border border-gray-400 rounded-lg'
-                                    placeholder='Tên của bạn...'
+                                    className="p-3 w-full dark:text-[#101828] border border-gray-400 rounded-lg"
+                                    placeholder="Tên của bạn..."
                                 />
-                                {errors.user_name && <div className='mt-2 text-sm text-rose-500'>{errors.user_name}</div>}
+                                {errors.user_name && <p className="mt-2 text-sm text-rose-500">{errors.user_name}</p>}
                             </div>
-                            <div className='mt-3'>
-                                <label className='flex flex-col mb-2 text-gray-500 dark:text-white'>Email</label>
-                                <input type="email" name="email"
+
+                            {/* Input: Email */}
+                            <div className="mt-3">
+                                <label className="block mb-2 text-sm text-gray-500 dark:text-white">Email</label>
+                                <input
+                                    type="email"
+                                    name="email"
                                     value={email}
                                     onChange={(e) => setEmail(e.target.value)}
-                                    className='p-3 dark:text-[#101828] w-full max-w-[500px] h-auto mx-auto border border-gray-400 rounded-lg'
-                                    placeholder='Email của bạn...'
+                                    className="p-3 w-full dark:text-[#101828] border border-gray-400 rounded-lg"
+                                    placeholder="Email của bạn..."
                                 />
-                                {errors.email && <div className='mt-2 text-sm text-rose-500'>{errors.email}</div>}
+                                {errors.email && <p className="mt-2 text-sm text-rose-500">{errors.email}</p>}
                             </div>
-                            <div className='relative mt-3'>
-                                <label className='flex flex-col mb-2 text-gray-500 dark:text-white '>Mật Khẩu</label>
-                                <input type={isShowPassword ? "text" : "password"} name='password'
+
+                            {/* Input: Password */}
+                            <div className="relative mt-3">
+                                <label className="block mb-2 text-sm text-gray-500 dark:text-white">Mật khẩu</label>
+                                <input
+                                    type={isShowPassword ? "text" : "password"}
+                                    name="password"
                                     value={password}
                                     onChange={(e) => setPassword(e.target.value)}
-                                    className='p-3 dark:text-[#101828] w-full max-w-[500px] h-auto mx-auto border border-gray-400 rounded-lg'
-                                    placeholder='Mật khẩu...'
+                                    className="p-3 w-full dark:text-[#101828] border border-gray-400 rounded-lg"
+                                    placeholder="Mật khẩu..."
                                 />
-                                {errors?.password && <div className='mt-2 text-sm text-rose-500'>{errors.password}</div>}
-                                <div className='absolute top-[48px] right-[80px] cursor-pointer'>
+                                {errors.password && <p className="mt-2 text-sm text-rose-500">{errors.password}</p>}
+                                <div className="absolute top-[48px] right-4 cursor-pointer">
                                     {isShowPassword ? (
-                                        <PiEye className='w-6 h-6 dark:text-[#101828]' onClick={() => setIsShowPassword(false)} />
+                                        <PiEye className="w-5 h-5" onClick={() => setIsShowPassword(false)} />
                                     ) : (
-                                        <PiEyeSlash className='w-6 h-6 dark:text-[#101828]' onClick={() => setIsShowPassword(true)} />
+                                        <PiEyeSlash className="w-5 h-5" onClick={() => setIsShowPassword(true)} />
                                     )}
                                 </div>
                             </div>
-                            <div className='relative mt-3'>
-                                <label className='flex flex-col mb-2 text-gray-500 dark:text-white '>Xác nhận mật khẩu</label>
 
-                                <input value={passwordConfirm} type={isShowConfirmPassword === true ? "text" : "password"} name='confirmPassword'
-                                    className='p-3 dark:text-[#101828] w-full max-w-[500px] h-auto mx-auto border border-gray-400 rounded-lg'
-                                    placeholder='Nhập lại mật khẩu...'
+                            {/* Input: Confirm Password */}
+                            <div className="relative mt-3">
+                                <label className="block mb-2 text-sm text-gray-500 dark:text-white">Xác nhận mật khẩu</label>
+                                <input
+                                    type={isShowConfirmPassword ? "text" : "password"}
+                                    value={passwordConfirm}
+                                    name="confirmPassword"
                                     onChange={(e) => setPasswordConfirm(e.target.value)}
+                                    className="p-3 w-full dark:text-[#101828] border border-gray-400 rounded-lg"
+                                    placeholder="Nhập lại mật khẩu..."
                                 />
-                                {errors.passwordConfirm && <div className='pt-2 ml-2 text-sm text-rose-500'>{errors.passwordConfirm}</div>}
-                                <div className='absolute top-[48px] right-[80px] cursor-pointer'>
+                                {errors.passwordConfirm && <p className="mt-2 text-sm text-rose-500">{errors.passwordConfirm}</p>}
+                                <div className="absolute top-[48px] right-4 cursor-pointer">
                                     {isShowConfirmPassword ? (
-                                        <PiEye className='w-6 h-6 dark:text-[#101828]' onClick={() => setIsShowConfirmPassword(false)} />
+                                        <PiEye className="w-5 h-5" onClick={() => setIsShowConfirmPassword(false)} />
                                     ) : (
-                                        <PiEyeSlash className='w-6 h-6 dark:text-[#101828]' onClick={() => setIsShowConfirmPassword(true)} />
+                                        <PiEyeSlash className="w-5 h-5" onClick={() => setIsShowConfirmPassword(true)} />
                                     )}
                                 </div>
-
                             </div>
-                            <div className='mt-6'>
+
+                            {/* Submit Button */}
+                            <div className="mt-6">
                                 <button
-                                    type='submit'
+                                    type="submit"
                                     disabled={loading}
-                                    className='w-full p-3 max-w-[500px] text-white transition-all rounded-lg duration-600 bg-gradient-to-r from-primary to-secondary hover:bg-gradient-to-r hover:from-secondary hover:bg-primary flex items-center justify-center gap-2'
+                                    className="flex items-center justify-center w-full gap-2 p-3 text-white transition-all rounded-lg bg-gradient-to-r from-primary to-secondary hover:from-secondary hover:to-primary"
                                 >
-                                    {loading ? (
-                                        <>
-                                            <FaSyncAlt className='w-5 h-5 text-white animate-spin' />
-                                        </>
-                                    ) : (
-                                        "Đăng ký"
-                                    )}
+                                    {loading ? <FaSyncAlt className="w-5 h-5 animate-spin" /> : "Đăng ký"}
                                 </button>
                             </div>
                         </form>
-                        <div className='grid items-center max-w-[500px] justify-center grid-cols-3 p-5 text-gray-500 '>
-                            <hr className='-mr-10 border-gray-400' />
-                            <p className='text-center'>Hoặc</p>
-                            <hr className='-ml-10 border-gray-400' />
+
+                        {/* Hoặc */}
+                        <div className="grid items-center justify-center grid-cols-3 my-6 text-gray-500 max-w-[500px] mx-auto">
+                            <hr className="border-gray-400" />
+                            <p className="text-sm text-center">Hoặc</p>
+                            <hr className="border-gray-400" />
                         </div>
-                        <div className='flex items-center justify-between'>
-                            <div className='mr-[50px]'>
-                                <Link onClick={() => window.scrollTo(0, 0)} to="/login" className='px-5 py-2 text-white transition-all rounded-full duration-600 bg-gradient-to-r from-primary to-secondary hover:bg-gradient-to-r hover:from-secondary hover:bg-primary'>Đăng nhập</Link>
-                            </div>
+
+                        {/* Link Đăng nhập */}
+                        <div className="flex  ml-[20px]">
+                            <Link
+                                to="/login"
+                                onClick={() => window.scrollTo(0, 0)}
+                                className="px-5 py-2 text-white rounded-full bg-gradient-to-r from-primary to-secondary hover:from-secondary hover:to-primary"
+                            >
+                                Đăng nhập
+                            </Link>
                         </div>
                     </div>
                 </section>
             </div>
         </>
-
     );
 };
 

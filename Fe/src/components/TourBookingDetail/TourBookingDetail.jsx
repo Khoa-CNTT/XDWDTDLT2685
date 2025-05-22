@@ -28,7 +28,7 @@ const TourBookingDetail = () => {
     const [paymentMethod, setPaymentMethod] = useState('');
     const [title, setTitle] = useState('');
     const [total_price, setTotalPrice] = useState(0);
-    const [bookings, setBookings] = useState([]);
+    const [bookingStatus, setBookingStatus] = useState("");
     const [tourId, setTourId] = useState('');
 
     useEffect(() => {
@@ -53,7 +53,8 @@ const TourBookingDetail = () => {
                 setPriceAdult(data.price_adult || 0);
                 setPriceChild(data.price_child || 0);
                 setPaymentMethod(data.payment_method || '');
-                setTourId(data.tourId || data.tour_id || '');  // Phòng trường hợp API trả tour_id
+                setTourId(data.tourId || data.tour_id || '');
+                setBookingStatus(data.booking_status || 0)
 
             } catch (error) {
                 console.error("Lỗi khi lấy chi tiết booking:", error);
@@ -97,7 +98,8 @@ const TourBookingDetail = () => {
                                 price_child={priceChild}
                                 num_adults={countAdult}
                                 num_children={countChildren}
-                                setBookings={setBookings}
+                                booking_status={bookingStatus}
+
                             />
                         </div>
                     </div>

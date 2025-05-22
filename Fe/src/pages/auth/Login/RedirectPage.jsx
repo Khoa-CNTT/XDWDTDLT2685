@@ -22,10 +22,10 @@ const RedirectPage = () => {
         if (userId && userId !== 'null' && !isNaN(userId)) {
             localStorage.setItem('user_id', userId);
         }
-        console.log('userId:', userId);
-        console.log('user_name:', user_name);
-        console.log('email:', email);
-        console.log('roleId:', role);
+        // console.log('userId:', userId);
+        // console.log('user_name:', user_name);
+        // console.log('email:', email);
+        // console.log('roleId:', role);
 
         const roleId = role?.toUpperCase() === 'ADMIN' ? '2' : '1';
         setRole(roleId);

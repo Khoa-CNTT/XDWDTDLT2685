@@ -29,7 +29,7 @@ const AboutTravel = () => {
                     </div>
                     <div className="relative flex items-center gap-2 mt-10 text-white group">
                         <div className="p-2 border text-center border-gray-200 w-[200px] bg-primary  rounded-full transition-all duration-300 group-hover:shadow-lg ">
-                            <Link className="font-semibold">Khám phá Tour</Link>
+                            <Link to="/tours" onClick={() => window.scrollTo(0, 0)}  className="font-semibold">Khám phá Tour</Link>
                         </div>
                         <FaArrowRightLong className="absolute left-[34%] top-[15px]  transition-all duration-300 group-hover:scale-110 group-hover:translate-x-1" />
                     </div>

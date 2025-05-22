@@ -24,13 +24,13 @@ const useTourFilterSort = () => {
   const [selectedRegion, setSelectedRegion] = useState(null);
   const [selectedPrice, setSelectedPrice] = useState(null);
   const [selectedDuration, setSelectedDuration] = useState(null);
-  const [starRating, setStarRating] = useState(null);
+  const [selectedStar, setSelectedStar] = useState(null);
   const [sortValue, setSortValue] = useState('default');
   const [tours, setTours] = useState([]);
 
   useEffect(() => {
     fetchTours();
-  }, [selectedRegion, selectedPrice, selectedDuration, sortValue, starRating]);
+  }, [selectedRegion, selectedPrice, selectedDuration, sortValue, selectedStar]);
 
   const fetchTours = async () => {
     try {
@@ -63,7 +63,7 @@ const useTourFilterSort = () => {
           break;
       }
 
-      const res = await getFilterSortTours(0, 20, region, priceMin, priceMax, duration, sortBy, sortDir, starRating);
+      const res = await getFilterSortTours(0, 20, region, priceMin, priceMax, duration, sortBy, sortDir, selectedStar);
       setTours(res.data.tours);
     } catch (error) {
       console.error("Lỗi khi lấy dữ liệu tour:", error);
@@ -75,7 +75,7 @@ const useTourFilterSort = () => {
     setSelectedPrice(null);
     setSelectedDuration(null);
     setSortValue('default');
-    setStarRating(null);
+    setSelectedStar(null);
     try {
       const res = await getFilterSortTours(0, 20); 
       setTours(res.data.tours);
@@ -85,7 +85,8 @@ const useTourFilterSort = () => {
   };
 
   return {
-    setStarRating,
+    selectedStar,
+    setSelectedStar,
     selectedRegion,
     setSelectedRegion,
     selectedPrice,

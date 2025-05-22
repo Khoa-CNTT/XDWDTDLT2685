@@ -78,7 +78,7 @@ const BlogSidebar = ({ item }) => {
                     </div>
                     <div className='flex items-center gap-2'>
                         <FiPhoneCall className='w-6 h-6 text-orange-500' />
-                        <p className='text-base text-gray-500'>+000 (123) 4588</p>
+                        <p className='text-base text-gray-500'>+0362137238</p>
                     </div>
                 </div>
             </div>
