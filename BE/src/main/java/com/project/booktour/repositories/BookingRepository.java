@@ -10,6 +10,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
@@ -17,12 +18,6 @@ import java.util.Optional;
 public interface BookingRepository extends JpaRepository<Booking, Long> {
     boolean existsByUserUserIdAndTourTourId(Long userId, Long tourId);
     List<Booking> findByUserUserId(Long userId);
-
-    @Query("SELECT COUNT(b) FROM Booking b")
-    Long countTotalBookings();
-
-    @Query("SELECT COALESCE(SUM(b.totalPrice), 0) FROM Booking b")
-    Double sumTotalRevenue();
 
     @Query("SELECT b FROM Booking b JOIN b.tour t JOIN b.user u " +
             "WHERE :keyword IS NULL OR b.specialRequests LIKE %:keyword% OR b.bookingStatus LIKE %:keyword% " +
@@ -39,14 +34,10 @@ public interface BookingRepository extends JpaRepository<Booking, Long> {
 
     List<Booking> findTop5ByOrderByCreatedAtDesc();
 
-    @Query("SELECT COUNT(b) FROM Booking b WHERE b.tour.tourId = :tourId AND b.bookingStatus = :bookingStatus")
-    Long countByTourAndBookingStatus(Long tourId, BookingStatus bookingStatus);
-
-    List<Booking> findByBookingStatus(BookingStatus bookingStatus);
-
     List<Booking> findByUserUserIdAndTourTourId(Long userId, Long tourId);
 
-    Optional<Booking> findByBookingIdAndBookingStatusNot(Long bookingId, BookingStatus bookingStatus);
-
     List<Booking> findByUserUserIdAndBookingStatus(Long userId, BookingStatus status);
+
+    List<Booking> findByTourAndBookingStatus(Long tourId, BookingStatus status);
+
 }

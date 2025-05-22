@@ -112,14 +112,27 @@ public class DashboardService {
         List<TourStatsResponse> tourStats = new ArrayList<>();
 
         for (Tour tour : tours) {
-            // Đếm số lượt đặt đã xác nhận
-            Long bookedSlots = bookingRepository.countByTourAndBookingStatus(tour.getTourId(), BookingStatus.CONFIRMED) != null
-                    ? bookingRepository.countByTourAndBookingStatus(tour.getTourId(), BookingStatus.CONFIRMED) : 0L;
+            List<Booking> confirmedBookings = bookingRepository.findByTourAndBookingStatus(
+                    tour.getTourId(), BookingStatus.CONFIRMED);
 
-            // Tính số slot còn lại
-            Integer availableSlots = tour.getQuantity() != null ? (tour.getQuantity() - bookedSlots.intValue()) : 0;
+            // Tổng số người (người lớn + trẻ em)
+            Long bookedSlots = confirmedBookings.stream()
+                    .mapToLong(booking -> {
+                        int adults = booking.getNumAdults() != null ? booking.getNumAdults() : 0;
+                        int children = booking.getNumChildren() != null ? booking.getNumChildren() : 0;
+                        return adults + children;
+                    })
+                    .sum();
 
-            // Tính điểm đánh giá trung bình
+            // Số lượng booking
+            int bookingCount = confirmedBookings.size();
+
+            // Số slot còn lại
+            Integer availableSlots = tour.getQuantity() != null
+                    ? (tour.getQuantity() - bookedSlots.intValue())
+                    : 0;
+
+            // Điểm trung bình
             Double averageRating = tour.getReviews() != null && !tour.getReviews().isEmpty()
                     ? tour.getReviews().stream()
                     .mapToDouble(review -> review.getRating() != null ? review.getRating() : 0.0)
@@ -127,7 +140,7 @@ public class DashboardService {
                     .orElse(0.0)
                     : 0.0;
 
-            // Tạo DTO cho tour
+            // Tạo DTO
             TourStatsResponse tourStat = new TourStatsResponse(
                     "tour" + String.format("%03d", tour.getTourId()),
                     tour.getTitle(),
@@ -135,17 +148,19 @@ public class DashboardService {
                     availableSlots,
                     tour.getPriceAdult(),
                     Math.round(averageRating * 10.0) / 10.0,
-                    tour.getDuration()
+                    tour.getDuration(),
+                    bookingCount // 👈 thêm vào đây
             );
             tourStats.add(tourStat);
         }
 
-        // Sắp xếp theo số lượt đặt giảm dần và giới hạn top 5
+        // Trả về top 5 theo số người đặt nhiều nhất
         return tourStats.stream()
                 .sorted((t1, t2) -> Integer.compare(t2.getBookedSlots(), t1.getBookedSlots()))
                 .limit(5)
                 .collect(Collectors.toList());
     }
+
 
     private List<BookingStatsResponse> getLatestBookings() {
         List<Booking> bookings = bookingRepository.findTop5ByOrderByCreatedAtDesc();

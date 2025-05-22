@@ -15,4 +15,5 @@ public class TourStatsResponse{
     private Double price;         // Giá (VND)
     private Double rating;        // Đánh giá
     private String duration;      // Thời gian
+    private int bookingCount;
 }

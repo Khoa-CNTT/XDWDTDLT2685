@@ -134,7 +134,7 @@ public class InvoiceService implements IInvoiceService {
                 .numAdults(booking.getNumAdults())
                 .numChildren(booking.getNumChildren())
                 .priceAdults(String.format("%,.0f VNĐ", tour.getPriceAdult()))
-                .priceChild(String.format("%,.0f VNĐ", tour.getPriceAdult()))
+                .priceChild(String.format("%,.0f VNĐ", tour.getPriceChild()))
                 .totalPrice(String.format("%,.0f VNĐ",booking.getTotalPrice()))
                 .fullName(booking.getUser() != null ? booking.getFullName() : null)
                 .address(booking.getUser() != null ? booking.getAddress() : null)

@@ -1,8 +1,6 @@
 package com.project.booktour.models;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
-import jakarta.validation.constraints.NotBlank;
 import lombok.*;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -38,11 +36,6 @@ public class User extends BaseEntity implements UserDetails {
     private String phoneNumber;
     @Column(name = "address", length = 255, nullable = false)
     private String address;
-//    @Column(name = "created_at")
-//    private LocalDateTime createdAt;
-//
-//    @Column(name = "updated_at")
-//    private LocalDateTime updatedAt;
 
     @Column(name = "is_active")
     private Boolean isActive = true;
