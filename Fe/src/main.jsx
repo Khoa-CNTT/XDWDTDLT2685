@@ -5,11 +5,11 @@ import App from './App.jsx'
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 createRoot(document.getElementById('root')).render(
-  <StrictMode>
+  <>
     <App />
     <ToastContainer
       autoClose={1500}
       containerStyle={{ zIndex: 9999 }}>
     </ToastContainer>
-  </StrictMode>,
+  </>,
 )

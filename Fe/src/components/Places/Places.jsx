@@ -33,7 +33,7 @@ const Places = ({
         } else {
             getAllTours(0); //  Nếu không có tours props, mới gọi API
         }
-    }, [tours]); //  Phải thêm tours vào dependency
+    }, [tours]); //   thêm tours vào dependency để cập nhật lại mỗi lần tahy đổi
 
     return (
         <div className='py-10 dark:bg-[#101828] dark:text-white'>

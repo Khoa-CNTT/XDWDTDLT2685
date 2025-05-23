@@ -11,7 +11,7 @@ const ChatBox = () => {
     const [messages, setMessages] = useState([
         {
             id: 1,
-            text: 'Bạn quan tâm đến chương trình du lịch nước nào ạ?',
+            text: 'Bạn quan tâm đến chương trình du lịch miền nào ạ?',
             options: ['Tour Miền Bắc', 'Tour Miền Trung', 'Tour Miền Nam'],
             type: 'bot',
             timestamp: new Date(),
