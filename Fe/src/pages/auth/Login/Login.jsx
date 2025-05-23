@@ -22,7 +22,7 @@ const Login = () => {
         if (token) {
             navigate('/');
         }
-        const query = new URLSearchParams(location.search);
+        const query = new URLSearchParams(location.search); //url giúp đọc giá trị
         if (query.get('error')) {
             toast.error('Đăng nhập Google/Facebook thất bại. Vui lòng thử lại.');
         }
