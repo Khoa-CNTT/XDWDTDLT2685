@@ -42,7 +42,7 @@ const TourHistory = ({ bookings: filteredBookings }) => {
         <div className='pt-10'>
             <div className='container space-y-10'>
                 {displayBookings.map((item, index) => (
-                    <div key={index} className='w-full bg-gray-100 p-6 h-[300px] rounded-lg shadow-xl'>
+                    <div key={index} className='w-full bg-gray-100 p-6 h-[320px] rounded-lg shadow-xl'>
                         <div className='relative flex space-x-10'>
                             <Link to={`/tourbookingdetail/${item.booking_id}`}>
                                 <img

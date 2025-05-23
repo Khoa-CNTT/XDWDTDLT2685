@@ -5,7 +5,8 @@ import { setToken, setRole } from '../../../services/authServices';
 
 const RedirectPage = () => {
     const navigate = useNavigate();
-    const location = useLocation();
+    const location = useLocation(); //useLocation: Lấy query params từ URL.
+
 
    useEffect(() => {
     const query = new URLSearchParams(location.search);

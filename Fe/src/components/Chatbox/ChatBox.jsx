@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
+import { Link } from 'react-router-dom'; // Import Link from react-router-dom
 import chatbox from '../../assets/Travel/chatbox.png';
 import { FaPaperclip, FaPaperPlane, FaRegImage } from 'react-icons/fa';
 import { IoMdClose } from 'react-icons/io';
@@ -11,7 +12,7 @@ const ChatBox = () => {
         {
             id: 1,
             text: 'Bạn quan tâm đến chương trình du lịch nước nào ạ?',
-            options: ['Tour Nhật Bản', 'Tour Hàn Quốc', 'Tour Đài Loan'],
+            options: ['Tour Miền Bắc', 'Tour Miền Trung', 'Tour Miền Nam'],
             type: 'bot',
             timestamp: new Date(),
         },
@@ -20,12 +21,10 @@ const ChatBox = () => {
     const [isTyping, setIsTyping] = useState(false);
     const [typingDots, setTypingDots] = useState(0);
     const messagesEndRef = useRef(null);
-    const CHAT_ID = 'user-123'; // Có thể tạo động nếu cần
+    const CHAT_ID = 'user-123';
 
-    // URL backend cố định
     const BASE_URL = 'http://localhost:8088/api/v1';
 
-    // Cuộn xuống tin nhắn mới nhất
     const scrollToBottom = () => {
         messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
     };
@@ -34,7 +33,6 @@ const ChatBox = () => {
         scrollToBottom();
     }, [messages, isTyping, typingDots]);
 
-    // Hiệu ứng dấu chấm động cho typing indicator
     useEffect(() => {
         let typingInterval = null;
         if (isTyping) {
@@ -45,9 +43,8 @@ const ChatBox = () => {
         return () => clearInterval(typingInterval);
     }, [isTyping]);
 
-    // Thiết lập kết nối SSE
     useEffect(() => {
-        const evtSource = new EventSource(`${BASE_URL}/events`); // Gọi thẳng đến backend
+        const evtSource = new EventSource(`${BASE_URL}/events`);
         evtSource.onmessage = (e) => {
             try {
                 const { chatId, reply } = JSON.parse(e.data);
@@ -110,7 +107,7 @@ const ChatBox = () => {
         setIsTyping(true);
 
         try {
-            const res = await fetch(`${BASE_URL}/chat`, { // Gọi thẳng đến backend
+            const res = await fetch(`${BASE_URL}/chat`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ message: input, chatId: CHAT_ID }),
@@ -119,7 +116,6 @@ const ChatBox = () => {
                 const errorText = await res.text();
                 throw new Error(`Status ${res.status}: ${errorText || 'Không tìm thấy endpoint'}`);
             }
-            // Không cần lấy data.reply vì dùng SSE để nhận phản hồi
         } catch (err) {
             setIsTyping(false);
             setMessages((prev) => [
@@ -135,24 +131,74 @@ const ChatBox = () => {
         }
     };
 
-    // Xử lý hiển thị ảnh trong tin nhắn bot
+    // Updated renderMessageText function
     const renderMessageText = (text) => {
-        const regex = /(https?:\/\/\S+\.(?:jpg|jpeg|png|gif))(?![^<]*>)/gi;
-        if (regex.test(text)) {
-            return (
-                <div
-                    dangerouslySetInnerHTML={{
-                        __html: text.replace(regex, '<img src="$1" alt="Tour Image" style="max-width: 100%; max-height: 150px; border-radius: 4px; margin-top: 5px;" />'),
-                    }}
-                />
-            );
-        }
-        return <p className="break-words whitespace-normal">{text}</p>;
+        // Regex for detecting URLs
+        const urlRegex = /(https?:\/\/[^\s]+)/gi;
+        // Regex for detecting images
+        const imageRegex = /(https?:\/\/\S+\.(?:jpg|jpeg|png|gif))(?![^<]*>)/gi;
+
+        // Split the text by URLs
+        const parts = text.split(urlRegex);
+        return (
+            <div>
+                {parts.map((part, index) => {
+                    if (urlRegex.test(part)) {
+                        // If the part is an image URL, render it as an image
+                        if (imageRegex.test(part)) {
+                            return (
+                                <img
+                                    key={index}
+                                    src={part}
+                                    alt="Tour Image"
+                                    style={{
+                                        maxWidth: '100%',
+                                        maxHeight: '150px',
+                                        borderRadius: '4px',
+                                        marginTop: '5px',
+                                    }}
+                                />
+                            );
+                        }
+                        // If the part is a tour URL (e.g., http://localhost:5173/tours/2), render as a Link
+                        if (part.includes('/tours/')) {
+                            const tourId = part.split('/tours/')[1]; // Extract tour ID
+                            return (
+                                <Link
+                                    key={index}
+                                    to={`/tours/${tourId}`}
+                                    className="text-blue-500 underline hover:text-blue-700"
+                                >
+                                    Xem chi tiết tour
+                                </Link>
+                            );
+                        }
+                        // Fallback for other URLs
+                        return (
+                            <a
+                                key={index}
+                                href={part}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="text-blue-500 underline hover:text-blue-700"
+                            >
+                                {part}
+                            </a>
+                        );
+                    }
+                    // Render non-URL parts as plain text
+                    return (
+                        <span key={index} className="break-words whitespace-normal">
+                            {part}
+                        </span>
+                    );
+                })}
+            </div>
+        );
     };
 
     return (
         <div>
-            {/* Chat icon + intro message */}
             {!isOpen && (
                 <div className="flex items-center p-4">
                     <div
@@ -172,13 +218,11 @@ const ChatBox = () => {
                 </div>
             )}
 
-            {/* Chat box khi mở */}
             {isOpen && (
                 <div
                     className={`ml-[10px] bg-white rounded-2xl shadow-2xl flex flex-col ${isExpanded ? 'w-[800px] h-[500px]' : 'w-[400px] h-[500px]'}`}
                 >
                     <div className="relative flex items-center justify-between px-4 py-2 font-semibold text-white bg-primary rounded-t-2xl">
-                        {/* icon mở rộng và close */}
                         <div className="absolute flex gap-4 text-white top-[-40px] right-2">
                             <button className="p-1 bg-gray-400 rounded-full" onClick={toggleExpand}>
                                 <IoExpandOutline className="w-6 h-6" />
@@ -187,8 +231,6 @@ const ChatBox = () => {
                                 <IoMdClose className="w-6 h-6" />
                             </button>
                         </div>
-
-                        {/* Tiêu đề */}
                         <div className="flex items-center">
                             <img
                                 src={chatbox}

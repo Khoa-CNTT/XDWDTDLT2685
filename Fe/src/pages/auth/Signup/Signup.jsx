@@ -104,7 +104,7 @@ const Signup = () => {
                         <form onSubmit={handleSubmit} className="mt-3 max-w-full sm:max-w-[500px] mx-auto">
                             {/* Input: Họ và tên */}
                             <div className="mt-3">
-                                <label className="block mb-2 text-sm text-gray-500 dark:text-white">Họ và tên</label>
+                                <label className="block mb-2 text-sm text-gray-500 dark:text-white">Tên Tài Khoản</label>
                                 <input
                                     type="text"
                                     name="user_name"

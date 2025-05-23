@@ -8,7 +8,7 @@ const BlogFeedback = ({ item }) => {
             <h1 className='text-2xl font-semibold'>Ý kiến của khách hàng</h1>
             <div className='mt-10 space-y-6 dark:text-[#101828]'>
                 {item.reviews.map((fb, index) => (
-                    <div key={index} className='w-[820px] h-[200px] bg-white border shadow-lg rounded-2xl relative p-10'>
+                    <div key={index} className='w-[820px] h-[230px] bg-white border shadow-lg rounded-2xl relative p-6'>
                         {/* Avatar + Thông tin khách hàng */}
                         <div className='flex items-center'>
                             {fb.avatar ? (
