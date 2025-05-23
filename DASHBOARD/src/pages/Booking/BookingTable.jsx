@@ -4,7 +4,7 @@ import icons from "../../util/icon";
 import { Link } from "react-router-dom";
 import VNPAY from "../../assets/Img/images.png";
 import PayOffice from "../../assets/Img/payoffice.png";
-import { confirmPaymentAndBooking, deleteBooking, cancelBooking } from "../../services/bookingService";
+import { confirmPaymentAndBooking, cancelBooking } from "../../services/bookingService";
 
 const { IoIosArrowDropdownCircle } = icons;
 
@@ -71,61 +71,6 @@ function BookingTourTable({ currentEntries }) {
         } finally {
             setIsLoading(false);
         }
-    };
-
-    const handleDeleteBooking = async (bookingId) => {
-        const token = localStorage.getItem("token");
-        if (!token) {
-            Swal.fire({
-                icon: "error",
-                title: "Vui lòng đăng nhập",
-                text: "Bạn cần đăng nhập với tài khoản admin để thực hiện hành động này.",
-                confirmButtonText: "Đến trang đăng nhập",
-            }).then(() => {
-                window.location.href = "/login";
-            });
-            return;
-        }
-
-        Swal.fire({
-            icon: "warning",
-            title: "Xác nhận xóa",
-            text: "Bạn có chắc chắn muốn xóa booking này?",
-            showCancelButton: true,
-            confirmButtonText: "Xóa",
-            cancelButtonText: "Hủy",
-        }).then(async (result) => {
-            if (result.isConfirmed) {
-                setIsLoading(true);
-                try {
-                    const response = await deleteBooking(bookingId);
-                    if (response.status !== 200) {
-                        throw new Error(response.data || "Lỗi khi xóa booking");
-                    }
-
-                    const updatedBookingData = bookingData.filter((b) => b.booking_id !== bookingId);
-                    setBookingData(updatedBookingData);
-                    setDropdownOpen(null);
-
-                    Swal.fire({
-                        icon: "success",
-                        title: "Thành công!",
-                        text: "Booking đã được xóa.",
-                        confirmButtonText: "OK",
-                    });
-                } catch (error) {
-                    console.error("Error deleting booking:", error);
-                    Swal.fire({
-                        icon: "error",
-                        title: "Lỗi khi xóa",
-                        text: error.message,
-                        confirmButtonText: "Thử lại",
-                    });
-                } finally {
-                    setIsLoading(false);
-                }
-            }
-        });
     };
 
     const handleCancelBooking = async (bookingId) => {
@@ -329,15 +274,6 @@ function BookingTourTable({ currentEntries }) {
                                                                 disabled={isLoading}
                                                             >
                                                                 🚫 Hủy
-                                                            </button>
-                                                        )}
-                                                        {(item.booking_status === "COMPLETED" || item.booking_status === "CANCELLED") && (
-                                                            <button
-                                                                className="w-full px-4 py-2 text-left text-sm text-red-600 hover:bg-red-50"
-                                                                onClick={() => handleDeleteBooking(item.booking_id)}
-                                                                disabled={isLoading}
-                                                            >
-                                                                🗑️ Xóa
                                                             </button>
                                                         )}
                                                         <Link to={`/invoice/bookings/${item.booking_id}`}>

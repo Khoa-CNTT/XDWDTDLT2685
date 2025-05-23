@@ -29,10 +29,10 @@ function ShowBookingTour() {
             const dataArray = res.data?.content && Array.isArray(res.data.content) ? res.data.content : [];
 
             setData(dataArray);
-            setOriginalData(dataArray); // Lưu dữ liệu gốc để tìm kiếm
-            setTotalPages(res.data?.totalPages || 1); // Tổng số trang
-            setTotalItems(res.data?.totalElements || 0); // Tổng số booking
-            setCurrentPage(res.data?.number || page); // Trang hiện tại
+            setOriginalData(dataArray);
+            setTotalPages(res.data?.totalPages || 1);
+            setTotalItems(res.data?.totalElements || 0);
+            setCurrentPage(res.data?.number || page);
         } catch (error) {
             console.error("Lỗi khi tải dữ liệu:", error);
             setData([]);
@@ -40,7 +40,7 @@ function ShowBookingTour() {
             setTotalPages(1);
             setTotalItems(0);
         } finally {
-            setIsLoading(false); // Kết thúc loading
+            setIsLoading(false);
         }
     };
 

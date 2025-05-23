@@ -15,8 +15,8 @@ function ShowTour() {
     const [originalData, setOriginalData] = useState([]);
     const [currentPage, setCurrentPage] = useState(0);
     const [totalPages, setTotalPages] = useState(0);
-    const [isLoading, setIsLoading] = useState(false); // Thêm trạng thái loading
-    const limit = 10; // số tour mỗi trang
+    const [isLoading, setIsLoading] = useState(false);
+    const limit = 10;
 
     const { register, handleSubmit } = useForm();
 
@@ -50,7 +50,7 @@ function ShowTour() {
             setOriginalData([]);
             setTotalPages(0);
         } finally {
-            setIsLoading(false); // Kết thúc loading
+            setIsLoading(false);
         }
     };
 
@@ -61,8 +61,8 @@ function ShowTour() {
     const removeDiacritics = (str) => {
         if (!str || typeof str !== "string") return "";
         return str
-            .normalize("NFD")
-            .replace(/[\u0300-\u036f]/g, "")
+            .normalize("NFD") //chuyen khong dau
+            .replace(/[\u0300-\u036f]/g, "") //xoa dau
             .replace(/đ/g, "d")
             .replace(/Đ/g, "D");
     };

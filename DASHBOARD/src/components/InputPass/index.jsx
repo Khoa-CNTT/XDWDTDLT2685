@@ -14,17 +14,17 @@ function InputPassword({ name, value, onChange, error, placeholder = "Mật kh�
                 value={value}
                 onChange={onChange}
                 placeholder={placeholder}
-                className={`h-12 w-full rounded-2xl border-2 ${error ? "border-red-500" : "border-[#019fb5]"} bg-white px-5 pr-12 text-lg text-black placeholder-[#019fb5] focus:outline-none dark:bg-slate-950 dark:text-white dark:placeholder-[#019fb5]`}
+                className={`h-12 w-full rounded-2xl border-2 ${error ? "border-red-500" : "border-[#019fb5]"} bg-transparent px-5 pr-12 text-lg text-white placeholder-[#019fb5] focus:outline-none`}
             />
             <button
                 type="button"
                 onClick={() => setShowPassword(!showPassword)}
-                className="absolute top-1/2 right-10 -translate-y-1/2 text-xl text-[#019fb5] focus:outline-none dark:text-[#019fb5]"
+                className="absolute top-1/2 right-10 -translate-y-1/2 text-xl text-[#019fb5] focus:outline-none"
             >
                 {showPassword ? <FaEyeSlash /> : <FaEye />}
             </button>
-            <RiLockPasswordFill className="absolute top-1/2 right-4 -translate-y-1/2 text-xl text-[#019fb5] dark:text-[#019fb5]" />
-            {error && <p className="mt-1 text-sm text-red-500 dark:text-red-400">{error}</p>} {/* Hiển thị lỗi nếu có */}
+            <RiLockPasswordFill className="absolute top-1/2 right-4 -translate-y-1/2 text-xl text-[#019fb5]" />
+            {error && <p className="mt-1 text-sm text-red-500">{error}</p>}
         </div>
     );
 }

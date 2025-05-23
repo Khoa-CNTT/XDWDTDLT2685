@@ -92,7 +92,9 @@ function TourRecent() {
                                                       ? "text-green-500"
                                                       : tour.status === "CANCELLED"
                                                         ? "text-red-500"
-                                                        : "text-gray-500"
+                                                        : tour.status === "COMPLETED"
+                                                          ? "text-blue-500"
+                                                          : "text-gray-500"
                                             }`}
                                         >
                                             {tour.status === "PENDING"
@@ -101,7 +103,9 @@ function TourRecent() {
                                                   ? "Đã xác nhận"
                                                   : tour.status === "CANCELLED"
                                                     ? "Đã hủy"
-                                                    : tour.status}
+                                                    : tour.status === "COMPLETED"
+                                                      ? "Đã hoàn thành"
+                                                      : tour.status}
                                         </td>
 
                                         <td className="max-w-[100px] truncate border border-gray-300 px-4 py-2">

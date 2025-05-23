@@ -1,19 +1,10 @@
-/* eslint-disable no-unused-vars */
 import React, { useState } from "react";
-import { centralProvinces, dataRegion, northProvinces, southProvinces } from "../../../context/TourContext";
-
-// Hàm lấy khu vực dựa trên điểm đến
-function getRegionFromDestination(destination) {
-    if (northProvinces.includes(destination)) return "NORTH";
-    if (centralProvinces.includes(destination)) return "CENTRAL";
-    if (southProvinces.includes(destination)) return "SOUTH";
-    return "";
-}
+import { dataRegion } from "../../../context/TourContext";
 
 function TourForm({
     data,
     itinerary,
-    handleChange, // Original handleChange prop
+    handleChange,
     handleItineraryChange,
     handleSubmit,
     closeModal,
@@ -25,20 +16,17 @@ function TourForm({
 }) {
     const [errors, setErrors] = useState({});
 
-    // Hàm chuyển chuỗi tiền tệ thành số
     const parsePrice = (price) => {
         if (!price) return 0;
         const cleanedPrice = price.replace(/[^0-9]/g, "");
         return parseFloat(cleanedPrice) || 0;
     };
 
-    // Hàm chuyển số thành chuỗi định dạng tiền tệ
     const formatPrice = (number) => {
         if (!number && number !== 0) return "";
         return number.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
     };
 
-    // Hàm xử lý thay đổi giá
     const handlePriceChange = (e) => {
         const { name, value } = e.target;
         const numericValue = parsePrice(value);
@@ -53,7 +41,6 @@ function TourForm({
         setErrors((prev) => ({ ...prev, [name]: "" }));
     };
 
-    // Hàm xử lý gửi biểu mẫu
     const handleFormSubmit = (e) => {
         e.preventDefault();
         let newErrors = {};
@@ -74,36 +61,26 @@ function TourForm({
         handleSubmit(e);
     };
 
-    // Hàm xử lý riêng cho trường Mô tả
     const handleDescriptionChange = (e) => {
         const { name, value } = e.target;
         let newDescription = value;
 
-        // Các từ khóa cần xử lý
         const keywords = ["Lưu trú:", "Ẩm thực:", "Hoạt động khác:"];
 
         keywords.forEach((keyword) => {
-            // Bước 1: Bình thường hóa - Loại bỏ dấu "|" hoặc xuống dòng không cần thiết trước từ khóa
-            // Regex này tìm: (khoảng trắng hoặc xuống dòng tùy chọn) + (dấu "|" tùy chọn với khoảng trắng xung quanh) + (xuống dòng tùy chọn) + từ khóa
-            // và thay thế bằng chính từ khóa đó, loại bỏ phần tiền tố không mong muốn.
             const normalizeRegex = new RegExp(`(?:\\s*\\|\\s*|\\s*\\n+\\s*)(${keyword.replace(":", "\\:")})`, "g");
             newDescription = newDescription.replace(normalizeRegex, `$1`);
         });
 
         keywords.forEach((keyword) => {
-            // Bước 2: Thêm " | " vào trước từ khóa
-            // Regex này tìm từ khóa và thay thế bằng " | " + từ khóa.
-            // Điều này sẽ được áp dụng sau khi đã bình thường hóa.
             const addSeparatorRegex = new RegExp(`(${keyword.replace(":", "\\:")})`, "g");
             newDescription = newDescription.replace(addSeparatorRegex, " | $1");
         });
 
-        // Loại bỏ dấu " | " thừa ở đầu chuỗi nếu có (ví dụ: nếu mô tả bắt đầu bằng một trong các từ khóa)
         if (newDescription.startsWith(" | ")) {
-            newDescription = newDescription.substring(3); // Bỏ " | "
+            newDescription = newDescription.substring(3);
         }
 
-        // Gọi hàm handleChange gốc với giá trị đã được cập nhật
         handleChange({
             target: {
                 name: name,
@@ -117,14 +94,13 @@ function TourForm({
             onSubmit={handleFormSubmit}
             className="space-y-6"
         >
-            {/* Tên tour */}
             <div>
                 <label className="block font-medium">Tên tour:</label>
                 <input
                     type="text"
                     name="title"
                     value={data.title || ""}
-                    onChange={handleChange} // Sử dụng handleChange gốc
+                    onChange={handleChange}
                     className="mt-1 w-full rounded-md border border-gray-300 p-2 focus:ring-2 focus:ring-[#00c0d1]"
                     required
                 />
@@ -136,21 +112,20 @@ function TourForm({
                     type="text"
                     name="destination"
                     value={data.destination || ""}
-                    onChange={handleChange} // Sử dụng handleChange gốc
+                    onChange={handleChange}
                     className="mt-1 w-full rounded-md border border-gray-300 p-2 focus:ring-2 focus:ring-[#00c0d1]"
                     placeholder="Nhập điểm đến"
                     required
                 />
             </div>
 
-            {/* Thời gian (readonly, tính tự động) */}
             <div>
                 <label className="block font-medium">Thời gian:</label>
                 <input
                     type="text"
                     name="duration"
                     value={data.duration || ""}
-                    onChange={handleChange} // Sử dụng handleChange gốc
+                    onChange={handleChange}
                     className="mt-1 w-full cursor-not-allowed rounded-md border border-gray-300 bg-gray-100 p-2 text-gray-600 focus:ring-0"
                     placeholder="Thời gian sẽ tự động tính toán từ ngày bắt đầu và kết thúc"
                     required
@@ -158,13 +133,12 @@ function TourForm({
                 />
             </div>
 
-            {/* Khu vực (dạng chọn) */}
             <div>
                 <label className="block font-medium">Khu vực:</label>
                 <select
                     name="region"
                     value={data.region || ""}
-                    onChange={handleChange} // Sử dụng handleChange gốc
+                    onChange={handleChange}
                     className="mt-1 w-full rounded-md border border-gray-300 p-3 focus:ring-2 focus:ring-[#00c0d1]"
                     required
                 >
@@ -180,68 +154,63 @@ function TourForm({
                 </select>
             </div>
 
-            {/* Mô tả tour */}
             <div>
                 <label className="block font-medium">Mô tả:</label>
                 <textarea
                     name="description"
                     value={data.description || ""}
-                    onChange={handleDescriptionChange} // Sử dụng hàm xử lý riêng cho mô tả
+                    onChange={handleDescriptionChange}
                     className="mt-1 w-full rounded-md border border-gray-300 p-2 focus:ring-2 focus:ring-[#00c0d1]"
                     rows="4"
                     required
                 />
             </div>
 
-            {/* Số lượng chỗ */}
             <div>
                 <label className="block font-medium">Số lượng chỗ:</label>
                 <input
                     type="number"
                     name="quantity"
                     value={data.quantity ?? ""}
-                    onChange={handleChange} // Sử dụng handleChange gốc
+                    onChange={handleChange}
                     className="mt-1 w-full rounded-md border border-gray-300 p-2 focus:ring-2 focus:ring-[#00c0d1]"
                     min="0"
                     required
                 />
             </div>
 
-            {/* Giá người lớn */}
             <div>
                 <label className="block font-medium">Giá người lớn (VNĐ):</label>
                 <input
                     type="text"
                     name="price_adult"
                     value={formatPrice(data.price_adult) || ""}
-                    onChange={handlePriceChange} // Sử dụng handlePriceChange
+                    onChange={handlePriceChange}
                     className="mt-1 w-full rounded-md border border-gray-300 p-2 focus:ring-2 focus:ring-[#00c0d1]"
                     required
                 />
                 {errors.price_adult && <p className="mt-1 text-sm text-red-500">{errors.price_adult}</p>}
             </div>
 
-            {/* Giá trẻ em */}
             <div>
                 <label className="block font-medium">Giá trẻ em (VNĐ):</label>
                 <input
                     type="text"
                     name="price_child"
                     value={formatPrice(data.price_child) || ""}
-                    onChange={handlePriceChange} // Sử dụng handlePriceChange
+                    onChange={handlePriceChange}
                     className="mt-1 w-full rounded-md border border-gray-300 p-2 focus:ring-2 focus:ring-[#00c0d1]"
                     required
                 />
                 {errors.price_child && <p className="mt-1 text-sm text-red-500">{errors.price_child}</p>}
             </div>
 
-            {/* Trạng thái tour */}
             <div>
                 <label className="block font-medium">Trạng thái:</label>
                 <select
                     name="availability"
                     value={data.availability ? "true" : "false"}
-                    onChange={(e) => handleChange({ target: { name: "availability", value: e.target.value === "true" } })} // Sử dụng handleChange gốc
+                    onChange={(e) => handleChange({ target: { name: "availability", value: e.target.value === "true" } })}
                     className="mt-1 w-full rounded-md border border-gray-300 p-2 focus:ring-2 focus:ring-[#00c0d1]"
                 >
                     <option value="true">Còn trống</option>
@@ -249,35 +218,32 @@ function TourForm({
                 </select>
             </div>
 
-            {/* Ngày bắt đầu */}
             <div>
                 <label className="block font-medium">Ngày bắt đầu:</label>
                 <input
                     type="date"
                     name="startDate"
                     value={data.startDate || ""}
-                    onChange={handleChange} // Sử dụng handleChange gốc
+                    onChange={handleChange}
                     min={new Date().toISOString().split("T")[0]}
                     className="mt-1 w-full rounded-md border border-gray-300 p-2 focus:ring-2 focus:ring-[#00c0d1]"
                     required
                 />
             </div>
 
-            {/* Ngày kết thúc */}
             <div>
                 <label className="block font-medium">Ngày kết thúc:</label>
                 <input
                     type="date"
                     name="endDate"
                     value={data.endDate || ""}
-                    onChange={handleChange} // Sử dụng handleChange gốc
+                    onChange={handleChange}
                     min={data.startDate || new Date().toISOString().split("T")[0]}
                     className="mt-1 w-full rounded-md border border-gray-300 p-2 focus:ring-2 focus:ring-[#00c0d1]"
                     required
                 />
             </div>
 
-            {/* Ảnh tour */}
             <div>
                 <div>
                     <label className="block font-medium">
@@ -299,7 +265,7 @@ function TourForm({
                         name="images"
                         accept="image/*"
                         multiple
-                        onChange={handleImageChange} // Prop riêng cho ảnh
+                        onChange={handleImageChange}
                         className="hidden"
                     />
                     {renderAnh()}
@@ -316,7 +282,6 @@ function TourForm({
                 </div>
             </div>
 
-            {/* Lịch trình tour */}
             <div>
                 <label className="block font-semibold">Lịch trình:</label>
                 {itinerary.length > 0 ? (
@@ -358,7 +323,6 @@ function TourForm({
                 )}
             </div>
 
-            {/* Nút hành động */}
             <div className="flex justify-end space-x-4">
                 <button
                     type="button"

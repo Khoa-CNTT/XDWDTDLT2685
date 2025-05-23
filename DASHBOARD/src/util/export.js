@@ -333,7 +333,7 @@ export const handlePrintReport = (item, type) => {
                 }
                 body { 
                     font-family: 'Arial', sans-serif; 
-                    font-size: 14px; 
+                    font-size: 13px; 
                     line-height: 1.3; 
                     color: #333; 
                     margin: 0; 
@@ -364,7 +364,7 @@ export const handlePrintReport = (item, type) => {
                     margin-bottom: 10px; 
                 }
                 .section h3 { 
-                    font-size: 14px; 
+                    font-size: 13px; 
                     font-weight: bold; 
                     margin-bottom: 5px; 
                     color: #1e40af; 
@@ -381,7 +381,7 @@ export const handlePrintReport = (item, type) => {
                     width: 100%; 
                     border-collapse: collapse; 
                     margin-bottom: 10px; 
-                    font-size: 14px; 
+                    font-size: 13px; 
                 }
                 th, td { 
                     border: 1px solid #ccc; 
@@ -400,7 +400,7 @@ export const handlePrintReport = (item, type) => {
                 }
                 .footer { 
                     text-align: center; 
-                    font-size: 13px; 
+                    font-size: 12px; 
                     margin-top: 10px; 
                     border-top: 1px solid #ccc; 
                     padding-top: 5px; 

@@ -135,3 +135,20 @@ export const uploadImageTour = async (tourId, formData) => {
         };
     }
 };
+
+// Lấy danh sách ảnh của tour theo ID
+export const getTourImages = async (tourId) => {
+    try {
+        const res = await get(`tours/${tourId}/images`);
+        return {
+            status: res.status,
+            data: res.data,
+        };
+    } catch (error) {
+        console.error(`Error fetching images for tour with ID ${tourId}:`, error);
+        return {
+            status: error.response?.status || 500,
+            data: error.response?.data || "Lỗi khi lấy danh sách ảnh tour",
+        };
+    }
+};
