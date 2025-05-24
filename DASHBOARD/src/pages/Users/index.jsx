@@ -66,7 +66,7 @@ function User() {
 
         const searchTermNoDiacritics = removeDiacritics(searchTerm);
         const filteredData = originalData.filter((user) => {
-            const userName = user.fullname && typeof user.fullname === "string" ? user.fullname.toLowerCase() : "";
+            const userName = user.full_name && typeof user.full_name === "string" ? user.full_name.toLowerCase() : "";
             const userNameNoDiacritics = removeDiacritics(userName);
             return userName.includes(searchTerm) || userNameNoDiacritics.includes(searchTermNoDiacritics);
         });

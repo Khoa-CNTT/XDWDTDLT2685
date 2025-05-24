@@ -80,9 +80,13 @@ function TourRecent() {
                                         key={tour.id}
                                         className="text-center"
                                     >
-                                        <td className="border border-gray-300 px-4 py-2">{tour.id}</td>
-                                        <td className="max-w-[120px] truncate border border-gray-300 px-4 py-2">{tour.customer_name}</td>
-                                        <td className="max-w-[100px] truncate border border-gray-300 px-4 py-2">{tour.tour_name}</td>
+                                        <td className="border border-gray-300 px-4 py-2 whitespace-normal">{tour.id}</td>
+                                        <td className="max-w-[120px] truncate border border-gray-300 px-4 py-2 whitespace-nowrap">
+                                            {tour.customer_name}
+                                        </td>
+                                        <td className="max-w-[100px] truncate border border-gray-300 px-4 py-2 whitespace-nowrap">
+                                            {tour.tour_name}
+                                        </td>
                                         <td className="border border-gray-300 px-4 py-2 whitespace-nowrap">{tour.price.toLocaleString("vi-VN")}</td>
                                         <td
                                             className={`border border-gray-300 px-4 py-2 whitespace-nowrap ${
@@ -108,14 +112,14 @@ function TourRecent() {
                                                       : tour.status}
                                         </td>
 
-                                        <td className="max-w-[100px] truncate border border-gray-300 px-4 py-2">
+                                        <td className="max-w-[100px] truncate border border-gray-300 px-4 py-2 whitespace-nowrap">
                                             {tour.payment_method === "OFFICE"
                                                 ? "Văn phòng"
                                                 : tour.payment_method === "VNPAY"
                                                   ? "VNPAY"
                                                   : tour.payment_method}
                                         </td>
-                                        <td className="max-w-[100px] truncate border border-gray-300 px-4 py-2">{tour.region}</td>
+                                        <td className="max-w-[100px] truncate border border-gray-300 px-4 py-2 whitespace-nowrap">{tour.region}</td>
                                         <td className="border border-gray-300 px-4 py-2 whitespace-nowrap">
                                             {tour.booking_date ? new Date(tour.booking_date).toLocaleDateString("vi-VN") : "N/A"}
                                         </td>

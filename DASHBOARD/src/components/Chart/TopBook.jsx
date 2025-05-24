@@ -6,7 +6,7 @@ const { FaFire } = icons;
 
 function TopbookedTour() {
     const [domesticData, setDomesticData] = useState([]);
-    const [error, setError] = useState(null); // State để lưu thông báo lỗi
+    const [error, setError] = useState(null);
 
     useEffect(() => {
         const fetchApi = async () => {
@@ -14,7 +14,6 @@ function TopbookedTour() {
                 const res = await getDashboardData();
                 console.log(res);
 
-                // Kiểm tra response và tourStats
                 if (!res || !res.data || !res.data.tourStats || !Array.isArray(res.data.tourStats)) {
                     throw new Error("Dữ liệu tour không hợp lệ hoặc không tồn tại");
                 }
@@ -29,14 +28,14 @@ function TopbookedTour() {
                         rating: tour.rating || 0,
                         duration: tour.duration || "Không xác định",
                     }))
-                    .sort((a, b) => b.bookedSlots - a.bookedSlots); // Sắp xếp theo bookedSlots giảm dần
+                    .sort((a, b) => b.bookedSlots - a.bookedSlots);
 
                 setDomesticData(formattedData);
-                setError(null); // Xóa lỗi nếu thành công
+                setError(null);
             } catch (error) {
                 console.error("Lỗi khi lấy dữ liệu thống kê:", error);
                 setError("Không thể tải dữ liệu tour. Vui lòng thử lại sau.");
-                setDomesticData([]); // Đặt dữ liệu rỗng để tránh lỗi bảng
+                setDomesticData([]);
             }
         };
         fetchApi();
@@ -65,7 +64,7 @@ function TopbookedTour() {
                                     <th className="border border-gray-300 px-4 py-2">ID</th>
                                     <th className="border border-gray-300 px-4 py-2">Tên Tour</th>
                                     <th className="border border-gray-300 px-4 py-2">Lượt Booking</th>
-                                    <th className="border border-gray-300 px-4 py-2">Chỗ đã đặt </th>
+                                    <th className="border border-gray-300 px-4 py-2">Chỗ đã đặt</th>
                                     <th className="border border-gray-300 px-4 py-2">Chỗ Trống</th>
                                     <th className="border border-gray-300 px-4 py-2">Giá (VND)</th>
                                     <th className="border border-gray-300 px-4 py-2">Đánh Giá</th>
@@ -78,14 +77,14 @@ function TopbookedTour() {
                                         key={tour.id || index}
                                         className="text-center"
                                     >
-                                        <td className="border border-gray-300 px-4 py-2">{tour.id}</td>
-                                        <td className="border border-gray-300 px-4 py-2">{tour.name}</td>
-                                        <td className="border border-gray-300 px-4 py-2">{tour.bookingCount}</td>
-                                        <td className="border border-gray-300 px-4 py-2">{tour.bookedSlots}</td>
-                                        <td className="border border-gray-300 px-4 py-2">{tour.availableSlots}</td>
-                                        <td className="border border-gray-300 px-4 py-2">{tour.price}</td>
-                                        <td className="border border-gray-300 px-4 py-2">{tour.rating}</td>
-                                        <td className="border border-gray-300 px-4 py-2">{tour.duration}</td>
+                                        <td className="border border-gray-300 px-4 py-2 whitespace-nowrap">{tour.id}</td>
+                                        <td className="max-w-[120px] truncate border border-gray-300 px-4 py-2 whitespace-nowrap">{tour.name}</td>
+                                        <td className="border border-gray-300 px-4 py-2 whitespace-nowrap">{tour.bookingCount}</td>
+                                        <td className="border border-gray-300 px-4 py-2 whitespace-nowrap">{tour.bookedSlots}</td>
+                                        <td className="border border-gray-300 px-4 py-2 whitespace-nowrap">{tour.availableSlots}</td>
+                                        <td className="border border-gray-300 px-4 py-2 whitespace-nowrap">{tour.price}</td>
+                                        <td className="border border-gray-300 px-4 py-2 whitespace-nowrap">{tour.rating}</td>
+                                        <td className="border border-gray-300 px-4 py-2 whitespace-nowrap">{tour.duration}</td>
                                     </tr>
                                 ))}
                             </tbody>

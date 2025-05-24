@@ -153,15 +153,29 @@ export const renderCSV = (data, type) => {
 
 // Hàm xuất CSV
 export const handleToCSV = (data, type) => {
+    // Gọi hàm renderCSV để chuyển dữ liệu (data) sang chuỗi CSV theo kiểu (type)
     const csv = renderCSV(data, type);
+
+    // Tạo một đối tượng Blob từ chuỗi CSV, với định dạng MIME là CSV
     const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
+
+    // Tạo URL tạm từ Blob để có thể tải xuống
     const url = URL.createObjectURL(blob);
 
+    // Tạo phần tử <a> để kích hoạt hành động tải xuống
     const link = document.createElement("a");
     link.href = url;
+
+    // Đặt thuộc tính "download" để chỉ định tên file CSV (ví dụ: users.csv, bookings.csv,...)
     link.setAttribute("download", `${type}.csv`);
+
+    // Thêm thẻ <a> vào DOM để trình duyệt xử lý được sự kiện click
     document.body.appendChild(link);
+
+    // Kích hoạt sự kiện click để bắt đầu tải file
     link.click();
+
+    // Xóa thẻ <a> khỏi DOM sau khi tải xong để dọn dẹp
     document.body.removeChild(link);
 };
 

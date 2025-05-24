@@ -118,9 +118,15 @@ function EditTour({ item }) {
             });
             return;
         }
-        // Không reset images, chỉ thêm ảnh mới vào files
-        setFiles(uploadedFiles ? Array.from(uploadedFiles) : []);
-        setAreImagesChanged(true);
+        if (uploadedFiles) {
+            setFiles(Array.from(uploadedFiles));
+            setAreImagesChanged(true);
+            setData((prevData) => ({
+                ...prevData,
+                images: [],
+                img: [],
+            }));
+        }
     };
 
     const handleChange = (e) => {
